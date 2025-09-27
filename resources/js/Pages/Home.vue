@@ -22,12 +22,13 @@ import { Head, Link } from '@inertiajs/vue3'
         <Link href="/about" class="text-gray-700 hover:text-blue-600">About</Link>
         <Link href="/login" class="text-gray-700 hover:text-blue-600">Login</Link>
         <Link href="/register" class="text-gray-700 hover:text-blue-600">Register</Link>
+        
       </div>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section class="bg-gray-50 py-20">
+  <section class="min-h-screen bg-gray-50 py-20">
     <div class="max-w-4xl mx-auto text-center">
       <h1 class="text-5xl font-extrabold text-gray-900 mb-6">
         Competeix, Vota i Decideix qui és el millor!

@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 defineProps({
     canResetPassword: {
@@ -78,7 +79,16 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <div class="mt-4 flex items-center justify-between">
+            <Link 
+                href="/"
+                class="inline-flex items-center rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                aria-label="Back to home"
+            >
+                <ArrowLeftIcon class="h-5 w-5" />
+            </Link>
+
+            <div class="flex items-center">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
@@ -95,6 +105,7 @@ const submit = () => {
                     Log in
                 </PrimaryButton>
             </div>
+        </div>
         </form>
     </GuestLayout>
 </template>
