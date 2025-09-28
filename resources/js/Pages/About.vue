@@ -68,7 +68,7 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
       <!-- CTA -->
       <div class="text-center mt-16">
         <p class="text-lg text-gray-800 mb-4">
-          Vols començar a jugar i crear els teus rànquings?
+          Vols començar a votar i crear els teus rànquings?
         </p>
         <Link
           :href="route('register')"
