@@ -50,20 +50,32 @@ defineProps({ rankings: Array })
       <div
         v-for="ranking in rankings"
         :key="ranking.id"
-        class="bg-white rounded-lg shadow hover:shadow-lg transition"
+        class="bg-white rounded-lg shadow hover:shadow-xl hover:-translate-y-1 transition transform"
       >
         <Link :href="`/rankings/${ranking.id}`">
+          <!-- Imatge o fallback -->
           <img
             v-if="ranking.image"
             :src="`/storage/${ranking.image}`"
             alt="Ranking image"
             class="w-full h-48 object-cover rounded-t-lg"
           />
+          <div
+            v-else
+            class="w-full h-48 flex items-center justify-center bg-gray-100 rounded-t-lg"
+          >
+            <span class="text-gray-400 text-sm">Sense imatge</span>
+          </div>
+
+          <!-- Info -->
           <div class="p-4">
             <h3 class="text-lg font-semibold text-gray-900">{{ ranking.title }}</h3>
             <p class="text-sm text-gray-600 line-clamp-2">
               {{ ranking.description }}
             </p>
+            <span class="mt-3 inline-block text-blue-600 hover:underline">
+              Veure més →
+            </span>
           </div>
         </Link>
       </div>
