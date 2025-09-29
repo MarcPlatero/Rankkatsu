@@ -1,6 +1,12 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 defineProps({ rankings: Array })
+
+const user = usePage().props.auth.user
+
+const logout = () => {
+  router.post('/logout')
+}
 </script>
 
 <template>
@@ -21,8 +27,23 @@ defineProps({ rankings: Array })
       <div class="flex space-x-8">
         <Link href="/rankings/create" class="text-gray-700 hover:text-blue-600">Create</Link>
         <Link href="/about" class="text-gray-700 hover:text-red-600">About</Link>
+
+      <!-- Si no està autenticat -->
+      <template v-if="!user">
         <Link href="/login" class="text-gray-700 hover:text-blue-600">Login</Link>
         <Link href="/register" class="text-gray-700 hover:text-red-600">Register</Link>
+      </template>
+
+      <!-- Si està autenticat -->
+      <template v-else>
+        <span class="text-gray-600">Hola, {{ user.name }}</span>
+        <button
+          @click="logout"
+          class="text-red-600 hover:text-red-800 font-semibold"
+        >
+          Logout
+        </button>
+      </template>
       </div>
     </div>
   </nav>
