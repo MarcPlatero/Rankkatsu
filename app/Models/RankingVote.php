@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RankingOption extends Model
+class RankingVote extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'ranking_id',
-        'name',
-        'image',
+        'ranking_option_id',
+        'user_id',
     ];
 
     public function ranking()
@@ -20,9 +20,14 @@ class RankingOption extends Model
         return $this->belongsTo(Ranking::class);
     }
 
-    public function votes()
+    public function option()
     {
-        return $this->hasMany(RankingVote::class, 'ranking_option_id');
+        return $this->belongsTo(RankingOption::class, 'ranking_option_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 }

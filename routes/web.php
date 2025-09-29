@@ -2,34 +2,28 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\RankingVoteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-})->name('home');
+// Home
+Route::get('/', [RankingController::class, 'home'])->name('home');
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
+// Informació
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index');
-Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
-Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
+// Rankigns (Index, Create, Store, Show, etc.)
+Route::resource('rankings', RankingController::class)->only([
+    'index', 'create', 'store', 'show'
+]);
 
-Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
-Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
+// Votació
+Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
+Route::delete('/rankings/{ranking}/unvote', [RankingVoteController::class, 'unvote'])->name('rankings.unvote');
 
-Route::get('/', [RankingController::class, 'home'])->name('home');
-Route::resource('rankings', RankingController::class);
-
-Route::post('/rankings/{ranking}/vote', [RankingController::class, 'vote'])->name('rankings.vote');
-
+// Usuari
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

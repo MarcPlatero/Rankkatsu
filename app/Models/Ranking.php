@@ -19,4 +19,10 @@ class Ranking extends Model
     {
         return $this->hasMany(RankingOption::class);
     }
+
+    public function votes()
+    {
+        return $this->hasMany(RankingVote::class);
+    }
+
 }

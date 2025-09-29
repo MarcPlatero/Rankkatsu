@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ranking;
+use App\Models\RankingVote;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,7 +12,6 @@ class RankingController extends Controller
     public function index()
     {
         $rankings = Ranking::latest()->get();
-
         return Inertia::render('Rankings/Index', [
             'rankings' => $rankings,
         ]);
@@ -25,17 +25,17 @@ class RankingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'image'       => 'nullable|image|max:2048',
-            'options'     => 'required|array|min:2',
-            'options.*.name'  => 'required|string|max:255',
+            'image' => 'nullable|image|max:2048',
+            'options' => 'required|array|min:2',
+            'options.*.name' => 'required|string|max:255',
             'options.*.image' => 'nullable|image|max:2048',
         ]);
 
-        //Guardar rànquing
+        // Guardar rànquing
         $rankingData = [
-            'title'       => $validated['title'],
+            'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
         ];
 
@@ -45,7 +45,7 @@ class RankingController extends Controller
 
         $ranking = Ranking::create($rankingData);
 
-        //Guardar opcions
+        // Guardar opcions
         foreach ($request->options as $option) {
             $optionData = [
                 'name' => $option['name'],
@@ -65,7 +65,6 @@ class RankingController extends Controller
     public function home()
     {
         $rankings = Ranking::latest()->take(10)->get();
-
         return Inertia::render('Home', [
             'rankings' => $rankings,
         ]);
@@ -73,24 +72,10 @@ class RankingController extends Controller
 
     public function show(Ranking $ranking)
     {
-        $ranking->load('options');
+        $ranking->load('options.votes');
 
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
         ]);
     }
-
-    public function vote(Request $request, Ranking $ranking)
-    {
-        $request->validate([
-            'option_id' => 'required|exists:ranking_options,id',
-        ]);
-
-        $option = $ranking->options()->findOrFail($request->option_id);
-
-        $option->increment('votes');
-
-        return back()->with('success', 'Has votat correctament!');
-    }
-
 }
