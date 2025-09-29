@@ -79,4 +79,18 @@ class RankingController extends Controller
             'ranking' => $ranking,
         ]);
     }
+
+    public function vote(Request $request, Ranking $ranking)
+    {
+        $request->validate([
+            'option_id' => 'required|exists:ranking_options,id',
+        ]);
+
+        $option = $ranking->options()->findOrFail($request->option_id);
+
+        $option->increment('votes');
+
+        return back()->with('success', 'Has votat correctament!');
+    }
+
 }
