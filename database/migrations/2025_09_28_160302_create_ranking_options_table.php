@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('ranking_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('image')->nullable();
-            $table->unsignedInteger('votes')->default(0);
             $table->timestamps();
         });
     }

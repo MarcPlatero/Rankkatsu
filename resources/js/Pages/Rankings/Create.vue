@@ -50,7 +50,8 @@ const submit = () => {
   })
 
   form.post(route('rankings.store'), {
-    forceFormData: true
+    forceFormData: true,
+    onSuccess: () => form.reset(),
   })
 }
 </script>

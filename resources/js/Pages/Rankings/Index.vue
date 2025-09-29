@@ -25,12 +25,20 @@ defineProps({ rankings: Array });
         class="mb-3 rounded border p-4 shadow"
       >
         <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>
-        <p class="text-gray-700">
-          {{ ranking.option_one }} vs {{ ranking.option_two }}
-        </p>
-        <p class="mt-2 text-sm text-gray-500">
-          Vots: {{ ranking.votes_one }} - {{ ranking.votes_two }}
-        </p>
+        <p class="text-gray-700">{{ ranking.description }}</p>
+
+        <ul class="mt-2">
+          <li v-for="opt in ranking.options" :key="opt.id" class="text-sm">
+            - {{ opt.name }}
+          </li>
+        </ul>
+
+        <Link
+          :href="`/rankings/${ranking.id}`"
+          class="mt-3 inline-block text-indigo-600 hover:underline"
+        >
+          Veure detalls →
+        </Link>
       </li>
     </ul>
   </div>

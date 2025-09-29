@@ -7,41 +7,45 @@ use App\Models\RankingOption;
 use App\Models\RankingVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class RankingVoteController extends Controller
 {
+    // Votar
     public function vote(Request $request, Ranking $ranking)
     {
         $request->validate([
             'option_id' => 'required|exists:ranking_options,id',
         ]);
 
-        $option = RankingOption::findOrFail($request->option_id);
+        $option = RankingOption::where('ranking_id', $ranking->id)
+            ->findOrFail($request->option_id);
 
-        // Comprovar si ja ha votat
-        $existingVote = RankingVote::where('ranking_id', $ranking->id)
-            ->where('user_id', Auth::id())
-            ->first();
+        // Esborra el vot previ de l’usuari (per evitar duplicats)
+        RankingVote::where('user_id', Auth::id())
+            ->whereHas('option', function ($q) use ($ranking) {
+                $q->where('ranking_id', $ranking->id);
+            })
+            ->delete();
 
-        if ($existingVote) {
-            return back()->with('error', 'Ja has votat en aquest rànquing');
-        }
-
+        // Desa el nou vot
         RankingVote::create([
-            'ranking_id' => $ranking->id,
             'ranking_option_id' => $option->id,
             'user_id' => Auth::id(),
         ]);
 
-        return back()->with('success', 'Vot registrat correctament!');
+        return redirect()->back()->with('success', 'Has votat correctament!');
     }
 
+    // Treure vot
     public function unvote(Ranking $ranking)
     {
-        RankingVote::where('ranking_id', $ranking->id)
-            ->where('user_id', Auth::id())
+        RankingVote::where('user_id', Auth::id())
+            ->whereHas('option', function ($q) use ($ranking) {
+                $q->where('ranking_id', $ranking->id);
+            })
             ->delete();
 
-        return back()->with('success', 'Has eliminat el teu vot.');
+        return redirect()->back()->with('success', 'Has eliminat el teu vot!');
     }
 }

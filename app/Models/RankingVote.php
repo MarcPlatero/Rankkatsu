@@ -10,15 +10,9 @@ class RankingVote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ranking_id',
         'ranking_option_id',
         'user_id',
     ];
-
-    public function ranking()
-    {
-        return $this->belongsTo(Ranking::class);
-    }
 
     public function option()
     {
@@ -29,5 +23,4 @@ class RankingVote extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }

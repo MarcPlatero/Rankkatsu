@@ -11,11 +11,12 @@ class RankingController extends Controller
 {
     public function index()
     {
-        $rankings = Ranking::latest()->get();
+        $rankings = Ranking::with('options')->latest()->get();
         return Inertia::render('Rankings/Index', [
             'rankings' => $rankings,
         ]);
     }
+
 
     public function create()
     {
@@ -72,7 +73,7 @@ class RankingController extends Controller
 
     public function show(Ranking $ranking)
     {
-        $ranking->load('options.votes');
+        $ranking->load('options');
 
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
