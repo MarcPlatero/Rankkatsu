@@ -104,7 +104,7 @@ const submit = () => {
             <input
               type="text"
               v-model="option.name"
-              placeholder="Nom de l’opció"
+              placeholder="Nom de l’opció/personatge/cosa"
               class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
               required
             />
