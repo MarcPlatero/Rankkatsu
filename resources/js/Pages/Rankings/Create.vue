@@ -1,71 +1,154 @@
 <script setup>
+import { Head, useForm } from '@inertiajs/vue3'
 import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
 
-const title = ref('')
-const description = ref('')
-const image = ref(null)
+const form = useForm({
+  title: '',
+  description: '',
+  image: null,
+  options: [
+    { name: '', image: null }
+  ]
+})
 
-const options = ref([
-  { name: '', image: null } // sempre comença amb 1 opció
-])
-
+// Afegir una nova opció
 const addOption = () => {
-  options.value.push({ name: '', image: null })
+  form.options.push({ name: '', image: null })
 }
 
+// Eliminar opció
 const removeOption = (index) => {
-  if (options.value.length > 1) {
-    options.value.splice(index, 1)
+  if (form.options.length > 1) {
+    form.options.splice(index, 1)
   }
 }
 
-const submit = () => {
-  const formData = new FormData()
-  formData.append('title', title.value)
-  formData.append('description', description.value)
-  if (image.value) formData.append('image', image.value)
+// Pujar imatge del rànquing
+const handleRankingImage = (e) => {
+  form.image = e.target.files[0]
+}
 
-  options.value.forEach((opt, i) => {
-    formData.append(`options[${i}][name]`, opt.name)
-    if (opt.image) {
-      formData.append(`options[${i}][image]`, opt.image)
+// Pujar imatge d’una opció
+const handleOptionImage = (e, index) => {
+  form.options[index].image = e.target.files[0]
+}
+
+// Enviar formulari
+const submit = () => {
+  const data = new FormData()
+  data.append('title', form.title)
+  data.append('description', form.description)
+  if (form.image) {
+    data.append('image', form.image)
+  }
+
+  form.options.forEach((option, i) => {
+    data.append(`options[${i}][name]`, option.name)
+    if (option.image) {
+      data.append(`options[${i}][image]`, option.image)
     }
   })
 
-  router.post('/rankings', formData)
+  form.post(route('rankings.store'), {
+    forceFormData: true
+  })
 }
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto p-6 bg-white shadow rounded">
-    <h1 class="text-2xl font-bold mb-4">Crear un nou Ranking</h1>
+  <Head title="Crear Rànquing" />
 
-    <!-- Títol -->
-    <input v-model="title" type="text" placeholder="Nom del rànquing"
-           class="w-full border rounded p-2 mb-4" />
+  <div class="max-w-3xl mx-auto py-12 px-6">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Crear un nou rànquing</h1>
 
-    <!-- Descripció -->
-    <textarea v-model="description" placeholder="Descripció del rànquing"
-              class="w-full border rounded p-2 mb-4"></textarea>
+    <form @submit.prevent="submit" class="space-y-6">
+      <!-- Nom del rànquing -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Nom del rànquing</label>
+        <input
+          type="text"
+          v-model="form.title"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+          required
+        />
+      </div>
 
-    <!-- Imatge -->
-    <input type="file" @change="e => image.value = e.target.files[0]" class="mb-6" />
+      <!-- Descripció -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Descripció</label>
+        <textarea
+          v-model="form.description"
+          rows="3"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+        ></textarea>
+      </div>
 
-    <h2 class="text-xl font-semibold mb-2">Opcions</h2>
+      <!-- Imatge del rànquing -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Imatge del rànquing</label>
+        <input
+          type="file"
+          accept="image/*"
+          @change="handleRankingImage"
+          class="mt-1 block w-full text-sm text-gray-600"
+        />
+      </div>
 
-    <div v-for="(opt, i) in options" :key="i" class="flex items-center gap-4 mb-2">
-      <input v-model="opt.name" type="text" placeholder="Nom de l'opció"
-             class="flex-1 border rounded p-2" />
-      <input type="file" @change="e => opt.image = e.target.files[0]" />
-      <button type="button" @click="removeOption(i)" class="text-red-500">-</button>
-    </div>
+      <!-- Opcions -->
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Opcions del rànquing</h2>
 
-    <button type="button" @click="addOption" class="text-blue-600 mb-6">+ Afegir opció</button>
+        <div v-for="(option, index) in form.options" :key="index" class="mb-4 p-4 border rounded-lg bg-gray-50">
+          <div class="flex items-center gap-4">
+            <!-- Nom -->
+            <input
+              type="text"
+              v-model="option.name"
+              placeholder="Nom de l’opció"
+              class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+              required
+            />
 
-    <button @click="submit"
-            class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-      Crear Ranking
-    </button>
+            <!-- Imatge -->
+            <input
+              type="file"
+              accept="image/*"
+              @change="(e) => handleOptionImage(e, index)"
+              class="text-sm text-gray-600"
+            />
+
+            <!-- Botó eliminar -->
+            <button
+              type="button"
+              @click="removeOption(index)"
+              class="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+              v-if="form.options.length > 1"
+            >
+              -
+            </button>
+          </div>
+        </div>
+
+        <!-- Botó afegir opció -->
+        <button
+          type="button"
+          @click="addOption"
+          class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+        >
+          + Afegir opció
+        </button>
+      </div>
+
+      <!-- Botó crear -->
+      <div>
+        <button
+          type="submit"
+          class="w-full px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
+          :disabled="form.processing"
+        >
+          Crear Rànquing
+        </button>
+      </div>
+    </form>
   </div>
 </template>
