@@ -25,6 +25,9 @@ Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.st
 Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
 Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
 
+Route::get('/', [RankingController::class, 'home'])->name('home');
+Route::resource('rankings', RankingController::class);
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

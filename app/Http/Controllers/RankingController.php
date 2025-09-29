@@ -33,22 +33,50 @@ class RankingController extends Controller
             'options.*.image' => 'nullable|image|max:2048',
         ]);
 
-        // Guardar rànquing
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('rankings', 'public');
-        }
-        $ranking = Ranking::create($validated);
+        //Guardar rànquing
+        $rankingData = [
+            'title'       => $validated['title'],
+            'description' => $validated['description'] ?? null,
+        ];
 
-        // Guardar opcions
+        if ($request->hasFile('image')) {
+            $rankingData['image'] = $request->file('image')->store('rankings', 'public');
+        }
+
+        $ranking = Ranking::create($rankingData);
+
+        //Guardar opcions
         foreach ($request->options as $option) {
-            $data = ['name' => $option['name']];
-            if (isset($option['image'])) {
-                $data['image'] = $option['image']->store('options', 'public');
+            $optionData = [
+                'name' => $option['name'],
+            ];
+
+            if (isset($option['image']) && $option['image'] instanceof \Illuminate\Http\UploadedFile) {
+                $optionData['image'] = $option['image']->store('options', 'public');
             }
-            $ranking->options()->create($data);
+
+            $ranking->options()->create($optionData);
         }
 
         return redirect()->route('rankings.index')
             ->with('success', 'Ranking creat correctament!');
+    }
+
+    public function home()
+    {
+        $rankings = Ranking::latest()->take(10)->get();
+
+        return Inertia::render('Home', [
+            'rankings' => $rankings,
+        ]);
+    }
+
+    public function show(Ranking $ranking)
+    {
+        $ranking->load('options');
+
+        return Inertia::render('Rankings/Show', [
+            'ranking' => $ranking,
+        ]);
     }
 }
