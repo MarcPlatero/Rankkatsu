@@ -1,41 +1,48 @@
 <script setup>
-import { Head } from '@inertiajs/vue3'
-defineProps({ ranking: Object })
+import { Link } from '@inertiajs/vue3'
+
+defineProps({
+  ranking: Object
+})
 </script>
 
 <template>
-  <Head :title="ranking.title" />
+  <div class="max-w-3xl mx-auto p-6 bg-white shadow rounded">
+    <!-- Títol -->
+    <h1 class="text-3xl font-bold mb-4">{{ ranking.title }}</h1>
 
-  <section class="max-w-4xl mx-auto py-10 px-6">
-    <!-- Info principal -->
-    <div class="mb-6 text-center">
-      <img
-        v-if="ranking.image"
-        :src="`/storage/${ranking.image}`"
-        alt="Ranking image"
-        class="w-full h-64 object-cover rounded-lg mb-4"
-      />
-      <h1 class="text-4xl font-bold mb-2">{{ ranking.title }}</h1>
-      <p class="text-gray-600">{{ ranking.description }}</p>
-    </div>
+    <!-- Imatge -->
+    <img v-if="ranking.image"
+         :src="`/storage/${ranking.image}`"
+         alt="Ranking image"
+         class="w-full h-64 object-cover rounded mb-4" />
+
+    <!-- Descripció -->
+    <p class="text-gray-700 mb-6">{{ ranking.description }}</p>
 
     <!-- Opcions -->
-    <h2 class="text-2xl font-semibold mb-4">Opcions</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <div
-        v-for="option in ranking.options"
-        :key="option.id"
-        class="bg-white shadow rounded-lg p-4 flex flex-col items-center"
-      >
-        <img
-          v-if="option.image"
-          :src="`/storage/${option.image}`"
-          alt="Option image"
-          class="w-24 h-24 object-cover rounded-full mb-3"
-        />
-        <h3 class="text-lg font-medium">{{ option.name }}</h3>
-        <!-- aquí després pots afegir un botó de votar -->
-      </div>
+    <h2 class="text-xl font-semibold mb-2">Opcions</h2>
+    <ul class="space-y-4">
+      <li v-for="opt in ranking.options" :key="opt.id"
+          class="flex items-center gap-4 p-3 border rounded">
+        <img v-if="opt.image"
+             :src="`/storage/${opt.image}`"
+             alt="Option image"
+             class="w-16 h-16 object-cover rounded" />
+        <span class="text-lg">{{ opt.name }}</span>
+      </li>
+    </ul>
+
+    <!-- Placeholder per quan implementem votacions -->
+    <div class="mt-6">
+      <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Votar 🔥
+      </button>
     </div>
-  </section>
+
+    <!-- Tornar enrere -->
+    <div class="mt-6">
+      <Link href="/rankings" class="text-blue-500 hover:underline">⬅ Tornar als rànquings</Link>
+    </div>
+  </div>
 </template>
