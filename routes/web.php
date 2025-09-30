@@ -14,11 +14,16 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-// Rankigns (Index, Create, Store, Show, etc.)
-Route::resource('rankings', RankingController::class)->only(['index', 'create', 'store', 'show'
-]);
+// Rankings
+Route::middleware('auth')->group(function () {
+    Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
+    Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
+});
 
-// Votació
+// Públic: només veure rànquings
+Route::resource('rankings', RankingController::class)->only(['index', 'show']);
+
+// Votació (només autenticats)
 Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
     Route::delete('/rankings/{ranking}/unvote', [RankingVoteController::class, 'unvote'])->name('rankings.unvote');
@@ -29,7 +34,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
 require __DIR__.'/auth.php';

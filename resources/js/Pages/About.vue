@@ -43,7 +43,7 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
         <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
           <h3 class="text-xl font-semibold text-gray-900 mb-3">⚔️ Fer duels</h3>
           <p class="text-gray-700 leading-relaxed">
-            Enfronta dues opcions i deixa que la comunitat decideixi quina és la millor.
+            Enfronta diverses opcions i deixa que la comunitat decideixi quina és la millor.
             Els duels són ràpids, divertits i addictius.
           </p>
         </div>
@@ -51,7 +51,7 @@ import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
         <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
           <h3 class="text-xl font-semibold text-gray-900 mb-3">🗳️ Votar i participar</h3>
           <p class="text-gray-700 leading-relaxed">
-            Participa votant en rànquings i duels ja existents. Les teves decisions
+            Participa votant en rànquings ja existents. Les teves decisions
             ajudaran a establir quin és el favorit de la comunitat.
           </p>
         </div>
