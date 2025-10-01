@@ -1,20 +1,18 @@
-<template>
-  <div class="min-h-screen bg-gray-100">
-    <nav class="bg-white shadow p-4 flex justify-between">
-      <div class="text-xl font-bold">RankDuel</div>
-      <div class="flex gap-4">
-        <Link href="/">Home</Link>
-        <Link href="/rankings">Rankings</Link>
-        <Link href="/about">About</Link>
-      </div>
-    </nav>
+<!-- resources/js/Layouts/AppLayout.vue -->
+<script setup>
+import Navbar from '@/Components/Navbar.vue'
+import Footer from '@/Components/Footer.vue'
+</script>
 
-    <main class="p-6">
+<template>
+  <div class="min-h-screen flex flex-col">
+    <Navbar />
+
+    <!-- Contingut de la pàgina -->
+    <main class="flex-1">
       <slot />
     </main>
+
+    <Footer />
   </div>
 </template>
-
-<script setup>
-import { Link } from '@inertiajs/vue3'
-</script>
