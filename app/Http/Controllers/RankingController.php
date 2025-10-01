@@ -25,32 +25,50 @@ class RankingController extends Controller
 
     public function store(Request $request)
     {
+        // Validació amb missatges personalitzats i més formats d'imatge
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'description' => 'nullable|string|max:1000',
+            // acceptem molts formats i 4MB màxim
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif,gif|max:4096',
+            // mínim 2 opcions
             'options' => 'required|array|min:2',
             'options.*.name' => 'required|string|max:255',
-            'options.*.image' => 'nullable|image|max:2048',
+            // si envies imatges per a cada opció (opcional)
+            'options.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif,gif|max:4096',
+        ], [
+            'title.required' => 'Has d’introduir un títol per al rànquing.',
+            'title.max' => 'El títol no pot tenir més de 255 caràcters.',
+            'image.image' => 'El fitxer ha de ser una imatge vàlida.',
+            'image.mimes' => 'Formats admesos: JPG, JPEG, PNG, WEBP, AVIF, GIF.',
+            'image.max' => 'La imatge no pot superar els 4MB.',
+            'options.required' => 'Has d’afegir opcions al rànquing.',
+            'options.min' => 'Has d’afegir almenys 2 opcions.',
+            'options.*.name.required' => 'Cada opció ha de tenir un nom.',
         ]);
 
-        // Guardar rànquing amb user_id
-        $rankingData = [
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'user_id' => auth()->id(),
-        ];
-
-        if ($request->hasFile('image')) {
-            $rankingData['image'] = $request->file('image')->store('rankings', 'public');
+        // Comprova autenticació (si la ruta store està protegida per auth potser no cal)
+        if (! auth()->check()) {
+            return redirect()->route('login')->with('error', 'Has d\'iniciar sessió per crear un rànquing.');
         }
 
-        $ranking = Ranking::create($rankingData);
+        // Guardar imatge del rànquing (si n'hi ha)
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('rankings', 'public');
+        }
 
-        // Guardar opcions
-        foreach ($validated['options'] as $index => $option) {
+        // Crear rànquing vinculat a l'usuari
+        $ranking = Ranking::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'image' => $validated['image'] ?? null,
+            'user_id' => auth()->id(),
+        ]);
+
+        // Guardar opcions: els arxius d'opció venen a $request->file("options.$i.image")
+        foreach ($validated['options'] as $index => $opt) {
             $optionData = [
-                'name' => $option['name'],
+                'name' => $opt['name'],
             ];
 
             if ($request->hasFile("options.$index.image")) {
@@ -60,8 +78,8 @@ class RankingController extends Controller
             $ranking->options()->create($optionData);
         }
 
-        return redirect()->route('rankings.index')
-            ->with('success', 'Rànquing creat correctament!');
+        // Redirigeix al show o index (segons preferència)
+        return redirect()->route('rankings.index')->with('success', 'Rànquing creat correctament!');
     }
 
     public function home()
