@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ranking;
 use App\Models\RankingVote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class RankingController extends Controller
@@ -90,12 +91,23 @@ class RankingController extends Controller
         ]);
     }
 
-    public function show(Ranking $ranking)
+    public function show($id)
     {
-        $ranking->load('options');
+        $ranking = Ranking::with(['options' => function ($q) {
+            $q->withCount('votes');
+        }])->findOrFail($id);
+
+        $userVote = null;
+
+        if (Auth::check()) {
+            $userVote = RankingVote::where('user_id', Auth::id())
+                ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
+                ->first();
+        }
 
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
+            'userVote' => $userVote,
         ]);
     }
 }

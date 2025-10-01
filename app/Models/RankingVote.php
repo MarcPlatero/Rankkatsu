@@ -23,4 +23,16 @@ class RankingVote extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function ranking()
+    {
+        return $this->hasOneThrough(
+            Ranking::class,
+            RankingOption::class,
+            'id',               
+            'id',               
+            'ranking_option_id',
+            'ranking_id'        
+        );
+    }
 }

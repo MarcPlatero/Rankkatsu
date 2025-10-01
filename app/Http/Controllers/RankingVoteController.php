@@ -11,24 +11,22 @@ use Inertia\Inertia;
 
 class RankingVoteController extends Controller
 {
-    // Votar
     public function vote(Request $request, Ranking $ranking)
     {
         $request->validate([
             'option_id' => 'required|exists:ranking_options,id',
         ]);
 
-        $option = RankingOption::where('ranking_id', $ranking->id)
-            ->findOrFail($request->option_id);
+        $option = $ranking->options()->findOrFail($request->option_id);
 
-        // Esborra el vot previ de l’usuari (per evitar duplicats)
+        // Esborrem vot previ de l’usuari en aquest rànquing
         RankingVote::where('user_id', Auth::id())
             ->whereHas('option', function ($q) use ($ranking) {
                 $q->where('ranking_id', $ranking->id);
             })
             ->delete();
 
-        // Desa el nou vot
+        // Creem nou vot
         RankingVote::create([
             'ranking_option_id' => $option->id,
             'user_id' => Auth::id(),
@@ -37,13 +35,10 @@ class RankingVoteController extends Controller
         return redirect()->back()->with('success', 'Has votat correctament!');
     }
 
-    // Treure vot
     public function unvote(Ranking $ranking)
     {
         RankingVote::where('user_id', Auth::id())
-            ->whereHas('option', function ($q) use ($ranking) {
-                $q->where('ranking_id', $ranking->id);
-            })
+            ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
             ->delete();
 
         return redirect()->back()->with('success', 'Has eliminat el teu vot!');

@@ -22,7 +22,6 @@ class RankingOption extends Model
 
     public function votes()
     {
-        return $this->hasMany(RankingVote::class, 'ranking_option_id');
+        return $this->hasMany(RankingVote::class);
     }
-
 }

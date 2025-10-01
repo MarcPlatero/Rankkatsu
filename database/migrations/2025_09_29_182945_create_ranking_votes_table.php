@@ -17,8 +17,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
 
-            $table->unique(['ranking_option_id', 'user_id']); // Evita que un usuari voti més d’un cop al mateix rànquing
+            $table->unique(['ranking_option_id', 'user_id']); // Evita que un usuari voti més d'una vegada la mateixa opció
         });
+
     }
 
     /**

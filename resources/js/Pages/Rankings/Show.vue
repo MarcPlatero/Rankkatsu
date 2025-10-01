@@ -7,7 +7,7 @@ const props = defineProps({ ranking: Object })
 
 // Total de vots
 const totalVotes = computed(() => {
-  return props.ranking.options.reduce((sum, opt) => sum + opt.votes, 0)
+  return props.ranking.options.reduce((sum, opt) => sum + opt.votes_count, 0)
 })
 
 // Percentatge per cada opció
@@ -66,8 +66,8 @@ const vote = (optionId) => {
 
           <!-- Text amb percentatge -->
           <div class="flex justify-between text-sm text-gray-600 mt-1">
-            <span>{{ opt.votes }} vots</span>
-            <span>{{ getPercentage(opt.votes) }}%</span>
+            <span>{{ opt.votes_count }} vots</span>
+            <span>{{ getPercentage(opt.votes_count) }}%</span>
           </div>
 
           <!-- Botó de votar -->

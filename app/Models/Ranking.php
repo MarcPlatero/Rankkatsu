@@ -23,7 +23,11 @@ class Ranking extends Model
 
     public function votes()
     {
-        return $this->hasMany(RankingVote::class);
+        return $this->hasManyThrough(RankingVote::class, RankingOption::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
