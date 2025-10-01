@@ -1,9 +1,14 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3'
+import { Head, router, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-const props = defineProps({ ranking: Object })
+const props = defineProps({ ranking: Object, userVote: Object })
+
+const page = usePage()
+
+// Flash messages
+const flash = computed(() => page.props.flash)
 
 // Total de vots
 const totalVotes = computed(() => {
@@ -26,6 +31,14 @@ const vote = (optionId) => {
     <Head :title="ranking.title" />
 
     <div class="max-w-3xl mx-auto py-10 px-6">
+      <!-- ALERTES FLASH -->
+      <div v-if="flash.success" class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+        {{ flash.success }}
+      </div>
+      <div v-if="flash.error" class="mb-4 p-4 bg-red-100 text-red-800 rounded">
+        {{ flash.error }}
+      </div>
+      
       <!-- Imatge -->
       <img
         v-if="ranking.image"
