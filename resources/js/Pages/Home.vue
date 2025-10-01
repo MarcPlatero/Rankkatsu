@@ -5,7 +5,9 @@ defineProps({ rankings: Array })
 const user = usePage().props.auth.user
 
 const logout = () => {
-  router.post('/logout')
+  router.post('/logout', {}, {
+    onFinish: () => window.location.reload()
+  })
 }
 </script>
 
