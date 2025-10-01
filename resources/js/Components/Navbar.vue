@@ -39,7 +39,7 @@ const logout = () => {
         </template>
 
         <template v-else>
-          <span class="text-gray-600">Hola, {{ user.name }}</span>
+          <span class="text-gray-700 hover:text-blue-600">Hola, {{ user.name }}</span>
           <button
             @click="logout"
             class="text-red-600 hover:text-red-800 font-semibold"
