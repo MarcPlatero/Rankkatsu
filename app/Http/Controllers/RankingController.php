@@ -110,4 +110,16 @@ class RankingController extends Controller
             'userVote' => $userVote,
         ]);
     }
+
+    public function destroy(Ranking $ranking)
+    {
+        if ($ranking->user_id !== Auth::id()) {
+            abort(403, 'No tens permisos per eliminar aquest rànquing');
+        }
+
+        $ranking->delete();
+
+        return redirect()->route('rankings.index')
+            ->with('success', 'Rànquing eliminat correctament!');
+    }
 }

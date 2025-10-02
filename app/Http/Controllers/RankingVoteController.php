@@ -17,16 +17,17 @@ class RankingVoteController extends Controller
             'option_id' => 'required|exists:ranking_options,id',
         ]);
 
-        $option = $ranking->options()->findOrFail($request->option_id);
+        // Comprovar que l'opció pertany al ranking
+        $option = RankingOption::where('id', $request->option_id)
+            ->where('ranking_id', $ranking->id)
+            ->firstOrFail();
 
-        // Esborrem vot previ de l’usuari en aquest rànquing
+        // Eliminar vot previ d'aquest usuari en aquest rànquing
         RankingVote::where('user_id', Auth::id())
-            ->whereHas('option', function ($q) use ($ranking) {
-                $q->where('ranking_id', $ranking->id);
-            })
+            ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
             ->delete();
 
-        // Creem nou vot
+        // Desa el nou vot
         RankingVote::create([
             'ranking_option_id' => $option->id,
             'user_id' => Auth::id(),

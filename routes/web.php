@@ -20,8 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
 });
 
-// Públic: només veure rànquings
-Route::resource('rankings', RankingController::class)->only(['index', 'show']);
+// Rutes de tots els rankings (index, show, edit, update, create, destroy, store)
+Route::resource('rankings', RankingController::class);
 
 // Votació (només autenticats)
 Route::middleware('auth')->group(function () {
