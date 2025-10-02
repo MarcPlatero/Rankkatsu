@@ -25,6 +25,7 @@ const vote = (optionId) => {
   router.post(`/rankings/${props.ranking.id}/vote`, { option_id: optionId })
 }
 
+// Confirmació i eliminació del rànquing
 const confirmDelete = () => {
   if (confirm("⚠️ Estàs segur que vols eliminar aquest rànquing? Aquesta acció no es podrà desfer.")) {
     router.delete(`/rankings/${props.ranking.id}`)
@@ -58,7 +59,8 @@ const confirmDelete = () => {
       <h1 class="text-3xl font-bold mb-2">{{ ranking.title }}</h1>
       <p class="text-gray-600 mb-6">{{ ranking.description }}</p>
 
-      <div v-if="ranking.user_id === page.props.auth.user.id" class="mb-6">
+      <!-- Botó d'eliminar (només si és el creador i està logejat) -->
+      <div v-if="page.props.auth?.user && ranking.user_id === page.props.auth.user.id" class="mb-6">
         <button
           @click="confirmDelete"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
@@ -100,19 +102,19 @@ const confirmDelete = () => {
           </div>
 
           <!-- Botó de votar -->
-          <div class="mt-3">
-            <button
-              @click="vote(opt.id)"
-              :class="[
-                'px-4 py-2 rounded text-white',
-                userVote && userVote.ranking_option_id === opt.id
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              ]"
-            >
-              {{ userVote && userVote.ranking_option_id === opt.id ? '✅ Ja has votat' : 'Votar' }}
-            </button>
-          </div>
+          <button
+            v-if="!userVote || userVote.ranking_option_id !== opt.id"
+            @click="vote(opt.id)"
+            class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Votar
+          </button>
+          <span
+            v-else
+            class="mt-3 inline-block px-4 py-2 bg-green-600 text-white rounded"
+          >
+            ✅ Ja has votat
+          </span>
         </div>
       </div>
     </div>

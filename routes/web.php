@@ -21,7 +21,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rutes de tots els rankings (index, show, edit, update, create, destroy, store)
-Route::resource('rankings', RankingController::class);
+Route::resource('rankings', RankingController::class)->only([
+    'index', 'store', 'show', 'destroy'
+]);
 
 // Votació (només autenticats)
 Route::middleware('auth')->group(function () {

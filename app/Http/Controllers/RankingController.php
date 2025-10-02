@@ -107,19 +107,20 @@ class RankingController extends Controller
 
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
-            'userVote' => $userVote,
+            'userVote' => $userVote, // si no ha votat = null
         ]);
     }
 
     public function destroy(Ranking $ranking)
     {
+        // Comprovar que és el creador
         if ($ranking->user_id !== Auth::id()) {
-            abort(403, 'No tens permisos per eliminar aquest rànquing');
+            abort(403);
         }
 
         $ranking->delete();
 
         return redirect()->route('rankings.index')
-            ->with('success', 'Rànquing eliminat correctament!');
+            ->with('success', 'El rànquing s’ha eliminat correctament!');
     }
 }
