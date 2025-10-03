@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RankingVoteController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -30,6 +31,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
     Route::delete('/rankings/{ranking}/unvote', [RankingVoteController::class, 'unvote'])->name('rankings.unvote');
 });
+
+// Guardem i esborrem comentaris (nested under rankings)
+Route::post('/rankings/{ranking}/comments', [CommentController::class, 'store'])->middleware('auth')->name('rankings.comments.store');
+Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth')->name('rankings.comments.destroy');
 
 // Usuari
 Route::middleware('auth')->group(function () {

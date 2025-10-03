@@ -95,7 +95,7 @@ class RankingController extends Controller
     {
         $ranking = Ranking::with(['options' => function ($q) {
             $q->withCount('votes');
-        }])->findOrFail($id);
+        }, 'comments.user'])->findOrFail($id);
 
         $userVote = null;
 

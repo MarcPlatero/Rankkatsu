@@ -1,6 +1,6 @@
 <script setup>
 import { Head, router, usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const props = defineProps({ ranking: Object, userVote: Object })
@@ -30,6 +30,32 @@ const confirmDelete = () => {
   if (confirm("⚠️ Estàs segur que vols eliminar aquest rànquing? Aquesta acció no es podrà desfer.")) {
     router.delete(`/rankings/${props.ranking.id}`)
   }
+}
+
+// Comentaris: formulari (només per a autenticats)
+import { useForm } from '@inertiajs/vue3'
+const commentForm = useForm({
+  content: '',
+})
+
+// enviar comentari
+const submitComment = () => {
+  commentForm.post(route('rankings.comments.store', props.ranking.id), {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      commentForm.reset('content')
+    }
+  })
+}
+
+// eliminar comentari (demana confirmació)
+const deleteComment = (commentId) => {
+  if (! confirm('Estàs segur que vols eliminar aquest comentari?')) return
+
+  router.delete(route('rankings.comments.destroy', { ranking: props.ranking.id, comment: commentId }), {
+    preserveScroll: true
+  })
 }
 
 </script>
@@ -117,6 +143,51 @@ const confirmDelete = () => {
           </span>
         </div>
       </div>
+
+        <!-- Form de comentar (només si usuari autenticat) -->
+        <div v-if="$page.props.auth?.user" class="mt-8 mb-4">
+          <form @submit.prevent="submitComment" class="space-y-2">
+            <textarea
+              v-model="commentForm.content"
+              placeholder="Escriu el teu comentari..."
+              class="w-full border rounded p-2"
+              rows="3"
+            ></textarea>
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-gray-500">Máx. 1000 caràcters</div>
+              <button :disabled="commentForm.processing || !commentForm.content" type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+                Publicar
+              </button>
+            </div>
+            <div v-if="commentForm.errors.content" class="text-red-600 text-sm">{{ commentForm.errors.content }}</div>
+          </form>
+        </div>
+
+        <!-- Si no autenticat, enllaç a login -->
+        <div v-else class="mb-4 text-sm">
+          <a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.
+        </div>
+
+        <!-- Llista de comentaris -->
+        <div v-if="ranking.comments && ranking.comments.length > 0" class="space-y-4">
+         <div v-for="comment in ranking.comments" :key="comment.id" class="p-4 bg-white border rounded">
+           <div class="flex items-start justify-between">
+            <div>
+              <div class="text-sm font-semibold">{{ comment.user?.name || 'Usuari' }}</div>
+              <div class="text-xs text-gray-500">{{ new Date(comment.created_at).toLocaleString() }}</div>
+            </div>
+
+            <!-- boto eliminar visible només per autor del comentari o creador del ranking -->
+            <div v-if="$page.props.auth?.user && ($page.props.auth.user.id === comment.user_id || $page.props.auth.user.id === ranking.user_id)">
+              <button @click="deleteComment(comment.id)" class="text-red-600 hover:underline text-sm">Eliminar</button>
+            </div>
+          </div>
+
+          <div class="mt-2 text-gray-700 whitespace-pre-line">{{ comment.content }}</div>
+        </div>
+      </div>
+
+      <div v-else class="text-gray-600">Encara no hi ha comentaris. Sigues el primer!</div>
     </div>
   </AppLayout>
 </template>
