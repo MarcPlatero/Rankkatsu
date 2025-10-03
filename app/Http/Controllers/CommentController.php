@@ -12,16 +12,29 @@ class CommentController extends Controller
     // Desa un comentari en un rànquing (només usuari autenticat)
     public function store(Request $request, Ranking $ranking)
     {
-        $request->validate([
+        $validated = $request->validate([
             'content' => 'required|string|max:1000',
         ], [
             'content.required' => 'El comentari no pot estar buit.',
             'content.max' => 'El comentari no pot superar els 1000 caràcters.',
         ]);
 
-        $comment = $ranking->comments()->create([
+        // Llista de paraules prohibides des de config/banned.php
+        $bannedWords = config('banned.words');
+
+        // Comprovació
+        foreach ($bannedWords as $badWord) {
+            if (stripos($validated['content'], $badWord) !== false) {
+                return back()->withErrors([
+                    'content' => '⚠️ El comentari conté paraules no permeses.',
+                ])->withInput();
+            }
+        }
+
+        // Guardar comentari si passa el filtre
+        $ranking->comments()->create([
             'user_id' => Auth::id(),
-            'content' => $request->input('content'),
+            'content' => $validated['content'],
         ]);
 
         return redirect()->back()->with('success', 'Comentari publicat!');
