@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\CommentVote;
 use App\Models\Ranking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,19 @@ class CommentController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Comentari publicat!');
+    }
+
+    public function unvote(Comment $comment)
+    {
+        if (!Auth::check()) {
+            return back()->with('error', 'Has d\'iniciar sessió per treure el vot.');
+        }
+
+        CommentVote::where('user_id', Auth::id())
+            ->where('comment_id', $comment->id)
+            ->delete();
+
+        return back();
     }
 
     // Esborra un comentari: només l'autor o el creador del ranking poden eliminar-lo

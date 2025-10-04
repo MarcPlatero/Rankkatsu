@@ -162,6 +162,19 @@ class RankingController extends Controller
         ]);
     }
 
+    public function unvote(Ranking $ranking)
+    {
+        if (!Auth::check()) {
+            return back()->with('error', 'Has d\'iniciar sessió per retirar el vot.');
+        }
+
+        RankingVote::where('user_id', Auth::id())
+            ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
+            ->delete();
+
+        return back()->with('success', 'Has retirat el teu vot.');
+    }
+
     public function destroy(Ranking $ranking)
     {
         // Comprovar que és el creador

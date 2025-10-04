@@ -27,8 +27,18 @@ const getPercentage = (votes) => {
   return Math.round((votes / totalVotes.value) * 100)
 }
 
+// Votar o treure vot d'una opció
 const vote = (optionId) => {
-  router.post(`/rankings/${props.ranking.id}/vote`, { option_id: optionId })
+  if (props.votedOptionId === optionId) {
+    // Si ja havies votat aquesta opció → eliminar vot
+    router.post(`/rankings/${props.ranking.id}/unvote`, {}, { preserveScroll: true })
+  } else {
+    router.post(`/rankings/${props.ranking.id}/vote`, { option_id: optionId }, { preserveScroll: true })
+  }
+}
+
+const unvoteRanking = () => {
+  router.post(`/rankings/${props.ranking.id}/unvote`, {}, { preserveScroll: true })
 }
 
 // Confirmació i eliminació del rànquing
@@ -63,9 +73,15 @@ const deleteComment = (commentId) => {
   })
 }
 
-// Votar comentari
+// Like/dislike comentaris amb toggle
 const voteComment = (commentId, isLike) => {
-  router.post(`/comments/${commentId}/vote`, { is_like: isLike }, { preserveScroll: true })
+  const comment = props.comments.find(c => c.id === commentId)
+  // Si ja havies votat el mateix → treure vot
+  if ((comment.user_vote === true && isLike === 1) || (comment.user_vote === false && isLike === 0)) {
+    router.post(`/comments/${commentId}/unvote`, {}, { preserveScroll: true })
+  } else {
+    router.post(`/comments/${commentId}/vote`, { is_like: isLike }, { preserveScroll: true })
+  }
 }
 
 // Estat local del filtre
@@ -112,7 +128,7 @@ watch(sort, (newSort) => {
           @click="confirmDelete"
           class="px-4 py-2 bg-red-600 text-white rounded transition hover:bg-red-700"
         >
-          🗑️ Eliminar rànquing
+          Eliminar rànquing
         </button>
       </div>
 
@@ -147,20 +163,28 @@ watch(sort, (newSort) => {
             <span>{{ getPercentage(opt.votes_count) }}%</span>
           </div>
 
-          <!-- Botó votar -->
-          <button
-            v-if="votedOptionId !== opt.id"
-            @click="vote(opt.id)"
-            class="mt-3 px-4 py-2 bg-blue-600 text-white rounded transition hover:bg-blue-700"
-          >
-            Votar
-          </button>
-          <span
-            v-else
-            class="mt-3 inline-block px-4 py-2 bg-green-600 text-white rounded"
-          >
-            ✅ Has votat per "{{ opt.name }}"
-          </span>
+          <!-- Botons de vot -->
+          <div class="mt-3 flex items-center gap-3">
+            <button
+              v-if="votedOptionId !== opt.id"
+              @click="vote(opt.id)"
+              class="px-4 py-2 bg-blue-600 text-white rounded transition hover:bg-blue-700"
+            >
+              Votar
+            </button>
+
+            <template v-else>
+              <span class="px-4 py-2 bg-green-600 text-white rounded">
+                ✅ Has votat per "{{ opt.name }}"
+              </span>
+              <button
+                @click="unvoteRanking"
+                class="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition"
+              >
+                🗑️ Treure votació
+              </button>
+            </template>
+          </div>
         </div>
       </div>
 

@@ -30,7 +30,7 @@ Route::resource('rankings', RankingController::class)->only([
 // Votació (només autenticats)
 Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
-    Route::delete('/rankings/{ranking}/unvote', [RankingVoteController::class, 'unvote'])->name('rankings.unvote');
+    Route::post('/rankings/{ranking}/unvote', [RankingController::class, 'unvote'])->name('rankings.unvote');
 });
 
 // Guardem i esborrem comentaris (nested under rankings)
@@ -39,6 +39,7 @@ Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::clas
 
 // Votació comentaris (només autenticats)
 Route::post('/comments/{comment}/vote', [CommentVoteController::class, 'store'])->middleware('auth')->name('comments.vote');
+Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])->name('comments.unvote');
 
 // Usuari
 Route::middleware('auth')->group(function () {
