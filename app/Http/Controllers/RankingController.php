@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ranking;
 use App\Models\RankingVote;
+use App\Models\Comment;
+use App\Models\CommentVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -91,23 +93,69 @@ class RankingController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request, Ranking $ranking)
     {
-        $ranking = Ranking::with(['options' => function ($q) {
+        // Carreguem opcions amb el recompte de vots
+        $ranking->load(['options' => function ($q) {
             $q->withCount('votes');
-        }, 'comments.user'])->findOrFail($id);
+        }]);
 
+        // Vot de l'usuari per al rànquing (si està logejat)
         $userVote = null;
-
         if (Auth::check()) {
             $userVote = RankingVote::where('user_id', Auth::id())
                 ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
                 ->first();
         }
 
+        $sort = $request->get('sort', 'recent');
+
+        $commentsQuery = Comment::with('user')
+            ->where('ranking_id', $ranking->id)
+            ->withCount([
+                'votes as likes_count' => function ($q) {
+                    $q->where('is_like', 1);
+                },
+                'votes as dislikes_count' => function ($q) {
+                    $q->where('is_like', 0);
+                }
+            ]);
+
+        // Ordenació segons el filtre
+        switch ($sort) {
+            case 'oldest':
+                $commentsQuery->orderBy('created_at', 'asc');
+                break;
+
+            case 'likes':
+                $commentsQuery->orderBy('likes_count', 'desc');
+                break;
+
+            default: // recent
+                $commentsQuery->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $comments = $commentsQuery->get();
+
+        // Si usuari logejat, afegim estat user_vote a cada comentari (true/false/null)
+        if (Auth::check() && $comments->isNotEmpty()) {
+            $userVotes = CommentVote::where('user_id', Auth::id())
+                ->whereIn('comment_id', $comments->pluck('id')->toArray())
+                ->get()
+                ->keyBy('comment_id');
+
+            $comments = $comments->map(function ($c) use ($userVotes) {
+                $c->user_vote = isset($userVotes[$c->id]) ? (bool) $userVotes[$c->id]->is_like : null;
+                return $c;
+            });
+        }
+
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
-            'userVote' => $userVote, // si no ha votat = null
+            'comments' => $comments,
+            'sort' => $sort,
+            'userVote' => $ranking->userVote,
         ]);
     }
 

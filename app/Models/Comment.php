@@ -24,4 +24,19 @@ class Comment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function votes()
+    {
+        return $this->hasMany(CommentVote::class);
+    }
+
+    public function likesCount()
+    {
+        return $this->votes()->where('is_like', true)->count();
+    }
+
+    public function dislikesCount()
+    {
+        return $this->votes()->where('is_like', false)->count();
+    }
 }

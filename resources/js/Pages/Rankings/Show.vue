@@ -1,9 +1,14 @@
 <script setup>
 import { Head, router, usePage } from '@inertiajs/vue3'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-const props = defineProps({ ranking: Object, userVote: Object })
+const props = defineProps({
+  ranking: Object,
+  userVote: Object,
+  comments: Array,
+  sort: { type: String, default: 'recent' }
+});
 
 const page = usePage()
 
@@ -38,7 +43,7 @@ const commentForm = useForm({
   content: '',
 })
 
-// enviar comentari
+// Enviar comentari
 const submitComment = () => {
   commentForm.post(route('rankings.comments.store', props.ranking.id), {
     forceFormData: true,
@@ -49,7 +54,7 @@ const submitComment = () => {
   })
 }
 
-// eliminar comentari (demana confirmació)
+// Eliminar comentari (demana confirmació)
 const deleteComment = (commentId) => {
   if (! confirm('Estàs segur que vols eliminar aquest comentari?')) return
 
@@ -58,6 +63,22 @@ const deleteComment = (commentId) => {
   })
 }
 
+// Votar un comentari (like/dislike)
+const voteComment = (commentId, isLike) => {
+  router.post(`/comments/${commentId}/vote`, { is_like: isLike }, { preserveScroll: true })
+}
+
+// Estat local del filtre
+const sort = ref(props.sort || 'recent')
+
+// Quan canvies el select → reload amb inertia
+watch(sort, (newSort) => {
+  router.get(
+    route('rankings.show', props.ranking.id),
+    { sort: newSort },
+    { preserveScroll: true, preserveState: true, replace: true }
+  )
+})
 </script>
 
 <template>
@@ -168,26 +189,53 @@ const deleteComment = (commentId) => {
           <a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.
         </div>
 
-        <!-- Llista de comentaris -->
-        <div v-if="ranking.comments && ranking.comments.length > 0" class="space-y-4">
-         <div v-for="comment in ranking.comments" :key="comment.id" class="p-4 bg-white border rounded">
-           <div class="flex items-start justify-between">
-            <div>
-              <div class="text-sm font-semibold">{{ comment.user?.name || 'Usuari' }}</div>
-              <div class="text-xs text-gray-500">{{ new Date(comment.created_at).toLocaleString() }}</div>
-            </div>
-
-            <!-- boto eliminar visible només per autor del comentari o creador del ranking -->
-            <div v-if="$page.props.auth?.user && ($page.props.auth.user.id === comment.user_id || $page.props.auth.user.id === ranking.user_id)">
-              <button @click="deleteComment(comment.id)" class="text-red-600 hover:underline text-sm">Eliminar</button>
-            </div>
-          </div>
-
-          <div class="mt-2 text-gray-700 whitespace-pre-line">{{ comment.content }}</div>
+        <!-- Filtre -->
+        <div class="flex justify-end mb-4">
+          <select v-model="sort" class="border rounded p-2">
+            <option value="recent">Més recents</option>
+            <option value="oldest">Més antics</option>
+            <option value="likes">Més likes</option>
+          </select>
         </div>
-      </div>
+
+        <!-- Llista de comentaris -->
+        <div v-if="comments && comments.length > 0" class="space-y-4">
+          <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white border rounded">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="text-sm font-semibold">{{ comment.user?.name || 'Usuari' }}</div>
+                <div class="text-xs text-gray-500">{{ new Date(comment.created_at).toLocaleString() }}</div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <!-- Like button -->
+                <button
+                  @click="voteComment(comment.id, 1)"
+                  :class="['text-sm px-2 py-1 rounded', comment.user_vote === true ? 'bg-green-100 text-green-700' : 'text-gray-600']"
+                >
+                  👍 {{ comment.likes_count ?? 0 }}
+                </button>
+
+                <!-- Dislike button -->
+                <button
+                  @click="voteComment(comment.id, 0)"
+                  :class="['text-sm px-2 py-1 rounded', comment.user_vote === false ? 'bg-red-100 text-red-700' : 'text-gray-600']"
+                >
+                  👎 {{ comment.dislikes_count ?? 0 }}
+                </button>
+
+                <!-- Eliminar -->
+                <div v-if="$page.props.auth?.user && ($page.props.auth.user.id === comment.user_id || $page.props.auth.user.id === ranking.user_id)">
+                  <button @click="deleteComment(comment.id)" class="text-red-600 hover:underline text-sm">Eliminar</button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 text-gray-700 whitespace-pre-line">{{ comment.content }}</div>
+          </div>
+        </div>
 
       <div v-else class="text-gray-600">Encara no hi ha comentaris. Sigues el primer!</div>
+
     </div>
   </AppLayout>
 </template>
