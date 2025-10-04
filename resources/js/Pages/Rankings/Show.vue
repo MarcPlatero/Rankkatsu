@@ -6,9 +6,10 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 const props = defineProps({
   ranking: Object,
   userVote: Object,
+  votedOptionId: [Number, null],
   comments: Array,
-  sort: { type: String, default: 'likes' } // ✅ per defecte "Més likes"
-});
+  sort: { type: String, default: 'likes' }
+})
 
 const page = usePage()
 
@@ -68,7 +69,7 @@ const voteComment = (commentId, isLike) => {
 }
 
 // Estat local del filtre
-const sort = ref(props.sort || 'likes') // ✅ inicial a "likes"
+const sort = ref(props.sort || 'likes')
 
 // Quan canvies el select → reload
 watch(sort, (newSort) => {
@@ -148,7 +149,7 @@ watch(sort, (newSort) => {
 
           <!-- Botó votar -->
           <button
-            v-if="!userVote || userVote.ranking_option_id !== opt.id"
+            v-if="votedOptionId !== opt.id"
             @click="vote(opt.id)"
             class="mt-3 px-4 py-2 bg-blue-600 text-white rounded transition hover:bg-blue-700"
           >
@@ -158,7 +159,7 @@ watch(sort, (newSort) => {
             v-else
             class="mt-3 inline-block px-4 py-2 bg-green-600 text-white rounded"
           >
-            ✅ Ja has votat
+            ✅ Has votat per "{{ opt.name }}"
           </span>
         </div>
       </div>
@@ -197,9 +198,9 @@ watch(sort, (newSort) => {
           v-model="sort"
           class="border rounded p-2 pr-8 transition hover:border-blue-400"
         >
+          <option value="likes">Més likes</option>
           <option value="recent">Més recents</option>
           <option value="oldest">Més antics</option>
-          <option value="likes">Més likes</option>
         </select>
       </div>
 

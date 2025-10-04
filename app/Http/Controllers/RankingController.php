@@ -108,7 +108,7 @@ class RankingController extends Controller
                 ->first();
         }
 
-        $sort = $request->get('sort', 'recent');
+        $sort = $request->get('sort', 'likes');
 
         $commentsQuery = Comment::with('user')
             ->where('ranking_id', $ranking->id)
@@ -151,11 +151,14 @@ class RankingController extends Controller
             });
         }
 
+        $votedOptionId = $userVote?->ranking_option_id;
+
         return Inertia::render('Rankings/Show', [
             'ranking' => $ranking,
             'comments' => $comments,
             'sort' => $sort,
-            'userVote' => $ranking->userVote,
+            'userVote' => $userVote,
+            'votedOptionId' => $votedOptionId,
         ]);
     }
 
