@@ -29,15 +29,16 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return Redirect::route('profile.edit');
+        return redirect()->route('profile.show')->with('success', 'El teu perfil s’ha actualitzat correctament!');
     }
 
     /**
@@ -59,5 +60,17 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function show(Request $request)
+    {
+        $user = $request->user();
+
+        $rankings = $user->rankings()->withCount('comments')->get();
+
+        return Inertia::render('Profile/ShowProfile', [
+            'user' => $user,
+            'rankings' => $rankings,
+        ]);
     }
 }

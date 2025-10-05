@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
 });
 
-// Rutes de tots els rankings (index, show, edit, update, create, destroy, store)
+// Rutes dels rankings (index, store, show, destroy)
 Route::resource('rankings', RankingController::class)->only([
     'index', 'store', 'show', 'destroy'
 ]);
@@ -43,7 +43,7 @@ Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])-
 
 // Usuari
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
