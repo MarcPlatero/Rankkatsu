@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RankingVoteController;
 use App\Http\Controllers\CommentController;
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
 });
 
 require __DIR__.'/auth.php';
