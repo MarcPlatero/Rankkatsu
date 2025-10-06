@@ -14,6 +14,7 @@ class Ranking extends Model
         'description',
         'image',
         'user_id',
+        'category',
     ];
 
     public function options()
@@ -34,5 +35,10 @@ class Ranking extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class)->latest();
+    }
+
+     public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorite_rankings');
     }
 }

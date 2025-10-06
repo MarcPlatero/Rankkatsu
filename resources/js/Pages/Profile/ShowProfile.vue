@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import AccountInfo from './Tabs/AccountInfo.vue'
+import FavoriteRankings from './Tabs/FavoriteRankings.vue'
+import YourRankings from './Tabs/YourRankings.vue'
 
 const props = defineProps({
   user: Object,
@@ -25,7 +27,7 @@ const logout = () => {
     <Head title="Perfil d'usuari" />
 
     <div class="max-w-3xl mx-auto py-10 px-6">
-      <h1 class="text-3xl font-bold mb-6 text-center"> El meu perfil</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center">El meu perfil</h1>
 
       <!-- Vista general -->
       <div class="bg-white shadow rounded-lg p-6 mb-8 text-center">
@@ -78,11 +80,11 @@ const logout = () => {
       </div>
 
       <div v-else-if="currentTab === 'favorites'">
-        <p class="text-gray-600 text-center">⭐ Encara no tens rankings favorits.</p>
+        <FavoriteRankings />
       </div>
 
       <div v-else-if="currentTab === 'yours'">
-        <p class="text-gray-600 text-center">🏆 Encara no has creat cap ranking.</p>
+        <YourRankings />
       </div>
     </div>
   </AppLayout>

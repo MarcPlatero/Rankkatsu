@@ -187,4 +187,38 @@ class RankingController extends Controller
         return redirect()->route('rankings.index')
             ->with('success', 'El rànquing s’ha eliminat correctament!');
     }
+
+    // Llista de rankings de l'usuari
+    public function yours(Request $request)
+    {
+        $rankings = $request->user()->rankings()->latest()->get();
+
+        return Inertia::render('Profile/Tabs/YourRankings', [
+            'rankings' => $rankings,
+        ]);
+    }
+
+    // Llista de favorits
+    public function favorites(Request $request)
+    {
+        $favorites = $request->user()->favoriteRankings()->with('user')->get();
+
+        return Inertia::render('Profile/Tabs/FavoriteRankings', [
+            'favorites' => $favorites,
+        ]);
+    }
+
+    // Afegir o treure de favorits
+    public function toggleFavorite(Request $request, Ranking $ranking)
+    {
+        $user = $request->user();
+
+        if ($user->favoriteRankings()->where('ranking_id', $ranking->id)->exists()) {
+            $user->favoriteRankings()->detach($ranking->id);
+            return back()->with('success', 'Ranking eliminat dels favorits.');
+        } else {
+            $user->favoriteRankings()->attach($ranking->id);
+            return back()->with('success', 'Ranking afegit als favorits!');
+        }
+    }
 }

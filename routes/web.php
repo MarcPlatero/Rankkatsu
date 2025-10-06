@@ -42,6 +42,13 @@ Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::clas
 Route::post('/comments/{comment}/vote', [CommentVoteController::class, 'store'])->middleware('auth')->name('comments.vote');
 Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])->name('comments.unvote');
 
+// Rànquings de l'usuari i favorits
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/rankings/yours', [RankingController::class, 'yours'])->name('rankings.yours');
+    Route::get('/rankings/favorites', [RankingController::class, 'favorites'])->name('rankings.favorites');
+    Route::post('/rankings/{ranking}/favorite', [RankingController::class, 'toggleFavorite'])->name('rankings.toggleFavorite');
+});
+
 // Usuari
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

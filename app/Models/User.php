@@ -49,7 +49,7 @@ class User extends Authenticatable
 
     public function rankings()
     {
-        return $this->hasMany(\App\Models\Ranking::class);
+        return $this->hasMany(Ranking::class);
     }
 
     public function rankingVotes()
@@ -60,5 +60,10 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function favoriteRankings()
+    {
+        return $this->belongsToMany(Ranking::class, 'favorite_rankings');
     }
 }
