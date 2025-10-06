@@ -64,6 +64,6 @@ class User extends Authenticatable
 
     public function favoriteRankings()
     {
-        return $this->belongsToMany(Ranking::class, 'favorite_rankings');
+         return $this->belongsToMany(Ranking::class, 'favorite_rankings')->withTimestamps();
     }
 }

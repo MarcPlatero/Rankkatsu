@@ -9,14 +9,12 @@ import YourRankings from './Tabs/YourRankings.vue'
 const props = defineProps({
   user: Object,
   rankings: Array,
+  favorites: Array,
 })
 
 const page = usePage()
-
-// Pestanya seleccionada
 const currentTab = ref('account')
 
-// Tancar sessió
 const logout = () => {
   router.post(route('logout'))
 }
@@ -29,7 +27,6 @@ const logout = () => {
     <div class="max-w-3xl mx-auto py-10 px-6">
       <h1 class="text-3xl font-bold mb-6 text-center">El meu perfil</h1>
 
-      <!-- Vista general -->
       <div class="bg-white shadow rounded-lg p-6 mb-8 text-center">
         <h2 class="text-xl font-semibold mb-2">{{ user.name }}</h2>
         <p class="text-gray-600 mb-4">
@@ -54,6 +51,7 @@ const logout = () => {
         >
           🧑 Informació del compte
         </button>
+
         <button
           class="flex-1 py-2 font-medium text-center transition border-b-2"
           :class="currentTab === 'favorites'
@@ -63,6 +61,7 @@ const logout = () => {
         >
           ⭐ Rankings favorits
         </button>
+
         <button
           class="flex-1 py-2 font-medium text-center transition border-b-2"
           :class="currentTab === 'yours'
@@ -80,11 +79,11 @@ const logout = () => {
       </div>
 
       <div v-else-if="currentTab === 'favorites'">
-        <FavoriteRankings />
+        <FavoriteRankings :favorites="favorites" />
       </div>
 
       <div v-else-if="currentTab === 'yours'">
-        <YourRankings />
+        <YourRankings :rankings="rankings" />
       </div>
     </div>
   </AppLayout>

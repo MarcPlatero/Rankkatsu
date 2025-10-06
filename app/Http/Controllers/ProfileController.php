@@ -67,10 +67,12 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $rankings = $user->rankings()->withCount('comments')->get();
+        $favoriteRankings = $user->favoriteRankings()->with('user')->get();
 
         return Inertia::render('Profile/ShowProfile', [
             'user' => $user,
             'rankings' => $rankings,
+            'favorites' => $favoriteRankings,
         ]);
     }
 }

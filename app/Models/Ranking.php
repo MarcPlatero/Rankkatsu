@@ -39,6 +39,6 @@ class Ranking extends Model
 
      public function favoritedBy()
     {
-        return $this->belongsToMany(User::class, 'favorite_rankings');
+        return $this->belongsToMany(User::class, 'favorite_rankings')->withTimestamps();
     }
 }

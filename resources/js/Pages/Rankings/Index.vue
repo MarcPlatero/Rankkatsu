@@ -1,10 +1,11 @@
 <script setup>
-import { Link, usePage, router } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
+import FavoriteStar from '@/Components/FavoriteStar.vue'
 
-defineProps({ rankings: Array });
+defineProps({ rankings: Array })
 
 const page = usePage()
 const flash = page.props.flash || {}
@@ -27,7 +28,7 @@ function confirmDelete() {
       },
       onError: () => {
         showModal.value = false
-      }
+      },
     })
   }
 }
@@ -61,8 +62,11 @@ function confirmDelete() {
         <li
           v-for="ranking in rankings"
           :key="ranking.id"
-          class="mb-3 rounded border p-4 shadow"
+          class="relative mb-3 rounded border p-4 shadow hover:shadow-md transition"
         >
+          <!-- ⭐ Estrella de Favorit -->
+          <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
+
           <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>
           <p class="text-gray-700">{{ ranking.description }}</p>
 

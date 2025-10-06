@@ -2,6 +2,8 @@
 import { Head, router, usePage } from '@inertiajs/vue3'
 import { computed, ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import FavoriteStar from '@/Components/FavoriteStar.vue'
+import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
   ranking: Object,
@@ -48,20 +50,13 @@ const confirmDelete = () => {
   }
 }
 
-// Comentaris: formulari (només per a autenticats)
-import { useForm } from '@inertiajs/vue3'
-const commentForm = useForm({
-  content: '',
-})
-
-// Enviar comentari
+// Formulari comentaris
+const commentForm = useForm({ content: '' })
 const submitComment = () => {
   commentForm.post(route('rankings.comments.store', props.ranking.id), {
     forceFormData: true,
     preserveScroll: true,
-    onSuccess: () => {
-      commentForm.reset('content')
-    }
+    onSuccess: () => commentForm.reset('content')
   })
 }
 
@@ -109,7 +104,7 @@ watch(sort, (newSort) => {
       <div v-if="flash.error" class="mb-4 p-4 bg-red-100 text-red-800 rounded">
         {{ flash.error }}
       </div>
-      
+
       <!-- Imatge -->
       <img
         v-if="ranking.image"
@@ -118,9 +113,14 @@ watch(sort, (newSort) => {
         class="w-full h-64 object-cover rounded-lg mb-6"
       />
 
-      <!-- Títol i descripció -->
-      <h1 class="text-3xl font-bold mb-2">{{ ranking.title }}</h1>
-      <p class="text-gray-600 mb-6">{{ ranking.description }}</p>
+      <!-- Estrella favorits -->
+      <div class="relative">
+        <FavoriteStar :ranking="ranking" class="absolute top-0 right-0" />
+
+        <!-- Títol i descripció -->
+        <h1 class="text-3xl font-bold mb-2">{{ ranking.title }}</h1>
+        <p class="text-gray-600 mb-6">{{ ranking.description }}</p>
+      </div>
 
       <!-- Eliminar ranking -->
       <div v-if="page.props.auth?.user && ranking.user_id === page.props.auth.user.id" class="mb-6">
