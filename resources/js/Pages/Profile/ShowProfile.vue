@@ -50,7 +50,7 @@ const logout = () => {
             : 'border-transparent hover:text-blue-500'"
           @click="currentTab = 'account'"
         >
-          👤 Informació del compte
+          🧑 Informació del compte
         </button>
         <button
           class="flex-1 py-2 font-medium text-center transition border-b-2"

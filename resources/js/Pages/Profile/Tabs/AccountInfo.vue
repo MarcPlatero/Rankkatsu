@@ -1,7 +1,6 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
-import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { ref, computed } from 'vue'
+import { useForm, usePage } from '@inertiajs/vue3'
 import ChangePassword from './ChangePassword.vue'
 
 const props = defineProps({
@@ -10,26 +9,55 @@ const props = defineProps({
 
 const page = usePage()
 const flash = computed(() => page.props.flash)
+const successMessage = ref('')
 
 const form = useForm({
   name: props.user.name,
   email: props.user.email,
 })
 
+// Guardar canvis del nom
 const submit = () => {
   form.patch(route('profile.update'), {
     preserveScroll: true,
+    onSuccess: () => {
+      successMessage.value = '✅ Canvis guardats correctament.'
+      setTimeout(() => (successMessage.value = ''), 3000)
+    },
   })
+}
+
+// Quan es canvia la contrasenya correctament
+const handlePasswordUpdated = () => {
+  successMessage.value = '🔐 Contrasenya actualitzada correctament.'
+  setTimeout(() => (successMessage.value = ''), 3000)
 }
 </script>
 
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
+
 <template>
   <div class="bg-white shadow rounded-lg p-6 space-y-4">
-    <h2 class="text-xl font-semibold mb-4">Informació del compte</h2>
+    <h2 class="text-xl font-semibold mb-4">👤 Informació del compte</h2>
 
-    <div v-if="flash.success" class="p-3 bg-green-100 text-green-700 rounded">
-      {{ flash.success }}
-    </div>
+    <!-- Missatge d’èxit unificat -->
+    <transition name="fade">
+      <div
+        v-if="successMessage"
+        class="p-3 bg-green-100 text-green-700 rounded text-sm border border-green-200"
+      >
+        {{ successMessage }}
+      </div>
+    </transition>
 
     <div>
       <label class="block text-sm font-medium text-gray-700">Nom d'usuari</label>
@@ -61,6 +89,6 @@ const submit = () => {
       </button>
     </div>
 
-    <ChangePassword />
+    <ChangePassword @password-updated="handlePasswordUpdated" />
   </div>
 </template>
