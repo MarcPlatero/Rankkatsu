@@ -1,5 +1,4 @@
 <script setup>
-import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -12,22 +11,20 @@ const props = defineProps({
     <h2 class="text-xl font-semibold mb-4">🏆 Els teus rankings</h2>
 
     <div v-if="rankings.length" class="grid gap-4">
-      <div
+      <Link
         v-for="ranking in rankings"
         :key="ranking.id"
-        class="flex items-center justify-between bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
+        :href="route('rankings.show', ranking.id)"
+        class="flex items-center justify-between bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition cursor-pointer no-underline"
       >
-        <Link
-          :href="route('rankings.show', ranking.id)"
-          class="text-lg font-medium text-blue-600 hover:underline"
-        >
+        <span class="text-lg font-medium text-blue-600 hover:underline">
           {{ ranking.title }}
-        </Link>
-
-        <FavoriteStar :ranking="ranking" />
-      </div>
+        </span>
+      </Link>
     </div>
 
-    <p v-else class="text-gray-500 text-center">Encara no has creat cap ranking.</p>
+    <p v-else class="text-gray-500 text-center">
+      Encara no has creat cap ranking.
+    </p>
   </div>
 </template>
