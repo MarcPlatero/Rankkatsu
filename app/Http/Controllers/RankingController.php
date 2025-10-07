@@ -16,6 +16,19 @@ class RankingController extends Controller
     {
         $rankings = Ranking::with('options')->get();
 
+        $user = Auth::user();
+
+        if ($user) {
+            $favoriteIds = $user->favoriteRankings->pluck('id')->toArray();
+            foreach ($rankings as $ranking) {
+                $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+            }
+        } else {
+            foreach ($rankings as $ranking) {
+                $ranking->is_favorite = false;
+            }
+        }
+
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
         ]);
@@ -99,6 +112,10 @@ class RankingController extends Controller
         $ranking->load(['options' => function ($q) {
             $q->withCount('votes');
         }]);
+
+        // Afegim estat de favorit
+        $user = Auth::user();
+        $ranking->is_favorite = $user ? $user->favoriteRankings->contains($ranking->id) : false;
 
         // Vot de l'usuari per al rànquing (si està logejat)
         $userVote = null;

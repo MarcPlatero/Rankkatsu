@@ -41,9 +41,9 @@ const logout = () => {
       </div>
 
       <!-- Pestanyes -->
-      <div class="flex border-b mb-6">
+      <div class="flex border-b mb-6 bg-gray-50 rounded-lg shadow-sm overflow-hidden">
         <button
-          class="flex-1 py-2 font-medium text-center transition border-b-2"
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
           :class="currentTab === 'account'
             ? 'border-blue-500 text-blue-600'
             : 'border-transparent hover:text-blue-500'"
@@ -53,7 +53,7 @@ const logout = () => {
         </button>
 
         <button
-          class="flex-1 py-2 font-medium text-center transition border-b-2"
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
           :class="currentTab === 'favorites'
             ? 'border-blue-500 text-blue-600'
             : 'border-transparent hover:text-blue-500'"
@@ -63,7 +63,7 @@ const logout = () => {
         </button>
 
         <button
-          class="flex-1 py-2 font-medium text-center transition border-b-2"
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
           :class="currentTab === 'yours'
             ? 'border-blue-500 text-blue-600'
             : 'border-transparent hover:text-blue-500'"

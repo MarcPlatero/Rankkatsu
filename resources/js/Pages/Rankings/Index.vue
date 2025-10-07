@@ -64,7 +64,7 @@ function confirmDelete() {
           :key="ranking.id"
           class="relative mb-3 rounded border p-4 shadow hover:shadow-md transition"
         >
-          <!-- ⭐ Estrella de Favorit -->
+          <!-- Estrella de Favorit -->
           <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
 
           <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>

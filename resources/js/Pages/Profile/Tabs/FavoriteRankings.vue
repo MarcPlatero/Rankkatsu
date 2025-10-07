@@ -1,34 +1,31 @@
-<script setup>
-defineProps({
-  favorites: Array,
-})
-</script>
-
 <template>
-  <div>
-    <h2 class="text-xl font-semibold mb-4">⭐ Els teus rankings favorits</h2>
-
-    <div v-if="favorites.length === 0" class="text-gray-600">
-      Encara no tens cap rànquing marcat com a favorit.
-    </div>
-
-    <ul>
-      <li
-        v-for="ranking in favorites"
-        :key="ranking.id"
-        class="mb-3 rounded border p-4 shadow hover:bg-gray-50 transition"
+  <div class="space-y-3">
+    <div
+      v-for="ranking in localFavorites"
+      :key="ranking.id"
+      class="flex items-center justify-between bg-white shadow rounded-lg p-4 hover:bg-blue-50 transition"
+    >
+      <Link
+        :href="route('rankings.show', ranking.id)"
+        class="text-lg font-medium text-blue-600 hover:underline"
       >
-        <h3 class="text-lg font-semibold">{{ ranking.title }}</h3>
-        <p class="text-gray-700">{{ ranking.description }}</p>
-        <p class="text-sm text-gray-500 mt-1">Creat per: {{ ranking.user.name }}</p>
+        {{ ranking.title }}
+      </Link>
 
-        <Link
-          :href="`/rankings/${ranking.id}`"
-          class="text-indigo-600 hover:underline mt-2 inline-block"
-        >
-          Veure detalls →
-        </Link>
-      </li>
-    </ul>
+      <FavoriteStar :ranking="ranking" @removed="removeFavorite" />
+    </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { Link } from '@inertiajs/vue3'
+import FavoriteStar from '@/Components/FavoriteStar.vue'
+
+const props = defineProps({ favorites: Array })
+const localFavorites = ref([...props.favorites])
+
+const removeFavorite = (id) => {
+  localFavorites.value = localFavorites.value.filter(r => r.id !== id)
+}
+</script>

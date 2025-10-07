@@ -1,30 +1,33 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import FavoriteStar from '@/Components/FavoriteStar.vue'
+import { Link } from '@inertiajs/vue3'
 
-const page = usePage()
-const rankings = computed(() => page.props.rankings || [])
+const props = defineProps({
+  rankings: Array
+})
 </script>
 
 <template>
-  <div class="p-6">
-    <h2 class="text-2xl font-semibold mb-4">🏆 Els teus rankings</h2>
+  <div>
+    <h2 class="text-xl font-semibold mb-4">🏆 Els teus rankings</h2>
 
-    <div v-if="rankings.length">
-      <ul class="space-y-3">
-        <li
-          v-for="ranking in rankings"
-          :key="ranking.id"
-          class="p-4 border rounded-lg shadow-sm hover:shadow-md transition"
+    <div v-if="rankings.length" class="grid gap-4">
+      <div
+        v-for="ranking in rankings"
+        :key="ranking.id"
+        class="flex items-center justify-between bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
+      >
+        <Link
+          :href="route('rankings.show', ranking.id)"
+          class="text-lg font-medium text-blue-600 hover:underline"
         >
-          <h3 class="font-medium text-lg">{{ ranking.title }}</h3>
-          <p class="text-gray-500 text-sm">Categoria: {{ ranking.category || 'Sense categoria' }}</p>
-        </li>
-      </ul>
+          {{ ranking.title }}
+        </Link>
+
+        <FavoriteStar :ranking="ranking" />
+      </div>
     </div>
 
-    <div v-else class="text-gray-500 mt-6 text-center">
-      Encara no has creat cap ranking.
-    </div>
+    <p v-else class="text-gray-500 text-center">Encara no has creat cap ranking.</p>
   </div>
 </template>

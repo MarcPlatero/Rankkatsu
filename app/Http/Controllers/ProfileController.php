@@ -69,6 +69,17 @@ class ProfileController extends Controller
         $rankings = $user->rankings()->withCount('comments')->get();
         $favoriteRankings = $user->favoriteRankings()->with('user')->get();
 
+        // Afegim is_favorite a tots
+        $favoriteIds = $user->favoriteRankings->pluck('id')->toArray();
+
+        foreach ($rankings as $ranking) {
+            $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+        }
+
+        foreach ($favoriteRankings as $fav) {
+            $fav->is_favorite = true;
+        }
+
         return Inertia::render('Profile/ShowProfile', [
             'user' => $user,
             'rankings' => $rankings,
