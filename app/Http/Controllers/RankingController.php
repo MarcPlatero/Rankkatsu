@@ -12,25 +12,38 @@ use Inertia\Inertia;
 
 class RankingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rankings = Ranking::with('options')->get();
-
+        $search = $request->input('search');
         $user = Auth::user();
 
+        // Obtenim els rankings filtrats pel text si n’hi ha
+        $rankings = Ranking::with('options')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->get();
+
+        // Si hi ha usuari, afegim els favorits
         if ($user) {
-            $favoriteIds = $user->favoriteRankings->pluck('id')->toArray();
-            foreach ($rankings as $ranking) {
-                $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
-            }
+            $favoriteIds = $user->favoriteRankings()->pluck('rankings.id')->toArray();
         } else {
-            foreach ($rankings as $ranking) {
-                $ranking->is_favorite = false;
-            }
+            $favoriteIds = [];
+        }
+
+        foreach ($rankings as $ranking) {
+            $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
         }
 
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 
