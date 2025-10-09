@@ -51,7 +51,7 @@ function confirmDelete() {
 
 <template>
   <AppLayout>
-    <div class="max-w-3xl mx-auto p-6">
+    <div class="max-w-4xl mx-auto p-6">
       <h1 class="text-2xl font-bold mb-4">Rankings</h1>
 
       <!-- Missatges flash -->
@@ -90,38 +90,57 @@ function confirmDelete() {
         No s’han trobat rànquings.
       </div>
 
-      <ul v-else>
+      <ul v-else class="space-y-4">
         <li
           v-for="ranking in rankings"
           :key="ranking.id"
-          class="relative mb-3 rounded border p-4 shadow hover:shadow-md transition"
+          class="relative flex flex-col sm:flex-row gap-4 items-start sm:items-center rounded border p-4 shadow hover:shadow-md transition"
         >
-          <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
-
-          <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>
-          <p class="text-gray-700">{{ ranking.description }}</p>
-
-          <ul class="mt-2">
-            <li v-for="opt in ranking.options" :key="opt.id" class="text-sm">
-              - {{ opt.name }}
-            </li>
-          </ul>
-
-          <div class="mt-3 flex items-center space-x-4">
-            <Link
-              :href="`/rankings/${ranking.id}`"
-              class="text-indigo-600 hover:underline"
+          <!-- Imatge principal -->
+          <div class="w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+            <img
+              v-if="ranking.image"
+              :src="`/storage/${ranking.image}`"
+              alt="Imatge del rànquing"
+              class="w-full h-48 object-cover rounded-lg border"
+            />
+            <div
+              v-else
+              class="w-full h-48 flex items-center justify-center bg-gray-100 rounded-lg text-4xl"
             >
-              Veure detalls →
-            </Link>
+              🖼️
+            </div>
+          </div>
 
-            <button
-              v-if="$page.props.auth?.user && ranking.user_id === $page.props.auth.user.id"
-              @click="askDelete(ranking.id)"
-              class="text-red-600 hover:underline"
-            >
-              🗑️ Eliminar
-            </button>
+          <!-- Contingut -->
+          <div class="flex-1 w-full">
+            <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
+
+            <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>
+            <p class="text-gray-700">{{ ranking.description }}</p>
+
+            <ul class="mt-2">
+              <li v-for="opt in ranking.options" :key="opt.id" class="text-sm">
+                - {{ opt.name }}
+              </li>
+            </ul>
+
+            <div class="mt-3 flex items-center space-x-4">
+              <Link
+                :href="`/rankings/${ranking.id}`"
+                class="text-indigo-600 hover:underline"
+              >
+                Veure detalls →
+              </Link>
+
+              <button
+                v-if="$page.props.auth?.user && ranking.user_id === $page.props.auth.user.id"
+                @click="askDelete(ranking.id)"
+                class="text-red-600 hover:underline"
+              >
+                🗑️ Eliminar
+              </button>
+            </div>
           </div>
         </li>
       </ul>
