@@ -17,23 +17,23 @@ class RankingController extends Controller
         $search = $request->input('search');
         $user = Auth::user();
 
-        // Obtenim els rankings filtrats pel text si n’hi ha
         $rankings = Ranking::with('options')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('options', function ($subQuery) use ($search) {
+                            $subQuery->where('name', 'like', "%{$search}%");
+                        });
                 });
             })
             ->latest()
             ->get();
 
-        // Si hi ha usuari, afegim els favorits
-        if ($user) {
-            $favoriteIds = $user->favoriteRankings()->pluck('rankings.id')->toArray();
-        } else {
-            $favoriteIds = [];
-        }
+        // Gestionem favorits
+        $favoriteIds = $user
+            ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
+            : [];
 
         foreach ($rankings as $ranking) {
             $ranking->is_favorite = in_array($ranking->id, $favoriteIds);

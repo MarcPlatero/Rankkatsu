@@ -1,6 +1,6 @@
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
@@ -18,15 +18,16 @@ const search = ref(page.props.filters?.search || '')
 const showModal = ref(false)
 const rankingToDelete = ref(null)
 
-// 🔍 Quan l’usuari escriu, actualitzem la URL per fer la cerca
-watch(search, (value) => {
+// Executa la cerca només quan es prem Enter o el botó
+function applySearch() {
   router.get(
     '/rankings',
-    { search: value },
+    { search: search.value },
     { preserveState: true, replace: true }
   )
-})
+}
 
+// Confirmar eliminació d’un rànquing
 function askDelete(rankingId) {
   rankingToDelete.value = rankingId
   showModal.value = true
@@ -62,12 +63,21 @@ function confirmDelete() {
       </div>
 
       <!-- Buscador -->
-      <input
-        v-model="search"
-        type="text"
-        placeholder="Cerca rànquings..."
-        class="w-full mb-6 px-4 py-2 border rounded focus:outline-none focus:ring focus:border-indigo-400"
-      />
+      <div class="flex mb-6">
+        <input
+          v-model="search"
+          @keyup.enter="applySearch"
+          type="text"
+          placeholder="Cerca rànquings o opcions..."
+          class="w-full px-4 py-2 border rounded-l focus:outline-none focus:ring focus:border-indigo-400"
+        />
+        <button
+          @click="applySearch"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-r hover:bg-indigo-700"
+        >
+          🔍
+        </button>
+      </div>
 
       <Link
         href="/rankings/create"
