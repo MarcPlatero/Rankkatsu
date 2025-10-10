@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { usePage } from '@inertiajs/vue3'
 
-const emit = defineEmits(['removed']) // <-- afegim l'event per avisar al pare
+const emit = defineEmits(['removed'])
 
 const props = defineProps({
   ranking: Object
@@ -25,7 +25,6 @@ const toggleFavorite = async () => {
     const response = await axios.post(`/rankings/${props.ranking.id}/favorite`)
     isFavorite.value = response.data.favorited
 
-    // ⚡ Si s'ha desfavorit i estem dins la pestanya de favorits → eliminar de la llista
     if (!response.data.favorited) {
       emit('removed', props.ranking.id)
     }
