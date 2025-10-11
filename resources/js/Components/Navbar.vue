@@ -1,4 +1,3 @@
-<!-- resources/js/Components/Navbar.vue -->
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 
