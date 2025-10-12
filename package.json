@@ -10,19 +10,24 @@
         "@inertiajs/vue3": "^2.0.0",
         "@tailwindcss/forms": "^0.5.3",
         "@tailwindcss/vite": "^4.0.0",
-        "@vitejs/plugin-vue": "^5.0.0",
+        "@vitejs/plugin-vue": "^5.2.4",
         "autoprefixer": "^10.4.12",
-        "axios": "^1.11.0",
+        "axios": "^1.12.2",
         "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^2.0.0",
+        "laravel-vite-plugin": "^1.3.0",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.2.1",
-        "vite": "^7.0.4",
+        "vite": "^6.3.6",
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+        "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
         "@heroicons/vue": "^2.2.0",
-        "@vitejs/plugin-vue": "^6.0.1",
+        "@tensorflow/tfjs": "^4.22.0",
+        "buffer": "^6.0.3",
+        "nsfwjs": "^4.2.1",
+        "process": "^0.11.10",
         "vue": "^3.5.22"
     }
 }

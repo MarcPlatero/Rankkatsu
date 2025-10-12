@@ -38,7 +38,7 @@ defineProps({ rankings: Array })
             <img
               v-if="ranking.image"
               :src="`/storage/${ranking.image}`"
-              alt="Ranking image"
+              alt="Imatge del rànquing"
               class="w-full h-48 object-cover rounded-t-lg"
             />
             <div

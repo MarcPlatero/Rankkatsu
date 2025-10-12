@@ -105,13 +105,16 @@ watch(sort, (newSort) => {
         {{ flash.error }}
       </div>
 
-      <!-- Imatge -->
-      <img
+      <!-- Imatge principal del rànquing -->
+      <img 
         v-if="ranking.image"
         :src="`/storage/${ranking.image}`"
-        alt="Ranking image"
+        alt="Imatge del rànquing"
         class="w-full h-64 object-cover rounded-lg mb-6"
       />
+      <div v-else class="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg mb-6">
+        <span class="text-gray-400 text-sm">Sense imatge</span>
+      </div>
 
       <!-- Estrella favorits -->
       <div class="relative">
@@ -132,21 +135,21 @@ watch(sort, (newSort) => {
         </button>
       </div>
 
-      <!-- Opcions -->
+      <!-- Imatges opcions -->
       <div class="space-y-4">
         <div
           v-for="opt in ranking.options"
           :key="opt.id"
           class="p-4 bg-white shadow rounded-lg"
         >
-          <div class="flex items-center gap-4 mb-2">
+          <div class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded overflow-hidden">
             <img
               v-if="opt.image"
               :src="`/storage/${opt.image}`"
-              alt="Option"
-              class="w-16 h-16 object-cover rounded"
+              alt="Imatge opció"
+              class="w-full h-full object-cover"
             />
-            <span class="font-medium">{{ opt.name }}</span>
+            <span v-else class="text-gray-400 text-sm">Sense imatge</span>
           </div>
 
           <!-- Barra percentatges -->
