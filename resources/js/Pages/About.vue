@@ -56,7 +56,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           </div>
         </div>
 
-        <!-- CTA -->
+        <!-- Botó -->
         <div class="text-center mt-16">
           <p class="text-lg text-gray-800 mb-4">
             Vols començar a votar i crear els teus rànquings?
