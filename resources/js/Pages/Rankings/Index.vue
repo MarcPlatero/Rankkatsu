@@ -18,7 +18,7 @@ const search = ref(page.props.filters?.search || '')
 const showModal = ref(false)
 const rankingToDelete = ref(null)
 
-// Executa la cerca només quan es prem Enter o el botó
+// Executa la cerca només quan es prem enter o el botó
 function applySearch() {
   router.get(
     '/rankings',
