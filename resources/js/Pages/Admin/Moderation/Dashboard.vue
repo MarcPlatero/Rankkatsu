@@ -52,7 +52,7 @@ function rejectRanking(id) {
             :href="`/admin/moderation/${ranking.id}`"
             class="text-blue-600 hover:underline"
           >
-            Veure detall
+            Veure detalls
           </Link>
 
           <div class="flex gap-2">

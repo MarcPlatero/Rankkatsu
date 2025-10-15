@@ -50,8 +50,13 @@ class ModerationController extends Controller
 
     public function rejectRanking(Ranking $ranking)
     {
-        $ranking->delete(); // O bé $ranking->update(['rejected' => true])
-        return back()->with('success', 'Rànquing eliminat correctament.');
+        // Elimina el rànquing (i les seves opcions)
+        $ranking->options()->delete();
+        $ranking->delete();
+
+        return redirect()
+            ->route('admin.moderation.dashboard')
+            ->with('success', 'Rànquing eliminat correctament.');
     }
 
     public function approveImage(RankingImage $image)
