@@ -33,6 +33,15 @@ const logout = () => {
         <Link href="/rankings/create" class="text-gray-700 hover:text-red-600">Create</Link>
         <Link href="/about" class="text-gray-700 hover:text-blue-600">About</Link>
 
+        <!-- Només per a admin -->
+        <Link
+          v-if="user?.is_admin"
+          href="/admin/moderation"
+          class="text-red-600 font-semibold hover:text-red-800 flex items-center"
+        >
+          🛡️ Moderació
+        </Link>
+
         <!-- Auth -->
         <template v-if="!user">
           <Link href="/login" class="text-gray-700 hover:text-red-600">Login</Link>

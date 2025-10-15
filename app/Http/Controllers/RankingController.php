@@ -18,19 +18,31 @@ class RankingController extends Controller
         $user = Auth::user();
 
         $rankings = Ranking::with('options')
+            ->when(!$user || !$user->is_admin, function ($query) use ($user) {
+                // Si no és admin:
+                if ($user) {
+                    // Usuari normal: pot veure aprovats o els seus propis
+                    $query->where(function ($q) use ($user) {
+                        $q->where('is_approved', true)
+                        ->orWhere('user_id', $user->id);
+                    });
+                } else {
+                    // Visitant: només aprovats
+                    $query->where('is_approved', true);
+                }
+            })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhereHas('options', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'like', "%{$search}%");
-                        });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('options', function ($subQuery) use ($search) {
+                        $subQuery->where('name', 'like', "%{$search}%");
+                    });
                 });
             })
             ->latest()
             ->get();
 
-        // Gestionem favorits
         $favoriteIds = $user
             ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
             : [];
@@ -41,9 +53,7 @@ class RankingController extends Controller
 
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
-            'filters' => [
-                'search' => $search,
-            ],
+            'filters' => ['search' => $search],
         ]);
     }
 
@@ -59,9 +69,11 @@ class RankingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif,gif|max:4096',
+            'image_is_suspicious' => 'nullable|boolean',
             'options' => 'required|array|min:2',
             'options.*.name' => 'required|string|max:255',
             'options.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif,gif|max:4096',
+            'options.*.is_suspicious' => 'nullable|boolean',
         ], [
             'title.required' => 'Has d’introduir un títol per al rànquing.',
             'title.max' => 'El títol no pot tenir més de 255 caràcters.',
@@ -78,6 +90,8 @@ class RankingController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'image' => null,
+            'image_is_suspicious' => $request->boolean('image_is_suspicious', false),
+            'is_approved' => !$request->boolean('image_is_suspicious', false),
             'user_id' => auth()->id(),
         ]);
 
@@ -89,9 +103,13 @@ class RankingController extends Controller
 
         // Opcions del rànquing
         foreach ($validated['options'] as $i => $opt) {
+            $isSuspicious = $request->boolean("options.$i.is_suspicious", false);
+
             $option = $ranking->options()->create([
                 'name' => $opt['name'],
                 'image' => null,
+                'is_suspicious' => $isSuspicious,
+                'is_approved' => !$isSuspicious,
             ]);
 
             if ($request->hasFile("options.$i.image")) {
@@ -103,72 +121,105 @@ class RankingController extends Controller
         return redirect()->route('rankings.index')->with('success', 'Rànquing creat correctament!');
     }
 
-    public function home()
+    public function home(Request $request)
     {
-        $rankings = Ranking::latest()->take(10)->get();
-        return Inertia::render('Home', [
+        $search = $request->input('search');
+        $user = Auth::user();
+
+        $rankings = Ranking::with('options')
+            ->when(!($user?->is_admin), function ($query) {
+                $query->where('is_approved', true);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('options', function ($subQuery) use ($search) {
+                            $subQuery->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $favoriteIds = $user
+            ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
+            : [];
+
+        foreach ($rankings as $ranking) {
+            $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+        }
+
+        return inertia('Home', [
             'rankings' => $rankings,
+            'filters' => ['search' => $search],
         ]);
     }
 
     public function show(Request $request, Ranking $ranking)
     {
-        // Carreguem opcions amb el recompte de vots
-        $ranking->load(['options' => function ($q) {
+        $user = Auth::user();
+
+        // Bloqueig si el rànquing no està aprovat i no és ni autor ni admin
+        if (!$ranking->is_approved && (!$user || ($user->id !== $ranking->user_id && !$user->can('moderate')))) {
+            abort(403, 'Aquest rànquing encara no ha estat aprovat.');
+        }
+
+        // Carregar opcions (si no és admin ni autor, només les aprovades)
+        $ranking->load(['options' => function ($q) use ($user, $ranking) {
+            if (!$user || (!$user->can('moderate') && $user->id !== $ranking->user_id)) {
+                $q->where('is_approved', true);
+            }
             $q->withCount('votes');
         }]);
 
-        // Afegim estat de favorit
-        $user = Auth::user();
+        // Estat de favorit
         $ranking->is_favorite = $user ? $user->favoriteRankings->contains($ranking->id) : false;
 
         // Vot de l'usuari per al rànquing (si està logejat)
         $userVote = null;
-        if (Auth::check()) {
-            $userVote = RankingVote::where('user_id', Auth::id())
+        if ($user) {
+            $userVote = RankingVote::where('user_id', $user->id)
                 ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
                 ->first();
         }
 
+        // Ordenació dels comentaris
         $sort = $request->get('sort', 'likes');
 
         $commentsQuery = Comment::with('user')
             ->where('ranking_id', $ranking->id)
             ->withCount([
-                'votes as likes_count' => function ($q) {
-                    $q->where('is_like', 1);
-                },
-                'votes as dislikes_count' => function ($q) {
-                    $q->where('is_like', 0);
-                }
+                'votes as likes_count' => fn($q) => $q->where('is_like', 1),
+                'votes as dislikes_count' => fn($q) => $q->where('is_like', 0),
             ]);
 
-        // Ordenació segons el filtre
         switch ($sort) {
             case 'oldest':
                 $commentsQuery->orderBy('created_at', 'asc');
                 break;
-
             case 'likes':
                 $commentsQuery->orderBy('likes_count', 'desc');
                 break;
-
-            default: // recent
+            default:
                 $commentsQuery->orderBy('created_at', 'desc');
                 break;
         }
 
         $comments = $commentsQuery->get();
 
-        // Si usuari logejat, afegim estat user_vote a cada comentari (true/false/null)
-        if (Auth::check() && $comments->isNotEmpty()) {
-            $userVotes = CommentVote::where('user_id', Auth::id())
-                ->whereIn('comment_id', $comments->pluck('id')->toArray())
+        // Si usuari logejat, afegim estat de vot a cada comentari
+        if ($user && $comments->isNotEmpty()) {
+            $userVotes = CommentVote::where('user_id', $user->id)
+                ->whereIn('comment_id', $comments->pluck('id'))
                 ->get()
                 ->keyBy('comment_id');
 
             $comments = $comments->map(function ($c) use ($userVotes) {
-                $c->user_vote = isset($userVotes[$c->id]) ? (bool) $userVotes[$c->id]->is_like : null;
+                $c->user_vote = isset($userVotes[$c->id])
+                    ? (bool) $userVotes[$c->id]->is_like
+                    : null;
                 return $c;
             });
         }

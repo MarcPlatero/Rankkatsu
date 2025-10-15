@@ -25,6 +25,11 @@ const optionPreviews = ref([])
 const nsfwError = ref('')
 const nsfwLoading = ref(true)
 const processing = ref(false)
+const rankingSuspicious = ref(false)
+const optionSuspicious = ref([])
+
+// Inicialitza array alignment
+optionSuspicious.value = form.options.map(() => false)
 
 let model = null
 
@@ -44,18 +49,30 @@ onMounted(async () => {
 // Validació NSFW
 const validateImage = async (file) => {
   try {
-    if (!model) return true
+    if (!model) {
+      await tf.ready()
+      model = await nsfwjs.load()
+    }
+
     const img = document.createElement('img')
     img.src = URL.createObjectURL(file)
-    await new Promise((resolve) => (img.onload = resolve))
+    await new Promise(resolve => img.onload = resolve)
     const predictions = await model.classify(img)
-    return !predictions.some(
-      (p) =>
-        ['Hentai', 'Porn', 'Sexy'].includes(p.className) &&
-        p.probability > 0.7
-    )
-  } catch {
-    return true // Permet si hi ha error
+
+    let maxPorn = 0
+    for (const p of predictions) {
+      if (['Hentai', 'Porn', 'Sexy'].includes(p.className)) {
+        maxPorn = Math.max(maxPorn, p.probability)
+      }
+    }
+
+    // Thresholds
+    if (maxPorn > 0.85) return { ok: false, suspicious: true }   // Bloquejar
+    if (maxPorn > 0.6)  return { ok: true,  suspicious: true }   // Permetre però marcar
+    return { ok: true, suspicious: false }
+  } catch (err) {
+    console.error('Error validateImage', err)
+    return { ok: true, suspicious: false }
   }
 }
 
@@ -64,43 +81,53 @@ const addOption = () => {
   form.options.push({ name: '', image: null })
   optionFiles.value.push(null)
   optionPreviews.value.push(null)
+  optionSuspicious.value.push(false)
 }
 const removeOption = (index) => {
   if (form.options.length > 2) {
     form.options.splice(index, 1)
     optionFiles.value.splice(index, 1)
     optionPreviews.value.splice(index, 1)
+    optionSuspicious.value.splice(index, 1)
   }
 }
 
 // Gestors d’imatges
 const handleRankingImage = async (e) => {
-  const file = e.target.files?.[0]
+  const file = e.target.files && e.target.files[0]
   if (!file) return
   nsfwError.value = ''
-  const ok = await validateImage(file)
+  const { ok, suspicious } = await validateImage(file)
   if (!ok) {
-    nsfwError.value = 'Aquesta imatge sembla inapropiada.'
-    rankingFile.value = null
+    nsfwError.value = 'Aquesta imatge sembla inapropiada. Tria una altra.'
+    form.image = null
     imagePreview.value = null
+    rankingFile.value = null
+    rankingSuspicious.value = false
   } else {
-    rankingFile.value = file
+    form.image = file
     imagePreview.value = URL.createObjectURL(file)
+    rankingFile.value = file
+    rankingSuspicious.value = !!suspicious
   }
 }
 
 const handleOptionImage = async (e, index) => {
-  const file = e.target.files?.[0]
+  const file = e.target.files && e.target.files[0]
   if (!file) return
   nsfwError.value = ''
-  const ok = await validateImage(file)
+  const { ok, suspicious } = await validateImage(file)
   if (!ok) {
     nsfwError.value = `La imatge de l'opció ${index + 1} sembla inapropiada.`
-    optionFiles.value[index] = null
+    form.options[index].image = null
     optionPreviews.value[index] = null
+    optionFiles.value[index] = null
+    optionSuspicious.value[index] = false
   } else {
-    optionFiles.value[index] = file
+    form.options[index].image = file
     optionPreviews.value[index] = URL.createObjectURL(file)
+    optionFiles.value[index] = file
+    optionSuspicious.value[index] = !!suspicious
   }
 }
 
@@ -118,14 +145,26 @@ const submit = async () => {
     const fd = new FormData()
     fd.append('title', form.title)
     fd.append('description', form.description ?? '')
-    if (rankingFile.value) fd.append('image', rankingFile.value)
 
+    // ─── IMATGE PRINCIPAL ──────────────────────────────────────────────
+    if (rankingFile.value) {
+      fd.append('image', rankingFile.value)
+      fd.append('image_is_suspicious', rankingSuspicious.value ? '1' : '0')
+    }
+
+    // ─── OPCIONS ───────────────────────────────────────────────────────
     form.options.forEach((opt, i) => {
       fd.append(`options[${i}][name]`, opt.name ?? '')
-      if (optionFiles.value[i])
-        fd.append(`options[${i}][image]`, optionFiles.value[i])
+      fd.append(`options[${i}][is_suspicious]`, optionSuspicious.value[i] ? '1' : '0')
     })
 
+    optionFiles.value.forEach((file, i) => {
+      if (file) {
+        fd.append(`options[${i}][image]`, file)
+      }
+    })
+
+    // ─── ENVIAMENT ─────────────────────────────────────────────────────
     await axios.post(route('rankings.store'), fd, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

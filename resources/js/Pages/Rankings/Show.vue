@@ -106,14 +106,14 @@ watch(sort, (newSort) => {
       </div>
 
       <!-- Imatge principal del rànquing -->
-      <img 
-        v-if="ranking.image"
-        :src="`/storage/${ranking.image}`"
+      <img
+        v-if="ranking.image && (ranking.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
+        :src="ranking.image.startsWith('/storage/') ? ranking.image : `/storage/${ranking.image}`"
         alt="Imatge del rànquing"
         class="w-full h-64 object-cover rounded-lg mb-6"
       />
       <div v-else class="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg mb-6">
-        <span class="text-gray-400 text-sm">Sense imatge</span>
+        <span class="text-gray-400 text-sm">Imatge pendent d’aprovació</span>
       </div>
 
       <!-- Estrella favorits -->
@@ -137,19 +137,15 @@ watch(sort, (newSort) => {
 
       <!-- Imatges opcions -->
       <div class="space-y-4">
-        <div
-          v-for="opt in ranking.options"
-          :key="opt.id"
-          class="p-4 bg-white shadow rounded-lg"
-        >
+        <div v-for="opt in ranking.options" :key="opt.id" class="p-4 bg-white shadow rounded-lg">
           <div class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded overflow-hidden">
             <img
-              v-if="opt.image"
-              :src="`/storage/${opt.image}`"
+              v-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
+              :src="opt.image.startsWith('/storage/') ? opt.image : `/storage/${opt.image}`"
               alt="Imatge opció"
               class="w-full h-full object-cover"
             />
-            <span v-else class="text-gray-400 text-sm">Sense imatge</span>
+            <span v-else class="text-gray-400 text-sm">Imatge pendent d’aprovació</span>
           </div>
 
           <!-- Barra percentatges -->

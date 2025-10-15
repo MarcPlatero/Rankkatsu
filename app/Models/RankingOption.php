@@ -13,6 +13,8 @@ class RankingOption extends Model
         'ranking_id',
         'name',
         'image',
+        'is_suspicious',
+        'is_approved',
     ];
 
     public function ranking()

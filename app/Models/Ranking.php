@@ -15,6 +15,8 @@ class Ranking extends Model
         'image',
         'user_id',
         'category',
+        'is_suspicious',
+        'is_approved',
     ];
 
     public function options()

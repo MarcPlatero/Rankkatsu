@@ -7,6 +7,7 @@ use App\Http\Controllers\RankingVoteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentVoteController;
 use App\Http\Controllers\FavoriteRankingController;
+use App\Http\Controllers\Admin\ModerationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -62,6 +63,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
+});
+
+// Moderació (només per a usuaris amb rol d'admin o moderator)
+Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () {
+    Route::get('/moderation', [ModerationController::class, 'dashboard'])->name('admin.moderation.dashboard');
+    Route::get('/moderation/{ranking}', [ModerationController::class, 'show'])->name('admin.moderation.show');
+    Route::post('/moderation/{ranking}/approve', [ModerationController::class, 'approveRanking'])->name('admin.moderation.approve');
+    Route::post('/moderation/{ranking}/reject', [ModerationController::class, 'rejectRanking'])->name('admin.moderation.reject');
+    Route::post('/moderation/images/{image}/approve', [ModerationController::class, 'approveImage'])->name('admin.moderation.image.approve');
+    Route::post('/moderation/images/{image}/reject', [ModerationController::class, 'rejectImage'])->name('admin.moderation.image.reject');
 });
 
 require __DIR__.'/auth.php';
