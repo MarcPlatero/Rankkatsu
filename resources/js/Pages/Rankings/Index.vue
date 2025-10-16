@@ -15,9 +15,6 @@ const flash = page.props.flash || {}
 
 const search = ref(page.props.filters?.search || '')
 
-const showModal = ref(false)
-const rankingToDelete = ref(null)
-
 // Executa la cerca només quan es prem enter o el botó
 function applySearch() {
   router.get(
@@ -25,27 +22,6 @@ function applySearch() {
     { search: search.value },
     { preserveState: true, replace: true }
   )
-}
-
-// Confirmar eliminació d’un rànquing
-function askDelete(rankingId) {
-  rankingToDelete.value = rankingId
-  showModal.value = true
-}
-
-function confirmDelete() {
-  if (rankingToDelete.value) {
-    router.delete(`/rankings/${rankingToDelete.value}`, {
-      preserveScroll: true,
-      onSuccess: () => {
-        showModal.value = false
-        rankingToDelete.value = null
-      },
-      onError: () => {
-        showModal.value = false
-      },
-    })
-  }
 }
 </script>
 
@@ -132,26 +108,10 @@ function confirmDelete() {
               >
                 Veure detalls →
               </Link>
-
-              <button
-                v-if="$page.props.auth?.user && ranking.user_id === $page.props.auth.user.id"
-                @click="askDelete(ranking.id)"
-                class="text-red-600 hover:underline"
-              >
-                🗑️ Eliminar
-              </button>
             </div>
           </div>
         </li>
       </ul>
     </div>
-
-    <ConfirmModal
-      :show="showModal"
-      title="Eliminar rànquing"
-      message="Estàs segur que vols eliminar aquest rànquing? Aquesta acció és irreversible."
-      @cancel="showModal = false"
-      @confirm="confirmDelete"
-    />
   </AppLayout>
 </template>
