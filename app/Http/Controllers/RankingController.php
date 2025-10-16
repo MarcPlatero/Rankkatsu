@@ -264,9 +264,11 @@ class RankingController extends Controller
 
     public function destroy(Ranking $ranking)
     {
-        // Comprovar que és el creador
-        if ($ranking->user_id !== Auth::id()) {
-            abort(403);
+        $user = Auth::user();
+
+        // Permetre eliminar si és el creador o si és administrador
+        if ($ranking->user_id !== $user->id && !$user->is_admin) {
+            abort(403, 'No tens permís per eliminar aquest rànquing.');
         }
 
         $ranking->delete();

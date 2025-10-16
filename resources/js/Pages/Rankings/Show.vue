@@ -126,7 +126,7 @@ watch(sort, (newSort) => {
       </div>
 
       <!-- Eliminar ranking -->
-      <div v-if="page.props.auth?.user && ranking.user_id === page.props.auth.user.id" class="mb-6">
+      <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
         <button
           @click="confirmDelete"
           class="px-4 py-2 bg-red-600 text-white rounded transition hover:bg-red-700"
