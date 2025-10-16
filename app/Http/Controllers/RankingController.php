@@ -85,13 +85,16 @@ class RankingController extends Controller
             'options.*.name.required' => 'Cada opció ha de tenir un nom.',
         ]);
 
-        // Crear el rànquing
+        // Determinar si la imatge principal és sospitosa
+        $mainSuspicious = $request->boolean('image_is_suspicious', false);
+
+        // Crear el rànquing inicialment (encara no sabem si serà aprovat)
         $ranking = Ranking::create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'image' => null,
-            'image_is_suspicious' => $request->boolean('image_is_suspicious', false),
-            'is_approved' => !$request->boolean('image_is_suspicious', false),
+            'image_is_suspicious' => $mainSuspicious,
+            'is_approved' => true,
             'user_id' => auth()->id(),
         ]);
 
@@ -101,9 +104,15 @@ class RankingController extends Controller
             $ranking->update(['image' => $path]);
         }
 
+        // Variable per saber si alguna opció és sospitosa
+        $hasSuspiciousOption = false;
+
         // Opcions del rànquing
         foreach ($validated['options'] as $i => $opt) {
             $isSuspicious = $request->boolean("options.$i.is_suspicious", false);
+            if ($isSuspicious) {
+                $hasSuspiciousOption = true;
+            }
 
             $option = $ranking->options()->create([
                 'name' => $opt['name'],
@@ -116,6 +125,11 @@ class RankingController extends Controller
                 $optPath = $request->file("options.$i.image")->store('options', 'public');
                 $option->update(['image' => $optPath]);
             }
+        }
+
+        // Si la imatge principal o qualsevol opció és sospitosa, llavors marcar com no aprovat
+        if ($mainSuspicious || $hasSuspiciousOption) {
+            $ranking->update(['is_approved' => false]);
         }
 
         return redirect()->route('rankings.index')->with('success', 'Rànquing creat correctament!');
