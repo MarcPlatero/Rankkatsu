@@ -19,12 +19,20 @@ function rejectRanking(id) {
 
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Moderació de rànquings</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Moderació de rànquings</h1>
+      <Link
+        href="/"
+        class="text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+      >
+        ⬅️ Tornar a l'inici
+      </Link>
+    </div>
 
-    <p v-if="success" class="text-green-600 mb-4">{{ success }}</p>
+    <p v-if="success" class="text-green-600 mb-4 font-medium">{{ success }}</p>
 
     <div v-if="rankings.length === 0" class="text-gray-500">
-      No hi ha rànquings pendents de moderació 🎉
+      No hi ha rànquings pendents de moderació.
     </div>
 
     <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

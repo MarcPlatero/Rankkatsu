@@ -31,22 +31,26 @@ function rejectRanking() {
     })
   }
 }
+
+function goBack() {
+  router.visit('/admin/moderation', { replace: true })
+}
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-6 max-w-5xl mx-auto">
+    <!-- Botó per tornar enrere -->
+    <button
+      @click="goBack"
+      class="mb-6 text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+    >
+      ⬅️ Tornar a la moderació
+    </button>
+
     <!-- Títol i info -->
     <h1 class="text-2xl font-bold mb-2">{{ ranking.title }}</h1>
     <p class="text-gray-700 mb-1">Creat per: {{ ranking.user?.name || 'Desconegut' }}</p>
     <p class="text-gray-600 mb-6">{{ ranking.description }}</p>
-
-    <!-- Imatge principal -->
-    <img
-      v-if="ranking.image"
-      :src="`/storage/${ranking.image}`"
-      alt="Imatge principal"
-      class="w-full max-w-3xl rounded-lg shadow mb-6"
-    />
 
     <!-- Botons de moderació -->
     <div class="flex gap-3 mb-8">
@@ -65,6 +69,15 @@ function rejectRanking() {
       >
         ❌ Eliminar rànquing
       </button>
+    </div>
+
+    <!-- Imatge principal -->
+    <div v-if="ranking.image" class="flex justify-center mb-6">
+      <img
+        :src="`/storage/${ranking.image}`"
+        alt="Imatge principal"
+        class="max-h-80 w-auto rounded-lg shadow"
+      />
     </div>
 
     <!-- Opcions -->
