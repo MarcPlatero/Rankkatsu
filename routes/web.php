@@ -19,6 +19,10 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
+Route::get('/settings', function () {
+    return inertia('Settings/Configuration');
+})->middleware(['auth'])->name('settings.configuration');
+
 // Rankings
 Route::middleware('auth')->group(function () {
     Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
