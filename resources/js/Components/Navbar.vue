@@ -36,15 +36,6 @@ const logout = () => {
         <Link href="/about" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">About</Link>
         <Link href="/settings" class="text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400">Configuració</Link>
 
-        <!-- Només per a admin -->
-        <Link
-          v-if="user?.is_admin"
-          href="/admin/moderation"
-          class="text-red-600 dark:text-red-400 font-semibold hover:text-red-800 dark:hover:text-red-300 flex items-center"
-        >
-          🛡️ Moderació
-        </Link>
-
         <!-- Auth -->
         <template v-if="!user">
           <Link href="/login" class="text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400">Login</Link>
@@ -60,6 +51,15 @@ const logout = () => {
             Logout
           </button>
         </template>
+
+        <!-- Només per a admin -->
+        <Link
+          v-if="user?.is_admin"
+          href="/admin/moderation"
+          class="text-red-600 dark:text-red-400 font-semibold hover:text-red-800 dark:hover:text-red-300 flex items-center"
+        >
+          🛡️ Moderació
+        </Link>
       </div>
     </div>
   </nav>

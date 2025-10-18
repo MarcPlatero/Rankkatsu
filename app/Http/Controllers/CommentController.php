@@ -21,14 +21,14 @@ class CommentController extends Controller
         ]);
 
         // Llista de paraules prohibides des de config/banned.php
-        $bannedWords = config('banned.words');
+        $bannedWords = config('banned.words', []);
 
-        // Comprovació
+        // Comprovar si el comentari conté alguna paraula prohibida (sense distingir majúscules/minúscules)
         foreach ($bannedWords as $badWord) {
-            if (stripos($validated['content'], $badWord) !== false) {
-                return back()->withErrors([
-                    'content' => '⚠️ El comentari conté paraules no permeses.',
-                ])->withInput();
+            if (preg_match("/\b" . preg_quote($badWord, '/') . "\b/i", $validated['content'])) {
+                return redirect()->back()
+                    ->with('error', '⚠️ No utilitzis paraules malsonants al comentari.')
+                    ->withInput();
             }
         }
 
@@ -54,17 +54,31 @@ class CommentController extends Controller
         return back();
     }
 
-    // Esborra un comentari: només l'autor o el creador del ranking poden eliminar-lo
+    // Esborra un comentari
     public function destroy(Ranking $ranking, Comment $comment)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
 
-        if (! $userId) {
+        if (!$user) {
             abort(403);
         }
 
-        // Permís: autor del comentari o creador del ranking
-        if ($comment->user_id !== $userId && $ranking->user_id !== $userId) {
+        // Comprovem que el comentari pertanyi realment al rànquing
+        if ($comment->ranking_id !== $ranking->id) {
+            // Si no, busquem el comentari dins el rànquing per seguretat
+            $comment = $ranking->comments()->find($comment->id);
+
+            if (!$comment) {
+                abort(403, 'El comentari no pertany a aquest rànquing.');
+            }
+        }
+
+        // Permisos: autor del comentari, creador del rànquing o admin
+        if (
+            $comment->user_id !== $user->id &&
+            $ranking->user_id !== $user->id &&
+            !$user->is_admin
+        ) {
             abort(403);
         }
 

@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { useForm } from '@inertiajs/vue3'
+import { onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   ranking: Object,
@@ -16,254 +17,430 @@ const props = defineProps({
 const page = usePage()
 
 // Flash messages
-const flash = computed(() => page.props.flash)
+const flash = ref({ success: null, error: null })
+watch(
+  () => page.props.flash,
+  (newFlash) => {
+    if (newFlash.success) {
+      flash.value.success = newFlash.success
+      setTimeout(() => (flash.value.success = null), 3500)
+    }
+    if (newFlash.error) {
+      flash.value.error = newFlash.error
+      setTimeout(() => (flash.value.error = null), 3500)
+    }
+  },
+  { immediate: true }
+)
 
-// Total de vots
-const totalVotes = computed(() => {
-  return props.ranking.options.reduce((sum, opt) => sum + opt.votes_count, 0)
-})
+// Total vots
+const totalVotes = computed(() =>
+  props.ranking.options.reduce((sum, opt) => sum + opt.votes_count, 0)
+)
+const getPercentage = (votes) =>
+  totalVotes.value === 0 ? 0 : Math.round((votes / totalVotes.value) * 100)
 
-// Percentatge per cada opció
-const getPercentage = (votes) => {
-  if (totalVotes.value === 0) return 0
-  return Math.round((votes / totalVotes.value) * 100)
-}
-
-// Votar o treure vot d'una opció
+// Votar / treure vot
 const vote = (optionId) => {
-  if (props.votedOptionId === optionId) {
-    // Si ja havies votat aquesta opció → eliminar vot
+  if (props.votedOptionId === optionId)
     router.post(`/rankings/${props.ranking.id}/unvote`, {}, { preserveScroll: true })
-  } else {
+  else
     router.post(`/rankings/${props.ranking.id}/vote`, { option_id: optionId }, { preserveScroll: true })
-  }
 }
 
-const unvoteRanking = () => {
+const unvoteRanking = () =>
   router.post(`/rankings/${props.ranking.id}/unvote`, {}, { preserveScroll: true })
-}
 
-// Confirmació i eliminació del rànquing
+// Eliminar rànquing
 const confirmDelete = () => {
-  if (confirm("⚠️ Estàs segur que vols eliminar aquest rànquing? Aquesta acció no es podrà desfer.")) {
+  if (confirm("⚠️ Estàs segur que vols eliminar aquest rànquing? Aquesta acció no es podrà desfer."))
     router.delete(`/rankings/${props.ranking.id}`)
-  }
 }
 
 // Formulari comentaris
 const commentForm = useForm({ content: '' })
+const textareaRef = ref(null)
+const charCount = ref(0)
+const charLimit = 1000
+
 const submitComment = () => {
   commentForm.post(route('rankings.comments.store', props.ranking.id), {
     forceFormData: true,
     preserveScroll: true,
-    onSuccess: () => commentForm.reset('content')
+    onSuccess: () => {
+      commentForm.reset('content')
+      charCount.value = 0
+      resetTextareaHeight()
+    }
   })
+}
+
+// Limitar a 1000 caràcters + comptador
+watch(() => commentForm.content, (val) => {
+  if (val) {
+    if (val.length > charLimit) {
+      commentForm.content = val.slice(0, charLimit)
+    }
+    charCount.value = commentForm.content.length
+  } else {
+    charCount.value = 0
+  }
+})
+
+// Auto-resize textarea
+const autoResize = (event) => {
+  const textarea = event.target
+  textarea.style.height = 'auto'
+  textarea.style.transition = 'height 0.15s ease'
+  const newHeight = Math.min(textarea.scrollHeight, 300)
+  textarea.style.height = newHeight + 'px'
+}
+
+const resetTextareaHeight = () => {
+  if (textareaRef.value) {
+    textareaRef.value.style.height = 'auto'
+  }
 }
 
 // Eliminar comentari
 const deleteComment = (commentId) => {
-  if (! confirm('Estàs segur que vols eliminar aquest comentari?')) return
+  if (!confirm('Estàs segur que vols eliminar aquest comentari?')) return
   router.delete(route('rankings.comments.destroy', { ranking: props.ranking.id, comment: commentId }), {
     preserveScroll: true
   })
 }
 
-// Like/dislike comentaris amb toggle
+// Like/dislike comentaris
 const voteComment = (commentId, isLike) => {
   const comment = props.comments.find(c => c.id === commentId)
-  // Si ja havies votat el mateix → treure vot
-  if ((comment.user_vote === true && isLike === 1) || (comment.user_vote === false && isLike === 0)) {
+  if ((comment.user_vote === true && isLike === 1) || (comment.user_vote === false && isLike === 0))
     router.post(`/comments/${commentId}/unvote`, {}, { preserveScroll: true })
-  } else {
+  else
     router.post(`/comments/${commentId}/vote`, { is_like: isLike }, { preserveScroll: true })
-  }
 }
 
-// Estat local del filtre
+// Filtre comentaris
 const sort = ref(props.sort || 'likes')
+const loadingComments = ref(false)
 
-// Quan canvies el select → reload
-watch(sort, (newSort) => {
-  router.get(
+watch(sort, async (newSort) => {
+  loadingComments.value = true
+  await router.get(
     route('rankings.show', props.ranking.id),
     { sort: newSort },
-    { preserveScroll: true, preserveState: true, replace: true }
+    {
+      preserveScroll: true,
+      preserveState: true,
+      replace: true,
+      onFinish: () => (loadingComments.value = false)
+    }
   )
 })
+
+// Control d'expansió de comentaris
+const expandedComments = ref({})
+
+function toggleExpanded(commentId) {
+  expandedComments.value[commentId] = !expandedComments.value[commentId]
+}
+
+function isExpanded(commentId) {
+  return !!expandedComments.value[commentId]
+}
+
+// Veure més / menys comentaris
+const longComments = ref({}) // Guarda si cada comentari és llarg (necessita "veure més")
+
+onMounted(() => {
+  nextTick(() => checkOverflow()) // Esperem que es renderitzi el contingut
+})
+
+// Recalcular quan canviïn els comentaris
+watch(() => props.comments, () => {
+  nextTick(() => checkOverflow())
+})
+
+function checkOverflow() {
+  longComments.value = {}
+  document.querySelectorAll('.comment-content').forEach((el) => {
+    const id = el.getAttribute('data-id')
+
+    // guardem l'alçada original
+    const originalMaxHeight = el.style.maxHeight
+    const parent = el.closest('.comment-clamped')
+
+    // traiem límits per mesurar l'alçada real
+    if (parent) parent.style.maxHeight = 'none'
+
+    // comprovem si és més alt que el límit (120px aprox. = 7.5rem)
+    if (el.scrollHeight > 120) {
+      longComments.value[id] = true
+    }
+
+    // restablim l'alçada original
+    if (parent) parent.style.maxHeight = ''
+  })
+}
+
+function needsShowMore(commentId) {
+  return !!longComments.value[commentId]
+}
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.comment-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.comment-clamped {
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.comment-clamped::after {
+  display: none;
+}
+
+.show-more-btn {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+textarea.resize-none {
+  resize: none;
+}
+
+.char-counter {
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.char-counter.safe {
+  color: #6b7280;
+}
+
+.char-counter.warning {
+  color: #ef4444;
+  font-weight: 600;
+}
+</style>
 
 <template>
   <AppLayout>
     <Head :title="ranking.title" />
 
-    <div class="max-w-3xl mx-auto py-10 px-6">
+    <div class="max-w-3xl mx-auto py-10 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm">
       <!-- Flash -->
-      <div v-if="flash.success" class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-        {{ flash.success }}
-      </div>
-      <div v-if="flash.error" class="mb-4 p-4 bg-red-100 text-red-800 rounded">
-        {{ flash.error }}
-      </div>
+      <transition name="fade">
+        <div v-if="flash.success" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg z-50">
+          {{ flash.success }}
+        </div>
+      </transition>
+      <transition name="fade">
+        <div v-if="flash.error" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-xl shadow-lg z-50">
+          {{ flash.error }}
+        </div>
+      </transition>
 
-      <!-- Imatge principal del rànquing -->
+      <!-- Imatge -->
       <img
         v-if="ranking.image && (ranking.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
         :src="ranking.image.startsWith('/storage/') ? ranking.image : `/storage/${ranking.image}`"
         alt="Imatge del rànquing"
         class="w-full h-64 object-cover rounded-lg mb-6"
       />
-      <div v-else class="w-full h-64 flex items-center justify-center bg-gray-100 rounded-lg mb-6">
-        <span class="text-gray-400 text-sm">Imatge pendent d’aprovació</span>
+      <div v-else class="w-full h-64 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-lg mb-6">
+        <span class="text-gray-400 text-sm">Sense imatge</span>
       </div>
 
-      <!-- Estrella favorits -->
       <div class="relative">
         <FavoriteStar :ranking="ranking" class="absolute top-0 right-0" />
-
-        <!-- Títol i descripció -->
-        <h1 class="text-3xl font-bold mb-2">{{ ranking.title }}</h1>
-        <p class="text-gray-600 mb-6">{{ ranking.description }}</p>
+        <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">{{ ranking.title }}</h1>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">{{ ranking.description }}</p>
       </div>
 
-      <!-- Eliminar ranking -->
       <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
-        <button
-          @click="confirmDelete"
-          class="px-4 py-2 bg-red-600 text-white rounded transition hover:bg-red-700"
-        >
+        <button @click="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
           Eliminar rànquing
         </button>
       </div>
 
-      <!-- Imatges opcions -->
+      <!-- Opcions -->
       <div class="space-y-4">
-        <div v-for="opt in ranking.options" :key="opt.id" class="p-4 bg-white shadow rounded-lg">
-          <div class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded overflow-hidden">
+        <div v-for="opt in ranking.options" :key="opt.id" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow transition">
+          <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mb-3">
             <img
               v-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
               :src="opt.image.startsWith('/storage/') ? opt.image : `/storage/${opt.image}`"
               alt="Imatge opció"
               class="w-full h-full object-cover"
             />
-            <span v-else class="text-gray-400 text-sm">Imatge pendent d’aprovació</span>
+            <span v-else class="text-gray-400 text-sm">Sense imatge</span>
           </div>
 
-          <!-- Barra percentatges -->
-          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-            <div
-              class="bg-blue-600 h-4 transition-all duration-500"
-              :style="{ width: getPercentage(opt.votes_count) + '%' }"
-            ></div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+            <div class="bg-blue-600 h-4 transition-all duration-500" :style="{ width: getPercentage(opt.votes_count) + '%' }"></div>
           </div>
 
-          <!-- Percentatge -->
-          <div class="flex justify-between text-sm text-gray-600 mt-1">
+          <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
             <span>{{ opt.votes_count }} vots</span>
             <span>{{ getPercentage(opt.votes_count) }}%</span>
           </div>
 
-          <!-- Botons de vot -->
           <div class="mt-3 flex items-center gap-3">
             <button
               v-if="votedOptionId !== opt.id"
               @click="vote(opt.id)"
-              class="px-4 py-2 bg-blue-600 text-white rounded transition hover:bg-blue-700"
+              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
             >
               Votar
             </button>
 
             <template v-else>
               <span class="px-4 py-2 bg-green-600 text-white rounded">
-                ✅ Has votat per "{{ opt.name }}"
+                ✅ Has votat "{{ opt.name }}"
               </span>
               <button
                 @click="unvoteRanking"
-                class="px-3 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition"
+                class="px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition"
               >
-                🗑️ Treure votació
+                Treure votació
               </button>
             </template>
           </div>
         </div>
       </div>
 
-      <!-- Formulari comentaris -->
-      <div v-if="$page.props.auth?.user" class="mt-10 mb-4">
-        <form @submit.prevent="submitComment" class="space-y-2">
-          <textarea
-            v-model="commentForm.content"
-            placeholder="Escriu el teu comentari..."
-            class="w-full border rounded p-2"
-            rows="3"
-          ></textarea>
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-500">Máx. 1000 caràcters</div>
-            <button
-              :disabled="commentForm.processing || !commentForm.content"
-              type="submit"
-              class="px-4 py-2 bg-blue-600 text-white rounded transition hover:bg-blue-700 disabled:opacity-50"
-            >
-              Publicar
-            </button>
-          </div>
-          <div v-if="commentForm.errors.content" class="text-red-600 text-sm">{{ commentForm.errors.content }}</div>
-        </form>
-      </div>
-
-      <!-- No autenticat -->
-      <div v-else class="mt-10 mb-4 text-sm">
-        <a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.
-      </div>
-
-      <!-- Filtrar comentaris -->
-      <div class="flex justify-end mb-6">
-        <select
-          v-model="sort"
-          class="border rounded p-2 pr-8 transition hover:border-blue-400"
-        >
-          <option value="likes">Més likes</option>
-          <option value="recent">Més recents</option>
-          <option value="oldest">Més antics</option>
-        </select>
-      </div>
-
       <!-- Comentaris -->
-      <div v-if="comments && comments.length > 0" class="space-y-4">
-        <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white border rounded">
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="text-sm font-semibold">{{ comment.user?.name || 'Usuari' }}</div>
-              <div class="text-xs text-gray-500">{{ new Date(comment.created_at).toLocaleString() }}</div>
+      <div class="mt-10">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
+
+        <!-- Formulari comentari -->
+        <div v-if="$page.props.auth?.user" class="mb-6">
+          <form @submit.prevent="submitComment" class="space-y-2">
+            <textarea
+              ref="textareaRef"
+              v-model="commentForm.content"
+              placeholder="Escriu el teu comentari..."
+              class="w-full border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-2 resize-none transition-all duration-300"
+              rows="3"
+              @input="autoResize($event)"
+            ></textarea>
+
+            <div class="flex justify-between items-center">
+              <div :class="['char-counter', charCount < charLimit ? 'safe' : 'warning']">
+                {{ charCount }} / {{ charLimit }}
+              </div>
+              <button
+                type="submit"
+                :disabled="commentForm.processing || !commentForm.content"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition"
+              >
+                Publicar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div v-else class="text-gray-600 dark:text-gray-300 text-sm">
+          <a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.
+        </div>
+
+        <!-- Filtres -->
+        <div class="mb-4 flex items-center gap-3">
+          <label for="sort" class="text-gray-700 dark:text-gray-300 text-sm">Ordenar per:</label>
+          <select
+            id="sort"
+            v-model="sort"
+            class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
+          >
+            <option value="likes">Més likes</option>
+            <option value="recent">Més recents</option>
+            <option value="oldest">Més antics</option>
+          </select>
+        </div>
+
+        <!-- Spinner -->
+        <div v-if="loadingComments" class="flex justify-center items-center my-8">
+          <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <!-- Llista comentaris -->
+        <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6">
+          <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
+            <div class="flex justify-between">
+              <div>
+                <div class="font-semibold text-sm">{{ comment.user?.name || 'Usuari' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ new Date(comment.created_at).toLocaleString() }}</div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button
+                  @click="voteComment(comment.id, 1)"
+                  :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === true ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200' : 'text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-800']"
+                >
+                  👍 {{ comment.likes_count ?? 0 }}
+                </button>
+                <button
+                  @click="voteComment(comment.id, 0)"
+                  :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === false ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200' : 'text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-800']"
+                >
+                  👎 {{ comment.dislikes_count ?? 0 }}
+                </button>
+
+                <!-- Autor del comentari, autor del ranking o admin -->
+                <button
+                  v-if="page.props.auth?.user && (comment.user_id === page.props.auth.user.id || ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)"
+                  @click="deleteComment(comment.id)"
+                  class="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
 
-            <div class="flex items-center gap-3">
-              <!-- Like -->
-              <button
-                @click="voteComment(comment.id, 1)"
-                :class="['text-sm px-2 py-1 rounded transition hover:bg-green-50', comment.user_vote === true ? 'bg-green-100 text-green-700' : 'text-gray-600']"
+            <!-- Contingut -->
+            <div class="mt-2">
+              <div
+                class="comment-clamped"
+                :style="!isExpanded(comment.id) ? { maxHeight: '7.5rem', overflow: 'hidden' } : { maxHeight: 'none' }"
               >
-                👍 {{ comment.likes_count ?? 0 }}
-              </button>
+                <div
+                  class="comment-content text-gray-700 dark:text-gray-200"
+                  :data-id="comment.id"
+                >
+                  {{ comment.content }}
+                </div>
+              </div>
 
-              <!-- Dislike -->
-              <button
-                @click="voteComment(comment.id, 0)"
-                :class="['text-sm px-2 py-1 rounded transition hover:bg-red-50', comment.user_vote === false ? 'bg-red-100 text-red-700' : 'text-gray-600']"
-              >
-                👎 {{ comment.dislikes_count ?? 0 }}
-              </button>
-
-              <!-- Eliminar -->
-              <div v-if="$page.props.auth?.user && ($page.props.auth.user.id === comment.user_id || $page.props.auth.user.id === ranking.user_id)">
-                <button @click="deleteComment(comment.id)" class="text-red-600 hover:underline text-sm">Eliminar</button>
+              <!-- Veure més / menys -->
+              <div v-if="needsShowMore(comment.id)" class="mt-2">
+                <button class="show-more-btn" @click="toggleExpanded(comment.id)">
+                  <span v-if="!isExpanded(comment.id)">Veure més</span>
+                  <span v-else>Veure menys</span>
+                </button>
               </div>
             </div>
           </div>
-          <div class="mt-2 text-gray-700 whitespace-pre-line">{{ comment.content }}</div>
+        </div>
+
+        <div v-else class="text-gray-600 dark:text-gray-400 mt-4">
+          Encara no hi ha comentaris. Sigues el primer!
         </div>
       </div>
-
-      <div v-else class="text-gray-600">Encara no hi ha comentaris. Sigues el primer!</div>
     </div>
   </AppLayout>
 </template>
