@@ -18,47 +18,54 @@ function rejectRanking(id) {
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Moderació de rànquings</h1>
+  <div class="p-6 min-h-screen bg-gray-50 dark:bg-[#0d0d0d] transition-colors duration-500">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Moderació de rànquings</h1>
       <Link
         href="/"
-        class="text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-700"
+        class="text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-gray-700 dark:text-gray-100 transition"
       >
         ⬅️ Tornar a l'inici
       </Link>
     </div>
 
-    <p v-if="success" class="text-green-600 mb-4 font-medium">{{ success }}</p>
+    <p v-if="success" class="text-green-600 dark:text-green-400 mb-4 font-medium">
+      {{ success }}
+    </p>
 
-    <div v-if="rankings.length === 0" class="text-gray-500">
+    <div v-if="rankings.length === 0" class="text-gray-600 dark:text-gray-400">
       No hi ha rànquings pendents de moderació.
     </div>
 
-    <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      v-else
+      class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
       <div
         v-for="ranking in rankings"
         :key="ranking.id"
-        class="border rounded-lg p-4 shadow-sm bg-white flex flex-col"
+        class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm bg-white dark:bg-[#1a1a1a] flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
       >
-        <!-- Miniatura -->
+        <!-- Imatge -->
         <img
           v-if="ranking.image"
           :src="`/storage/${ranking.image}`"
           alt="Imatge principal"
-          class="w-full h-40 object-cover rounded mb-3"
+          class="w-full h-40 object-cover rounded-lg mb-3"
         />
         <div class="flex-1">
-          <h2 class="text-lg font-semibold mb-1">{{ ranking.title }}</h2>
-          <p class="text-sm text-gray-600 mb-3">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">
+            {{ ranking.title }}
+          </h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
             Creat per: {{ ranking.user?.name || 'Desconegut' }}
           </p>
         </div>
 
-        <div class="flex justify-between items-center mt-auto pt-2 border-t">
+        <div class="flex justify-between items-center mt-auto pt-3 border-t border-gray-200 dark:border-gray-700">
           <Link
             :href="`/admin/moderation/${ranking.id}`"
-            class="text-blue-600 hover:underline"
+            class="text-blue-600 dark:text-blue-400 hover:underline"
           >
             Veure detalls
           </Link>
@@ -66,13 +73,13 @@ function rejectRanking(id) {
           <div class="flex gap-2">
             <button
               @click="approveRanking(ranking.id)"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
             >
               Aprovar
             </button>
             <button
               @click="rejectRanking(ranking.id)"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
             >
               Rebutjar
             </button>
