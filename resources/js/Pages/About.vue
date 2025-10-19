@@ -1,13 +1,12 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import { Head, Link } from '@inertiajs/vue3'
+import AppLayout from '@/Layouts/AppLayout.vue'
 </script>
 
 <template>
   <AppLayout>
     <Head title="Sobre RankDuel" />
 
-    <!-- Fons amb degradat estàtic -->
     <div
       class="min-h-screen py-16 
              bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200
@@ -15,7 +14,6 @@ import AppLayout from '@/Layouts/AppLayout.vue';
              transition-colors duration-500"
     >
       <div class="mx-auto max-w-5xl px-6 lg:px-8">
-        <!-- Capçalera -->
         <div class="text-center mb-12">
           <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
             Sobre <span class="text-blue-600">Rank</span><span class="text-red-600">Duel</span>
@@ -25,9 +23,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
           </p>
         </div>
 
-        <!-- Targetes amb funcionalitats -->
+        <!-- Targetes -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Crear rànquings -->
           <div
             class="group bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
                    hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] 
@@ -45,7 +42,6 @@ import AppLayout from '@/Layouts/AppLayout.vue';
             </p>
           </div>
 
-          <!-- Fer duels -->
           <div
             class="group bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
                    hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] 
@@ -63,7 +59,6 @@ import AppLayout from '@/Layouts/AppLayout.vue';
             </p>
           </div>
 
-          <!-- Votar i participar -->
           <div
             class="group bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
                    hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] 
@@ -76,12 +71,11 @@ import AppLayout from '@/Layouts/AppLayout.vue';
               🗳️ Votar i participar
             </h3>
             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Participa votant en rànquings ja existents. Les teves decisions
-              ajudaran a establir quin és el favorit de la comunitat.
+              Participa votant en rànquings ja existents. Les teves decisions ajudaran a establir
+              quin és el favorit de la comunitat.
             </p>
           </div>
 
-          <!-- Connectar amb la comunitat -->
           <div
             class="group bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
                    hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] 
@@ -94,25 +88,46 @@ import AppLayout from '@/Layouts/AppLayout.vue';
               🌍 Connectar amb la comunitat
             </h3>
             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Comparteix els teus rànquings amb amics i descobreix els gustos d’altres
-              usuaris de tot arreu.
+              Comparteix els teus rànquings amb amics i descobreix els gustos d’altres usuaris de
+              tot arreu.
             </p>
           </div>
         </div>
 
-        <!-- Botó -->
+        <!-- Botó amb gradient animat -->
         <div class="text-center mt-16">
           <p class="text-lg text-gray-800 dark:text-gray-200 mb-4">
             Vols començar a votar i crear els teus rànquings?
           </p>
           <Link
             :href="route('register')"
-            class="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
+            class="relative inline-block px-8 py-3 rounded-xl font-semibold text-white text-lg shadow-lg overflow-hidden group"
           >
-            Uneix-te ara 🚀
+            <span
+              class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600
+                     animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
+            ></span>
+            <span class="relative z-10">Uneix-te ara 🚀</span>
           </Link>
         </div>
       </div>
     </div>
   </AppLayout>
 </template>
+
+<style scoped>
+@keyframes gradient-slow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.animate-gradient-slow {
+  animation: gradient-slow 8s ease infinite;
+}
+</style>
