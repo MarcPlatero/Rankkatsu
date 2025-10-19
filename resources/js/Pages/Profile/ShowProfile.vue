@@ -24,12 +24,15 @@ const logout = () => {
   <AppLayout>
     <Head title="Perfil d'usuari" />
 
-    <div class="max-w-3xl mx-auto py-10 px-6">
+    <div class="max-w-3xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
       <h1 class="text-3xl font-bold mb-6 text-center">El meu perfil</h1>
 
-      <div class="bg-white shadow rounded-lg p-6 mb-8 text-center">
+      <!-- Targeta principal -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 text-center transition-colors duration-300"
+      >
         <h2 class="text-xl font-semibold mb-2">{{ user.name }}</h2>
-        <p class="text-gray-600 mb-4">
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
           Compte creat el {{ new Date(user.created_at).toLocaleDateString() }}
         </p>
         <button
@@ -41,35 +44,37 @@ const logout = () => {
       </div>
 
       <!-- Pestanyes -->
-      <div class="flex border-b mb-6 bg-gray-50 rounded-lg shadow-sm overflow-hidden">
+      <div
+        class="flex border-b mb-6 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden transition-colors duration-300"
+      >
         <button
-          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
+          :class="currentTab === 'yours'
+            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+            : 'border-transparent hover:text-blue-500 dark:hover:text-blue-400'"
+          @click="currentTab = 'yours'"
+        >
+          🏆 Els teus rankings
+        </button>
+
+        <button
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
           :class="currentTab === 'account'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent hover:text-blue-500'"
+            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+            : 'border-transparent hover:text-blue-500 dark:hover:text-blue-400'"
           @click="currentTab = 'account'"
         >
           🧑 Informació del compte
         </button>
 
         <button
-          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
+          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800"
           :class="currentTab === 'favorites'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent hover:text-blue-500'"
+            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+            : 'border-transparent hover:text-blue-500 dark:hover:text-blue-400'"
           @click="currentTab = 'favorites'"
         >
           ⭐ Rankings favorits
-        </button>
-
-        <button
-          class="flex-1 py-3 font-medium text-center transition border-b-2 bg-white hover:bg-gray-100"
-          :class="currentTab === 'yours'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent hover:text-blue-500'"
-          @click="currentTab = 'yours'"
-        >
-          🏆 Els teus rankings
         </button>
       </div>
 

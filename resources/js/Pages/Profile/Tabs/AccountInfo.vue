@@ -8,7 +8,6 @@ const props = defineProps({
 })
 
 const page = usePage()
-const flash = computed(() => page.props.flash)
 const successMessage = ref('')
 
 const form = useForm({
@@ -16,7 +15,6 @@ const form = useForm({
   email: props.user.email,
 })
 
-// Guardar canvis del nom
 const submit = () => {
   form.patch(route('profile.update'), {
     preserveScroll: true,
@@ -27,7 +25,6 @@ const submit = () => {
   })
 }
 
-// Quan es canvia la contrasenya correctament
 const handlePasswordUpdated = () => {
   successMessage.value = '🔐 Contrasenya actualitzada correctament.'
   setTimeout(() => (successMessage.value = ''), 3000)
@@ -46,44 +43,45 @@ const handlePasswordUpdated = () => {
 </style>
 
 <template>
-  <div class="bg-white shadow rounded-lg p-6 space-y-4">
-    <h2 class="text-xl font-semibold mb-4">👤 Informació del compte</h2>
+  <div
+    class="bg-white dark:bg-gray-900 shadow-md rounded-xl p-6 space-y-4 border border-gray-100 dark:border-gray-800 transition-colors duration-300"
+  >
+    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">👤 Informació del compte</h2>
 
-    <!-- Missatge d’èxit unificat -->
     <transition name="fade">
       <div
         v-if="successMessage"
-        class="p-3 bg-green-100 text-green-700 rounded text-sm border border-green-200"
+        class="p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded text-sm border border-green-200 dark:border-green-800"
       >
         {{ successMessage }}
       </div>
     </transition>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700">Nom d'usuari</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom d'usuari</label>
       <input
         v-model="form.name"
         type="text"
-        class="mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition"
       />
       <div v-if="form.errors.name" class="text-red-600 text-sm mt-1">{{ form.errors.name }}</div>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700">Correu electrònic</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correu electrònic</label>
       <input
         v-model="form.email"
         type="email"
         disabled
-        class="mt-1 w-full bg-gray-100 border-gray-300 rounded-md shadow-sm text-gray-600"
+        class="mt-1 w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-400 cursor-not-allowed"
       />
     </div>
 
-    <div class="pt-4">
+    <div class="pt-4 flex justify-end">
       <button
         @click="submit"
         :disabled="form.processing"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50"
+        class="px-4 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition disabled:opacity-50 shadow-sm"
       >
         {{ form.processing ? 'Guardant...' : '💾 Guardar canvis' }}
       </button>

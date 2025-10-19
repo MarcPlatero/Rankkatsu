@@ -1,6 +1,5 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
-import { router } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 
 const props = defineProps({
   rankings: Array
@@ -15,32 +14,32 @@ const confirmDelete = (rankingId) => {
 
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">🏆 Els teus rankings</h2>
+    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">🏆 Els teus rànquings</h2>
 
     <div v-if="rankings.length" class="grid gap-4">
       <div
         v-for="ranking in rankings"
         :key="ranking.id"
-        class="flex items-center justify-between bg-white shadow rounded-lg p-4 hover:bg-gray-50 transition"
+        class="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm p-4 hover:shadow-md transition"
       >
         <Link
           :href="route('rankings.show', ranking.id)"
-          class="flex-1 text-lg font-medium text-blue-600 hover:underline"
+          class="flex-1 text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline"
         >
           {{ ranking.title }}
         </Link>
 
         <button
           @click="confirmDelete(ranking.id)"
-          class="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          class="ml-4 px-3 py-1 bg-red-600 dark:bg-red-500 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition"
         >
           Eliminar
         </button>
       </div>
     </div>
 
-    <p v-else class="text-gray-500 text-center">
-      Encara no has creat cap ranking.
+    <p v-else class="text-gray-500 dark:text-gray-400 text-center">
+      Encara no has creat cap rànquing.
     </p>
   </div>
 </template>
