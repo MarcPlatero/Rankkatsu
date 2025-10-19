@@ -39,7 +39,6 @@ function goToRanking(id) {
     background-position: 0% 50%;
   }
 }
-
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
 }
@@ -136,10 +135,7 @@ function goToRanking(id) {
               alt="Imatge del rànquing"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
-            <div
-              v-else
-              class="text-5xl text-gray-400 dark:text-gray-500"
-            >
+            <div v-else class="text-5xl text-gray-400 dark:text-gray-500">
               🗂️
             </div>
           </div>
@@ -167,7 +163,9 @@ function goToRanking(id) {
                 {{ ranking.description }}
               </p>
 
-              <ul class="mt-3 text-xs text-gray-600 dark:text-gray-400 whitespace-normal break-words">
+              <ul
+                class="mt-3 text-xs text-gray-600 dark:text-gray-400 whitespace-normal break-words"
+              >
                 <li
                   v-for="opt in ranking.options.slice(0, 2)"
                   :key="opt.id"
@@ -185,7 +183,7 @@ function goToRanking(id) {
             </div>
 
             <!-- Espai + Veure més -->
-            <div class="mt-5">
+            <div class="mt-6">
               <span
                 class="text-blue-600 dark:text-red-400 font-semibold hover:underline"
               >
