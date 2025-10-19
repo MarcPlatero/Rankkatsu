@@ -2,7 +2,6 @@
 import { Link, usePage, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import ConfirmModal from '@/Components/ConfirmModal.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 
 defineProps({
@@ -15,7 +14,6 @@ const flash = page.props.flash || {}
 
 const search = ref(page.props.filters?.search || '')
 
-// Executa la cerca només quan es prem enter o el botó
 function applySearch() {
   router.get(
     '/rankings',
@@ -23,95 +21,180 @@ function applySearch() {
     { preserveState: true, replace: true }
   )
 }
+
+function goToRanking(id) {
+  router.get(`/rankings/${id}`)
+}
 </script>
+
+<style scoped>
+@keyframes gradient-slow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-slow {
+  animation: gradient-slow 8s ease infinite;
+}
+</style>
 
 <template>
   <AppLayout>
-    <div class="max-w-4xl mx-auto p-6">
-      <h1 class="text-2xl font-bold mb-4">Rankings</h1>
+    <div
+      class="w-full mx-auto p-6 min-h-screen transition-colors duration-300 
+             bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+    >
+      <!-- Títol -->
+      <h1 class="text-3xl font-extrabold mb-10 text-center">
+        📊 Rànquings
+      </h1>
 
-      <!-- Missatges flash -->
-      <div v-if="flash.success" class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+      <!-- Flash messages -->
+      <div
+        v-if="flash.success"
+        class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 shadow"
+      >
         {{ flash.success }}
       </div>
-      <div v-if="flash.error" class="mb-4 p-4 bg-red-100 text-red-800 rounded">
+      <div
+        v-if="flash.error"
+        class="mb-4 p-4 rounded-lg bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100 shadow"
+      >
         {{ flash.error }}
       </div>
 
       <!-- Buscador -->
-      <div class="flex mb-6">
+      <div class="flex mb-10 max-w-3xl mx-auto">
         <input
           v-model="search"
           @keyup.enter="applySearch"
           type="text"
           placeholder="Cerca rànquings o opcions..."
-          class="w-full px-4 py-2 border rounded-l focus:outline-none focus:ring focus:border-indigo-400"
+          class="w-full px-4 py-2 rounded-l-lg border border-gray-300 dark:border-gray-700
+                 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           @click="applySearch"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-r hover:bg-indigo-700"
+          class="px-5 py-2 bg-gradient-to-r from-blue-600 to-red-600 text-white font-semibold
+                 rounded-r-lg hover:opacity-90 transition duration-200"
         >
           🔍
         </button>
       </div>
 
-      <Link
-        href="/rankings/create"
-        class="mb-4 inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-      >
-        + Crear nou rànquing
-      </Link>
+      <!-- Botó crear -->
+      <div class="text-center mb-12">
+        <Link
+          href="/rankings/create"
+          class="relative inline-block px-7 py-3 rounded-xl font-semibold text-white text-lg shadow-lg overflow-hidden group"
+        >
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600
+                   animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
+          ></span>
+          <span class="relative z-10">Crear nou rànquing</span>
+        </Link>
+      </div>
 
-      <div v-if="!rankings || rankings.length === 0" class="text-gray-600 mt-4">
+      <!-- Si no hi ha rànquings -->
+      <div
+        v-if="!rankings || rankings.length === 0"
+        class="text-gray-600 dark:text-gray-400 mt-8 text-center text-lg"
+      >
         No s’han trobat rànquings.
       </div>
 
-      <ul v-else class="space-y-4">
-        <li
+      <!-- Llista -->
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 
+               2xl:grid-cols-6 gap-6 w-full px-4"
+      >
+        <div
           v-for="ranking in rankings"
           :key="ranking.id"
-          class="relative flex flex-col sm:flex-row gap-4 items-start sm:items-center rounded border p-4 shadow hover:shadow-md transition"
+          class="relative flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 
+                 bg-white dark:bg-neutral-900 shadow-sm hover:shadow-xl hover:-translate-y-1
+                 transition-all duration-300 overflow-hidden group cursor-pointer"
+          @click="goToRanking(ranking.id)"
         >
-          <!-- Imatge principal -->
-          <div class="w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+          <!-- Imatge -->
+          <div
+            class="w-full h-40 overflow-hidden flex items-center justify-center 
+                   bg-gray-100 dark:bg-gray-800"
+          >
             <img
               v-if="ranking.image"
               :src="`/storage/${ranking.image}`"
               alt="Imatge del rànquing"
-              class="w-full h-48 object-cover rounded-lg border"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
             <div
               v-else
-              class="w-full h-48 flex items-center justify-center bg-gray-100 rounded-lg text-4xl"
+              class="text-5xl text-gray-400 dark:text-gray-500"
             >
-              🖼️
+              🗂️
             </div>
           </div>
 
           <!-- Contingut -->
-          <div class="flex-1 w-full">
-            <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
+          <div class="flex-1 p-4 relative flex flex-col justify-between">
+            <!-- Estrella -->
+            <div @click.stop>
+              <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
+            </div>
 
-            <h2 class="text-lg font-semibold">{{ ranking.title }}</h2>
-            <p class="text-gray-700">{{ ranking.description }}</p>
+            <!-- Text -->
+            <div>
+              <h2
+                class="text-lg font-bold mb-2 text-gray-900 dark:text-white 
+                       break-words group-hover:text-blue-600 dark:group-hover:text-red-400 
+                       transition-colors duration-200"
+              >
+                {{ ranking.title }}
+              </h2>
 
-            <ul class="mt-2">
-              <li v-for="opt in ranking.options" :key="opt.id" class="text-sm">
-                - {{ opt.name }}
-              </li>
-            </ul>
+              <p
+                class="text-sm text-gray-700 dark:text-gray-300 whitespace-normal break-words"
+              >
+                {{ ranking.description }}
+              </p>
 
-            <div class="mt-3 flex items-center space-x-4">
-              <Link
-                :href="`/rankings/${ranking.id}`"
-                class="text-indigo-600 hover:underline"
+              <ul class="mt-3 text-xs text-gray-600 dark:text-gray-400 whitespace-normal break-words">
+                <li
+                  v-for="opt in ranking.options.slice(0, 2)"
+                  :key="opt.id"
+                  class="leading-snug"
+                >
+                  • {{ opt.name }}
+                </li>
+                <li
+                  v-if="ranking.options.length > 2"
+                  class="text-gray-400 italic"
+                >
+                  ...
+                </li>
+              </ul>
+            </div>
+
+            <!-- Espai + Veure més -->
+            <div class="mt-5">
+              <span
+                class="text-blue-600 dark:text-red-400 font-semibold hover:underline"
               >
                 Veure detalls →
-              </Link>
+              </span>
             </div>
           </div>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </AppLayout>
 </template>
