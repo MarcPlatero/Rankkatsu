@@ -165,19 +165,19 @@ function checkOverflow() {
   document.querySelectorAll('.comment-content').forEach((el) => {
     const id = el.getAttribute('data-id')
 
-    // guardem l'alçada original
+    // Guardem l'alçada original
     const originalMaxHeight = el.style.maxHeight
     const parent = el.closest('.comment-clamped')
 
-    // traiem límits per mesurar l'alçada real
+    // Traiem límits per mesurar l'alçada real
     if (parent) parent.style.maxHeight = 'none'
 
-    // comprovem si és més alt que el límit (120px aprox. = 7.5rem)
+    // Comprovem si és més alt que el límit (120px aprox. = 7.5rem)
     if (el.scrollHeight > 120) {
       longComments.value[id] = true
     }
 
-    // restablim l'alçada original
+    // Restablim l'alçada original
     if (parent) parent.style.maxHeight = ''
   })
 }
