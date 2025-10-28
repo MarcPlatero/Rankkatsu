@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { useForm } from '@inertiajs/vue3'
+import { vAutoAnimate } from '@formkit/auto-animate'
 import { onMounted, nextTick } from 'vue'
 
 const props = defineProps({
@@ -39,6 +40,10 @@ const totalVotes = computed(() =>
 )
 const getPercentage = (votes) =>
   totalVotes.value === 0 ? 0 : Math.round((votes / totalVotes.value) * 100)
+  
+const sortedOptions = computed(() => {
+  return [...props.ranking.options].sort((a, b) => b.votes_count - a.votes_count)
+})
 
 // Votar / treure vot
 const vote = (optionId) => {
@@ -188,11 +193,14 @@ function needsShowMore(commentId) {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.fade-enter-from, .fade-leave-to {
+.slide-fade-enter-from,
+.slide-fade-leave-to {
   opacity: 0;
+  transform: translateX(100%);
 }
 
 .comment-content {
@@ -244,12 +252,12 @@ textarea.resize-none {
 
     <div class="max-w-3xl mx-auto py-10 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm">
       <!-- Flash -->
-      <transition name="fade">
+      <transition name="slide-fade">
         <div v-if="flash.success" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg z-50">
           {{ flash.success }}
         </div>
       </transition>
-      <transition name="fade">
+      <transition name="slide-fade">
         <div v-if="flash.error" class="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-xl shadow-lg z-50">
           {{ flash.error }}
         </div>
@@ -279,8 +287,15 @@ textarea.resize-none {
       </div>
 
       <!-- Opcions -->
-      <div class="space-y-4">
-        <div v-for="opt in ranking.options" :key="opt.id" class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow transition">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" v-auto-animate>
+        <div 
+          v-for="(opt, index) in sortedOptions" 
+          :key="opt.id" 
+          class="relative p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-blue-900/30">   
+          <span class="absolute -top-3 -left-3 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-lg shadow-lg z-10">
+            {{ index + 1 }}
+          </span>
+
           <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mb-3">
             <img
               v-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
@@ -292,7 +307,10 @@ textarea.resize-none {
           </div>
 
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
-            <div class="bg-blue-600 h-4 transition-all duration-500" :style="{ width: getPercentage(opt.votes_count) + '%' }"></div>
+            <div 
+              class="bg-gradient-to-r from-blue-500 to-blue-600 h-4 transition-all duration-700 ease-out" 
+              :style="{ width: getPercentage(opt.votes_count) + '%' }"
+            ></div>
           </div>
 
           <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -304,7 +322,7 @@ textarea.resize-none {
             <button
               v-if="votedOptionId !== opt.id"
               @click="vote(opt.id)"
-              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 active:scale-95 transform transition-all duration-150 ease-out"
             >
               Votar
             </button>
@@ -315,7 +333,7 @@ textarea.resize-none {
               </span>
               <button
                 @click="unvoteRanking"
-                class="px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition"
+                class="px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-500 active:scale-95 transform transition-all duration-150 ease-out"
               >
                 Treure votació
               </button>
@@ -374,12 +392,27 @@ textarea.resize-none {
         </div>
 
         <!-- Spinner -->
-        <div v-if="loadingComments" class="flex justify-center items-center my-8">
-          <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
+          <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
+            <div class="flex justify-between">
+              <div>
+                <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div>
+                <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              </div>
+            </div>
+            <div class="mt-3 space-y-2">
+              <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
+              <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Llista comentaris -->
-        <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6">
+        <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6" v-auto-animate>
           <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
             <div class="flex justify-between">
               <div>
