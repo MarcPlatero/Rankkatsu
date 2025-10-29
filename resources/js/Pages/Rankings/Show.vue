@@ -250,8 +250,8 @@ textarea.resize-none {
   <AppLayout>
     <Head :title="ranking.title" />
 
+     <!-- Flash -->
     <div class="max-w-3xl mx-auto py-10 px-6 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm">
-      <!-- Flash -->
       <transition name="slide-fade">
         <div v-if="flash.success" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-xl shadow-lg z-50">
           {{ flash.success }}
@@ -263,7 +263,7 @@ textarea.resize-none {
         </div>
       </transition>
 
-      <!-- Imatge -->
+       <!-- Imatge -->
       <img
         v-if="ranking.image && (ranking.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
         :src="ranking.image.startsWith('/storage/') ? ranking.image : `/storage/${ranking.image}`"
@@ -291,8 +291,9 @@ textarea.resize-none {
         <div 
           v-for="(opt, index) in sortedOptions" 
           :key="opt.id" 
-          class="relative p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg dark:hover:shadow-blue-900/30">   
-          <span class="absolute -top-3 -left-3 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-lg shadow-lg z-10">
+          class="relative p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-red-500/30"
+        > 
+          <span class="absolute -top-3 -left-3 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 dark:bg-red-600 text-white font-bold text-lg shadow-lg z-10">
             {{ index + 1 }}
           </span>
 
@@ -308,7 +309,7 @@ textarea.resize-none {
 
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
             <div 
-              class="bg-gradient-to-r from-blue-500 to-blue-600 h-4 transition-all duration-700 ease-out" 
+              class="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-red-500 dark:to-red-600 h-4 transition-all duration-700 ease-out" 
               :style="{ width: getPercentage(opt.votes_count) + '%' }"
             ></div>
           </div>
@@ -322,7 +323,7 @@ textarea.resize-none {
             <button
               v-if="votedOptionId !== opt.id"
               @click="vote(opt.id)"
-              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 active:scale-95 transform transition-all duration-150 ease-out"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded active:scale-95 transform transition-all duration-150 ease-out"
             >
               Votar
             </button>
@@ -365,7 +366,7 @@ textarea.resize-none {
               <button
                 type="submit"
                 :disabled="commentForm.processing || !commentForm.content"
-                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded disabled:opacity-50 transition"
               >
                 Publicar
               </button>
@@ -391,7 +392,6 @@ textarea.resize-none {
           </select>
         </div>
 
-        <!-- Spinner -->
         <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
           <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
             <div class="flex justify-between">
@@ -434,7 +434,6 @@ textarea.resize-none {
                   👎 {{ comment.dislikes_count ?? 0 }}
                 </button>
 
-                <!-- Autor del comentari, autor del ranking o admin -->
                 <button
                   v-if="page.props.auth?.user && (comment.user_id === page.props.auth.user.id || ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)"
                   @click="deleteComment(comment.id)"
