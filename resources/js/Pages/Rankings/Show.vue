@@ -300,6 +300,17 @@ textarea.resize-none {
   color: #ef4444;
   font-weight: 600;
 }
+
+.truncate-3-lines {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* Límit de 3 línies*/
+  line-clamp: 3;
+  
+  /* Per si de cas una sola paraula és molt llarga */
+  word-break: break-word; 
+}
 </style>
 
 <template>
@@ -337,8 +348,16 @@ textarea.resize-none {
 
             <div class="relative">
               <FavoriteStar :ranking="ranking" class="absolute top-0 right-0" />
-              <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">{{ ranking.title }}</h1>
-              <p class="text-gray-700 dark:text-gray-300 mb-6">{{ ranking.description }}</p>
+              
+              <div class="pr-10">
+                <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100 truncate-3-lines">
+                  {{ ranking.title }}
+                </h1>
+                
+                <p class="text-gray-700 dark:text-gray-300 mb-6 truncate-3-lines">
+                  {{ ranking.description }}
+                </p>
+              </div>
             </div>
 
             <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
@@ -545,12 +564,12 @@ textarea.resize-none {
                       </template>
                     </div>
                   </div>
-                  </div>
                 </div>
               </div>
-          </div>
+            </div>
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
+  </AppLayout>
 </template>
