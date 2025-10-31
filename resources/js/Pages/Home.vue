@@ -13,7 +13,7 @@ defineProps({ rankings: Array })
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4em;
-  max-height: 4.2em;
+  height: 4.2em;
 }
 
 /* Animació de gradient lent */
@@ -72,7 +72,6 @@ defineProps({ rankings: Array })
             ></span>
             <span class="relative z-10">Crear Ranking</span>
           </Link>
-
           <!-- Botó Veure -->
           <Link
             href="/rankings"
@@ -90,12 +89,12 @@ defineProps({ rankings: Array })
 
     <!-- Llistat de rànquings -->
     <section class="max-w-7xl mx-auto px-6 py-12">
-      <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
+      <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">
         Últims rànquings
       </h2>
 
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
       >
         <div
           v-for="ranking in rankings"
@@ -103,15 +102,15 @@ defineProps({ rankings: Array })
           class="group relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 
                  hover:border-blue-500 dark:hover:border-red-500 
                  hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] dark:hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] 
-                 hover:-translate-y-1 transition-all duration-300"
+                 hover:-translate-y-1 transition-all duration-300
+                 overflow-hidden"
         >
-          <!-- El Link ocupa només dins la targeta -->
           <Link
             :href="`/rankings/${ranking.id}`"
-            class="block h-full rounded-xl overflow-hidden"
+            class="block h-full"
           >
             <!-- Imatge -->
-            <div class="w-full h-40 bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+            <div class="w-full aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               <img
                 v-if="ranking.image"
                 :src="`/storage/${ranking.image}`"
@@ -122,7 +121,7 @@ defineProps({ rankings: Array })
             </div>
 
             <!-- Contingut -->
-            <div class="p-4 flex flex-col justify-between h-[7.5rem]">
+            <div class="p-4">
               <h3
                 class="text-base sm:text-lg font-bold title-clamp text-gray-900 dark:text-white 
                        transition-colors duration-300 
