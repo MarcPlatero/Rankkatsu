@@ -39,8 +39,33 @@ function goToRanking(id) {
     background-position: 0% 50%;
   }
 }
+
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  word-break: break-word; 
+ 
+  line-height: 1.4em;
+  height: 2.8em;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  word-break: break-word; 
+
+  line-height: 1.4em;
+  height: 4.2em;
 }
 </style>
 
@@ -50,12 +75,10 @@ function goToRanking(id) {
       class="w-full mx-auto p-6 min-h-screen transition-colors duration-300 
              bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
-      <!-- Títol -->
       <h1 class="text-3xl font-extrabold mb-10 text-center">
         📊 Rànquings
       </h1>
 
-      <!-- Flash messages -->
       <div
         v-if="flash.success"
         class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 shadow"
@@ -69,7 +92,6 @@ function goToRanking(id) {
         {{ flash.error }}
       </div>
 
-      <!-- Buscador -->
       <div class="flex mb-10 max-w-3xl mx-auto">
         <input
           v-model="search"
@@ -88,7 +110,6 @@ function goToRanking(id) {
         </button>
       </div>
 
-      <!-- Botó crear -->
       <div class="text-center mb-12">
         <Link
           href="/rankings/create"
@@ -102,7 +123,6 @@ function goToRanking(id) {
         </Link>
       </div>
 
-      <!-- Si no hi ha rànquings -->
       <div
         v-if="!rankings || rankings.length === 0"
         class="text-gray-600 dark:text-gray-400 mt-8 text-center text-lg"
@@ -110,11 +130,10 @@ function goToRanking(id) {
         No s’han trobat rànquings.
       </div>
 
-      <!-- Llista -->
       <div
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 
-               2xl:grid-cols-6 gap-6 w-full px-4"
+               gap-8 w-full px-4"
       >
         <div
           v-for="ranking in rankings"
@@ -124,9 +143,8 @@ function goToRanking(id) {
                  transition-all duration-300 overflow-hidden group cursor-pointer"
           @click="goToRanking(ranking.id)"
         >
-          <!-- Imatge -->
           <div
-            class="w-full h-40 overflow-hidden flex items-center justify-center 
+            class="w-full aspect-video overflow-hidden flex items-center justify-center 
                    bg-gray-100 dark:bg-gray-800"
           >
             <img
@@ -140,25 +158,22 @@ function goToRanking(id) {
             </div>
           </div>
 
-          <!-- Contingut -->
           <div class="flex-1 p-4 relative flex flex-col justify-between">
-            <!-- Estrella -->
             <div @click.stop>
-              <FavoriteStar :ranking="ranking" class="absolute top-3 right-3" />
+              <FavoriteStar :ranking="ranking" class="absolute top-3 right-3 z-10" />
             </div>
 
-            <!-- Text -->
-            <div>
+            <div class="pr-12">
               <h2
                 class="text-lg font-bold mb-2 text-gray-900 dark:text-white 
                        break-words group-hover:text-blue-600 dark:group-hover:text-red-400 
-                       transition-colors duration-200"
+                       transition-colors duration-200 line-clamp-2"
               >
                 {{ ranking.title }}
               </h2>
 
               <p
-                class="text-sm text-gray-700 dark:text-gray-300 whitespace-normal break-words"
+                class="text-sm text-gray-700 dark:text-gray-300 whitespace-normal break-words line-clamp-3"
               >
                 {{ ranking.description }}
               </p>
@@ -182,7 +197,6 @@ function goToRanking(id) {
               </ul>
             </div>
 
-            <!-- Espai + Veure més -->
             <div class="mt-6">
               <span
                 class="text-blue-600 dark:text-red-400 font-semibold hover:underline"
