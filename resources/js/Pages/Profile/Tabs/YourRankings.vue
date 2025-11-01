@@ -24,7 +24,7 @@ const confirmDelete = (rankingId) => {
       >
         <Link
           :href="route('rankings.show', ranking.id)"
-          class="flex-1 text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          class="flex-1 text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline truncate min-w-0 pr-4"
         >
           {{ ranking.title }}
         </Link>

@@ -75,10 +75,12 @@ function goToRanking(id) {
       class="w-full mx-auto p-6 min-h-screen transition-colors duration-300 
              bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
+      <!-- Títol -->
       <h1 class="text-3xl font-extrabold mb-10 text-center">
         📊 Rànquings
       </h1>
 
+      <!-- Flash messages -->
       <div
         v-if="flash.success"
         class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 shadow"
@@ -92,6 +94,7 @@ function goToRanking(id) {
         {{ flash.error }}
       </div>
 
+      <!-- Buscador -->
       <div class="flex mb-10 max-w-3xl mx-auto">
         <input
           v-model="search"
@@ -110,6 +113,7 @@ function goToRanking(id) {
         </button>
       </div>
 
+      <!-- Botó crear -->
       <div class="text-center mb-12">
         <Link
           href="/rankings/create"
@@ -130,6 +134,7 @@ function goToRanking(id) {
         No s’han trobat rànquings.
       </div>
 
+      <!-- Llista -->
       <div
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 
@@ -143,6 +148,7 @@ function goToRanking(id) {
                  transition-all duration-300 overflow-hidden group cursor-pointer"
           @click="goToRanking(ranking.id)"
         >
+          <!-- Imatge -->
           <div
             class="w-full aspect-video overflow-hidden flex items-center justify-center 
                    bg-gray-100 dark:bg-gray-800"
@@ -158,11 +164,14 @@ function goToRanking(id) {
             </div>
           </div>
 
+          <!-- Contingut -->
           <div class="flex-1 p-4 relative flex flex-col justify-between">
+            <!-- Estrella -->
             <div @click.stop>
               <FavoriteStar :ranking="ranking" class="absolute top-3 right-3 z-10" />
             </div>
 
+            <!-- Text -->
             <div class="pr-12">
               <h2
                 class="text-lg font-bold mb-2 text-gray-900 dark:text-white 
@@ -197,6 +206,7 @@ function goToRanking(id) {
               </ul>
             </div>
 
+            <!-- Veure detalls -->
             <div class="mt-6">
               <span
                 class="text-blue-600 dark:text-red-400 font-semibold hover:underline"
