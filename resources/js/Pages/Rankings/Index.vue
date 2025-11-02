@@ -39,11 +39,9 @@ function goToRanking(id) {
     background-position: 0% 50%;
   }
 }
-
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
 }
-
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
@@ -55,7 +53,6 @@ function goToRanking(id) {
   line-height: 1.4em;
   height: 2.8em;
 }
-
 .line-clamp-3 {
   overflow: hidden;
   display: -webkit-box;

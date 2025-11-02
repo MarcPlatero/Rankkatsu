@@ -191,6 +191,30 @@ const submit = async () => {
 }
 textarea { resize: none; }
 .red-count { color: #ef4444; transition: color 0.3s ease; }
+.file-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border: 2px dashed #9ca3af; /* gray-400 */
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.dark .file-drop-zone {
+  background-color: rgba(55, 65, 81, 0.5); /* dark:bg-gray-700/50 */
+  border-color: #4b5563; /* dark:border-gray-600 */
+}
+.file-drop-zone:hover {
+  border-color: #3b82f6; /* hover:border-blue-500 */
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.dark .file-drop-zone:hover {
+  border-color: #ef4444; /* dark:hover:border-red-500 */
+  background-color: rgba(55, 65, 81, 0.8);
+}
 </style>
 
 <template>
@@ -209,131 +233,160 @@ textarea { resize: none; }
           🏆 Crear un nou rànquing
         </h1>
 
-        <form @submit.prevent="submit" class="space-y-6">
-          <!-- Títol -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Nom del rànquing
-            </label>
-            <input
-              v-model="form.title"
-              type="text"
-              :maxlength="titleMax"
-              class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            />
-            <div class="text-xs mt-1 text-right" :class="form.title.length >= titleMax ? 'red-count' : 'text-gray-500'">
-              {{ form.title.length }}/{{ titleMax }}
+        <div
+          v-if="nsfwError"
+          class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 p-3 rounded-lg mb-6">
+          {{ nsfwError }}
+        </div>
+
+        <form @submit.prevent="submit" class="space-y-8">
+          
+          <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8"> <div class="space-y-6">
+              <div>
+                <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Nom del rànquing
+                </label>
+                <input
+                  id="title"
+                  v-model="form.title"
+                  type="text"
+                  :maxlength="titleMax"
+                  class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+                <div class="text-xs mt-1 text-right" :class="form.title.length >= titleMax ? 'red-count' : 'text-gray-500'">
+                  {{ form.title.length }}/{{ titleMax }}
+                </div>
+                <div v-if="form.errors.title" class="text-red-500 text-sm mt-1">
+                  {{ form.errors.title }}
+                </div>
+              </div>
+
+              <div>
+                <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Descripció
+                </label>
+                <textarea
+                  id="description"
+                  v-model="form.description"
+                  rows="4" :maxlength="descMax"
+                  class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                </textarea>
+                <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">
+                  {{ form.description.length }}/{{ descMax }}
+                </div>
+                <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">
+                  {{ form.errors.description }}
+                </div>
+              </div>
             </div>
-            <div v-if="form.errors.title" class="text-red-500 text-sm mt-1">
-              {{ form.errors.title }}
+
+            <div class="flex flex-col items-center"> <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                Imatge principal del rànquing
+              </label>
+
+              <div v-if="!imagePreview" class="w-full max-w-xs"> <label class="file-drop-zone h-36"> <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega una imatge</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="handleRankingImage"
+                    class="hidden"
+                  />
+                </label>
+              </div>
+
+              <div v-else class="mt-2 relative w-full max-w-xs aspect-video"> <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
+                <label class="absolute -top-2 -right-2 bg-white dark:bg-gray-700 p-1.5 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
+                  <svg class="w-5 h-5 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="handleRankingImage"
+                    class="hidden"
+                  />
+                </label>
+              </div>
             </div>
           </div>
+          <hr class="border-gray-300 dark:border-gray-600">
 
-          <!-- Error NSFW -->
-          <div
-            v-if="nsfwError"
-            class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 p-3 rounded-lg">
-            {{ nsfwError }}
-          </div>
-
-          <!-- Descripció -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Descripció
-            </label>
-            <textarea
-              v-model="form.description"
-              rows="3"
-              :maxlength="descMax"
-              class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-            </textarea>
-            <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">
-              {{ form.description.length }}/{{ descMax }}
-            </div>
-            <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">
-              {{ form.errors.description }}
-            </div>
-          </div>
-
-          <!-- Imatge principal -->
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Imatge del rànquing
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              @change="handleRankingImage"
-              class="mt-1 block w-full text-sm text-gray-700 dark:text-gray-200"
-            />
-            <div v-if="imagePreview" class="mt-3">
-              <img :src="imagePreview" alt="Preview" class="w-48 rounded-lg shadow" />
-            </div>
-          </div>
-
-          <!-- Opcions -->
           <div>
             <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
               Opcions del rànquing
             </h2>
 
-            <div
-              v-for="(option, index) in form.options"
-              :key="index"
-              class="mb-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/70 transition-colors border-gray-300 dark:border-gray-600">
-              <div class="flex items-center gap-4 flex-wrap">
-                <input
-                  v-model="form.options[index].name"
-                  type="text"
-                  :maxlength="optMax"
-                  placeholder="Nom de l’opció"
-                  class="flex-1 rounded-md p-2.5 border focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  @change="(e) => handleOptionImage(e, index)"
-                  class="text-sm text-gray-700 dark:text-gray-200"
-                />
-                <div v-if="optionPreviews[index]" class="mt-2">
-                  <img :src="optionPreviews[index]" alt="Preview" class="w-32 rounded-lg shadow" />
+            <div class="space-y-4" v-auto-animate>
+              <div
+                v-for="(option, index) in form.options"
+                :key="index"
+                class="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/70 transition-colors border-gray-300 dark:border-gray-600"
+              >
+                <div class="grid grid-cols-[80px_1fr_auto] items-start gap-4">
+                  
+                  <div>
+                    <label v-if="!optionPreviews[index]" class="file-drop-zone w-20 h-20 !p-0">
+                      <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                      <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
+                    </label>
+                    <div v-else class="relative w-20 h-20">
+                      <img :src="optionPreviews[index]" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
+                      <label class="absolute -top-1 -right-1 bg-white dark:bg-gray-700 p-1 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
+                        <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="min-w-0">
+                    <input
+                      v-model="form.options[index].name"
+                      type="text"
+                      :maxlength="optMax"
+                      placeholder="Nom de l’opció"
+                      class="w-full rounded-md p-2.5 border focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    />
+                    <div class="flex justify-between items-center">
+                      <div v-if="form.errors[`options.${index}.name`]" class="text-red-500 text-sm mt-1">
+                        {{ form.errors[`options.${index}.name`] }}
+                      </div>
+                      <div class="flex-grow text-xs mt-1 text-right" :class="option.name.length >= optMax ? 'red-count' : 'text-gray-500'">
+                        {{ option.name.length }}/{{ optMax }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    v-if="form.options.length > 2"
+                    type="button"
+                    @click="removeOption(index)"
+                    class="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all duration-300 h-11"
+                  >
+                    🗑️
+                  </button>
                 </div>
-                <button
-                  v-if="form.options.length > 2"
-                  type="button"
-                  @click="removeOption(index)"
-                  class="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all duration-300">
-                  -
-                </button>
-              </div>
-              <div class="text-xs mt-1 text-right" :class="option.name.length >= optMax ? 'red-count' : 'text-gray-500'">
-                {{ option.name.length }}/{{ optMax }}
-              </div>
-              <div v-if="form.errors[`options.${index}.name`]" class="text-red-500 text-sm mt-1">
-                {{ form.errors[`options.${index}.name`] }}
               </div>
             </div>
 
             <button
               type="button"
               @click="addOption"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md transition-all duration-300">
+              class="mt-4 px-4 py-2 bg-blue-600 dark:bg-red-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-red-700 shadow-md transition-all duration-300">
               + Afegir opció
             </button>
           </div>
 
-          <!-- Submit -->
           <div>
             <button
               type="submit"
               class="w-full px-6 py-3 rounded-lg text-lg font-semibold text-white shadow-lg relative overflow-hidden group transition-all duration-300"
-              :disabled="processing">
+              :disabled="processing || nsfwLoading">
               <span
                 class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600 animate-gradient-slow">
               </span>
               <span class="relative z-10">
-                <span v-if="!processing">Crear Rànquing</span>
-                <span v-else>Creant…</span>
+                <span v-if="nsfwLoading">Carregant filtre...</span>
+                <span v-else-if="processing">Creant…</span>
+                <span v-else>Crear Rànquing</span>
               </span>
             </button>
           </div>

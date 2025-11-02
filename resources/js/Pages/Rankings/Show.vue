@@ -258,22 +258,18 @@ function needsShowMore(commentId) {
   opacity: 0;
   transform: translateX(100%);
 }
-
 .comment-content {
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
 .comment-clamped {
   overflow: hidden;
   transition: max-height 0.4s ease;
 }
-
 .comment-clamped::after {
   display: none;
 }
-
 .show-more-btn {
   background: transparent;
   border: none;
@@ -282,25 +278,20 @@ function needsShowMore(commentId) {
   padding: 0;
   font-size: 0.9rem;
 }
-
 textarea.resize-none {
   resize: none;
 }
-
 .char-counter {
   font-size: 0.85rem;
   transition: all 0.3s ease;
 }
-
 .char-counter.safe {
   color: #6b7280;
 }
-
 .char-counter.warning {
   color: #ef4444;
   font-weight: 600;
 }
-
 .truncate-3-lines {
   overflow: hidden;
   display: -webkit-box;
