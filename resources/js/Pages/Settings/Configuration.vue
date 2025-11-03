@@ -18,6 +18,12 @@ function toggleDarkMode() {
 }
 </script>
 
+<style>
+html {
+  transition: background-color 0.3s, color 0.3s;
+}
+</style>
+
 <template>
   <AppLayout>
     <div class="max-w-3xl mx-auto p-6">
@@ -32,9 +38,12 @@ function toggleDarkMode() {
           <span class="text-gray-700 dark:text-gray-300">
             Mode {{ isDarkMode ? 'fosc 🌙' : 'clar ☀️' }}
           </span>
+          
           <button
             @click="toggleDarkMode"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            class="px-4 py-2 text-white rounded-lg transition
+                   bg-blue-600 hover:bg-blue-700
+                   dark:bg-red-600 dark:hover:bg-red-700"
           >
             Canviar mode
           </button>
@@ -53,10 +62,3 @@ function toggleDarkMode() {
     </div>
   </AppLayout>
 </template>
-
-<style>
-/* Opcional: transició suau entre modes */
-html {
-  transition: background-color 0.3s, color 0.3s;
-}
-</style>
