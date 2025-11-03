@@ -42,6 +42,80 @@ onMounted(async () => {
   }
 })
 
+const processRankingImage = async (file) => {
+  if (!file || !file.type.startsWith('image/')) return
+  nsfwError.value = ''
+  if (nsfwLoading.value) {
+    nsfwError.value = 'El filtre d\'imatges encara s\'està carregant. Espera un segon.'
+    return
+  }
+  const { ok, suspicious } = await validateImage(file)
+  if (!ok) {
+    nsfwError.value = 'Aquesta imatge sembla inapropiada. Tria una altra.'
+    form.image = null
+    imagePreview.value = null
+    rankingFile.value = null
+    rankingSuspicious.value = false
+  } else {
+    form.image = file
+    imagePreview.value = URL.createObjectURL(file)
+    rankingFile.value = file
+    rankingSuspicious.value = !!suspicious
+  }
+}
+
+const processOptionImage = async (file, index) => {
+  if (!file || !file.type.startsWith('image/')) return
+  nsfwError.value = ''
+  if (nsfwLoading.value) {
+    nsfwError.value = 'El filtre d\'imatges encara s\'està carregant. Espera un segon.'
+    return
+  }
+  const { ok, suspicious } = await validateImage(file)
+  if (!ok) {
+    nsfwError.value = `La imatge de l'opció ${index + 1} sembla inapropiada.`
+    form.options[index].image = null
+    optionPreviews.value[index] = null
+    optionFiles.value[index] = null
+    optionSuspicious.value[index] = false
+  } else {
+    form.options[index].image = file
+    optionPreviews.value[index] = URL.createObjectURL(file)
+    optionFiles.value[index] = file
+    optionSuspicious.value[index] = !!suspicious
+  }
+}
+
+const handleRankingImage = (e) => {
+  const file = e.target.files && e.target.files[0]
+  if (file) {
+    processRankingImage(file)
+  }
+  e.target.value = null
+}
+
+const onDropRanking = (e) => {
+  const file = e.dataTransfer.files && e.dataTransfer.files[0]
+  if (file) {
+    processRankingImage(file)
+  }
+}
+
+const handleOptionImage = (e, index) => {
+  const file = e.target.files && e.target.files[0]
+  if (file) {
+    processOptionImage(file, index)
+  }
+  e.target.value = null
+}
+
+const onDropOption = (e, index) => {
+  const file = e.dataTransfer.files && e.dataTransfer.files[0]
+  if (file) {
+    processOptionImage(file, index)
+  }
+}
+
 const validateImage = async (file) => {
   try {
     if (!model) {
@@ -79,44 +153,6 @@ const removeOption = (index) => {
     optionFiles.value.splice(index, 1)
     optionPreviews.value.splice(index, 1)
     optionSuspicious.value.splice(index, 1)
-  }
-}
-
-const handleRankingImage = async (e) => {
-  const file = e.target.files && e.target.files[0]
-  if (!file) return
-  nsfwError.value = ''
-  const { ok, suspicious } = await validateImage(file)
-  if (!ok) {
-    nsfwError.value = 'Aquesta imatge sembla inapropiada. Tria una altra.'
-    form.image = null
-    imagePreview.value = null
-    rankingFile.value = null
-    rankingSuspicious.value = false
-  } else {
-    form.image = file
-    imagePreview.value = URL.createObjectURL(file)
-    rankingFile.value = file
-    rankingSuspicious.value = !!suspicious
-  }
-}
-
-const handleOptionImage = async (e, index) => {
-  const file = e.target.files && e.target.files[0]
-  if (!file) return
-  nsfwError.value = ''
-  const { ok, suspicious } = await validateImage(file)
-  if (!ok) {
-    nsfwError.value = `La imatge de l'opció ${index + 1} sembla inapropiada.`
-    form.options[index].image = null
-    optionPreviews.value[index] = null
-    optionFiles.value[index] = null
-    optionSuspicious.value[index] = false
-  } else {
-    form.options[index].image = file
-    optionPreviews.value[index] = URL.createObjectURL(file)
-    optionFiles.value[index] = file
-    optionSuspicious.value[index] = !!suspicious
   }
 }
 
@@ -241,7 +277,9 @@ textarea { resize: none; }
 
         <form @submit.prevent="submit" class="space-y-8">
           
-          <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8"> <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
+            
+            <div class="space-y-6">
               <div>
                 <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Nom del rànquing
@@ -268,7 +306,8 @@ textarea { resize: none; }
                 <textarea
                   id="description"
                   v-model="form.description"
-                  rows="4" :maxlength="descMax"
+                  rows="4" 
+                  :maxlength="descMax"
                   class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 </textarea>
                 <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">
@@ -280,11 +319,18 @@ textarea { resize: none; }
               </div>
             </div>
 
-            <div class="flex flex-col items-center"> <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Imatge principal del rànquing
+            <div class="flex flex-col items-center">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                Imatge del rànquing
               </label>
 
-              <div v-if="!imagePreview" class="w-full max-w-xs"> <label class="file-drop-zone h-36"> <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+              <div v-if="!imagePreview" class="w-full max-w-xs">
+                <label 
+                  class="file-drop-zone h-36"
+                  @dragover.prevent
+                  @drop.prevent="onDropRanking"
+                >
+                  <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                   <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega una imatge</span>
                   <input
                     type="file"
@@ -295,7 +341,13 @@ textarea { resize: none; }
                 </label>
               </div>
 
-              <div v-else class="mt-2 relative w-full max-w-xs aspect-video"> <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
+              <div 
+                v-else 
+                class="mt-2 relative w-full max-w-xs aspect-video"
+                @dragover.prevent
+                @drop.prevent="onDropRanking"
+              >
+                <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
                 <label class="absolute -top-2 -right-2 bg-white dark:bg-gray-700 p-1.5 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
                   <svg class="w-5 h-5 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
                   <input
@@ -324,11 +376,21 @@ textarea { resize: none; }
                 <div class="grid grid-cols-[80px_1fr_auto] items-start gap-4">
                   
                   <div>
-                    <label v-if="!optionPreviews[index]" class="file-drop-zone w-20 h-20 !p-0">
+                    <label 
+                      v-if="!optionPreviews[index]" 
+                      class="file-drop-zone w-20 h-20 !p-0"
+                      @dragover.prevent
+                      @drop.prevent="(e) => onDropOption(e, index)"
+                    >
                       <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                       <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
                     </label>
-                    <div v-else class="relative w-20 h-20">
+                    <div 
+                      v-else 
+                      class="relative w-20 h-20"
+                      @dragover.prevent
+                      @drop.prevent="(e) => onDropOption(e, index)"
+                    >
                       <img :src="optionPreviews[index]" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
                       <label class="absolute -top-1 -right-1 bg-white dark:bg-gray-700 p-1 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
                         <svg class="w-4 h-4 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
