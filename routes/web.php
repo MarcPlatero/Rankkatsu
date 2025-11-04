@@ -69,7 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
 });
 
-// Moderació (només per a usuaris amb rol d'admin o moderator)
+// Moderació (només per a usuaris amb rol d'admin o moderador)
 Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () {
     Route::get('/moderation', [ModerationController::class, 'dashboard'])->name('admin.moderation.dashboard');
     Route::get('/moderation/{ranking}', [ModerationController::class, 'show'])->name('admin.moderation.show');
