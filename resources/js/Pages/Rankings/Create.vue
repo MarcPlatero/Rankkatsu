@@ -233,22 +233,22 @@ textarea { resize: none; }
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  border: 2px dashed #9ca3af; /* gray-400 */
+  border: 2px dashed #9ca3af;
   border-radius: 0.5rem;
   background-color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .dark .file-drop-zone {
-  background-color: rgba(55, 65, 81, 0.5); /* dark:bg-gray-700/50 */
-  border-color: #4b5563; /* dark:border-gray-600 */
+  background-color: rgba(55, 65, 81, 0.5);
+  border-color: #4b5563;
 }
 .file-drop-zone:hover {
-  border-color: #3b82f6; /* hover:border-blue-500 */
+  border-color: #3b82f6;
   background-color: rgba(255, 255, 255, 0.8);
 }
 .dark .file-drop-zone:hover {
-  border-color: #ef4444; /* dark:hover:border-red-500 */
+  border-color: #ef4444;
   background-color: rgba(55, 65, 81, 0.8);
 }
 </style>
