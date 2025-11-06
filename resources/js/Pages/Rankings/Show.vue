@@ -296,10 +296,9 @@ textarea.resize-none {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3; /* Límit de 3 línies*/
+  -webkit-line-clamp: 3;
   line-clamp: 3;
   
-  /* Per si de cas una sola paraula és molt llarga */
   word-break: break-word; 
 }
 </style>
