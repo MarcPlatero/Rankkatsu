@@ -181,12 +181,15 @@ class RankingController extends Controller
         }
 
         // Carregar opcions (si no és admin ni autor, només les aprovades)
-        $ranking->load(['options' => function ($q) use ($user, $ranking) {
-            if (!$user || (!$user->can('moderate') && $user->id !== $ranking->user_id)) {
-                $q->where('is_approved', true);
-            }
-            $q->withCount('votes');
-        }]);
+        $ranking->load([
+            'options' => function ($q) use ($user, $ranking) {
+                if (!$user || (!$user->can('moderate') && $user->id !== $ranking->user_id)) {
+                    $q->where('is_approved', true);
+                }
+                $q->withCount('votes');
+            },
+            'user',
+        ]);
 
         // Estat de favorit
         $ranking->is_favorite = $user ? $user->favoriteRankings->contains($ranking->id) : false;
