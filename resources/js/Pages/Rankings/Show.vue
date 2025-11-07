@@ -348,6 +348,10 @@ textarea.resize-none {
                   {{ ranking.description }}
                 </p>
               </div>
+
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
+              </p>
             </div>
 
             <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
