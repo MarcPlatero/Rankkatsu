@@ -50,7 +50,7 @@ html {
         </div>
       </section>
 
-      <!-- Idioma (placeholder futur) -->
+      <!-- Idioma (opció futura) -->
       <section class="mt-8 p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 shadow">
         <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
           Idioma
