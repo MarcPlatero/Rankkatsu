@@ -29,7 +29,7 @@ html {
     <div class="max-w-3xl mx-auto p-6">
       <h1 class="text-2xl font-bold mb-6">⚙️ Configuració</h1>
 
-      <!-- Preferències d’aparença -->
+      <!-- Mode clar/obscur -->
       <section class="mb-8 p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 shadow">
         <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
           Aparença
