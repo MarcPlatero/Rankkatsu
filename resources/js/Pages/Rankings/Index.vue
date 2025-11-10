@@ -110,7 +110,7 @@ function goToRanking(id) {
         </button>
       </div>
 
-      <!-- Botó crear -->
+      <!-- Crear -->
       <div class="text-center mb-12">
         <Link
           href="/rankings/create"
