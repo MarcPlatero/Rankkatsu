@@ -11,7 +11,6 @@ function applyFromLocalStorage() {
     } else if (storedTheme === 'light') {
       document.documentElement.classList.remove('dark')
     } else {
-      // fallback to system
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       if (prefersDark) document.documentElement.classList.add('dark')
       else document.documentElement.classList.remove('dark')
