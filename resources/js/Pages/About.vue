@@ -94,7 +94,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           </div>
         </div>
 
-        <!-- Botó amb gradient animat -->
+        <!-- Botó -->
         <div class="text-center mt-16">
           <p class="text-lg text-gray-800 dark:text-gray-200 mb-4">
             Vols començar a votar i crear els teus rànquings?
