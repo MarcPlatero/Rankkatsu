@@ -6,7 +6,6 @@ defineProps({ rankings: Array })
 </script>
 
 <style scoped>
-/* Permet fins a 3 línies de títol abans de truncar */
 .title-clamp {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -16,7 +15,6 @@ defineProps({ rankings: Array })
   height: 4.2em;
 }
 
-/* Animació de gradient lent */
 @keyframes gradient-slow {
   0% {
     background-position: 0% 50%;
