@@ -13,8 +13,6 @@ class ProfileUpdateRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    // app/Http/Requests/ProfileUpdateRequest.php
-
     public function rules(): array
     {
         return [
@@ -26,6 +24,8 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            
+            'avatar' => ['nullable', 'string', 'max:255'], 
         ];
     }
 }
