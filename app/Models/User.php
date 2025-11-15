@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
+        'profile_photo_path',
     ];
 
     /**
@@ -33,6 +35,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    /**
+     *
+     */
+    protected $appends = [
+        'profile_photo_url',
     ];
 
     /**
@@ -67,5 +76,20 @@ class User extends Authenticatable
     public function favoriteRankings()
     {
          return $this->belongsToMany(Ranking::class, 'favorite_rankings')->withTimestamps();
+    }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        $path = $this->profile_photo_path;
+
+        if (!$path) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'avatars/')) {
+            return asset('images/' . $path);
+        }
+
+        return Storage::disk('public')->url($path);
     }
 }
