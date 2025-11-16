@@ -6,6 +6,8 @@ import * as tf from '@tensorflow/tfjs'
 import { ref, onMounted, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import axios from 'axios'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 
 const form = useForm({
   title: '',
@@ -30,6 +32,12 @@ optionSuspicious.value = form.options.map(() => false)
 
 let model = null
 
+const isCropperOpen = ref(false)
+const cropperSrc = ref(null)
+const cropperAspectRatio = ref(16 / 9)
+const editingImageIndex = ref(null)
+const cropperRef = ref(null)
+
 onMounted(async () => {
   try {
     await tf.ready()
@@ -42,88 +50,89 @@ onMounted(async () => {
   }
 })
 
-const processRankingImage = async (file) => {
+const openCropper = (file, ratio, index) => {
   if (!file || !file.type.startsWith('image/')) return
+  
   nsfwError.value = ''
-  if (nsfwLoading.value) {
-    nsfwError.value = 'El filtre d\'imatges encara s\'està carregant. Espera un segon.'
-    return
-  }
-  const { ok, suspicious } = await validateImage(file)
-  if (!ok) {
-    nsfwError.value = 'Aquesta imatge sembla inapropiada. Tria una altra.'
-    form.image = null
-    imagePreview.value = null
-    rankingFile.value = null
-    rankingSuspicious.value = false
-  } else {
-    form.image = file
-    imagePreview.value = URL.createObjectURL(file)
-    rankingFile.value = file
-    rankingSuspicious.value = !!suspicious
-  }
+  
+  cropperSrc.value = URL.createObjectURL(file)
+  cropperAspectRatio.value = ratio
+  editingImageIndex.value = index
+  isCropperOpen.value = true
 }
 
-const processOptionImage = async (file, index) => {
-  if (!file || !file.type.startsWith('image/')) return
-  nsfwError.value = ''
-  if (nsfwLoading.value) {
-    nsfwError.value = 'El filtre d\'imatges encara s\'està carregant. Espera un segon.'
-    return
-  }
-  const { ok, suspicious } = await validateImage(file)
-  if (!ok) {
-    nsfwError.value = `La imatge de l'opció ${index + 1} sembla inapropiada.`
-    form.options[index].image = null
-    optionPreviews.value[index] = null
-    optionFiles.value[index] = null
-    optionSuspicious.value[index] = false
-  } else {
-    form.options[index].image = file
-    optionPreviews.value[index] = URL.createObjectURL(file)
-    optionFiles.value[index] = file
-    optionSuspicious.value[index] = !!suspicious
-  }
+const cancelCrop = () => {
+  isCropperOpen.value = false
+  cropperSrc.value = null
+}
+
+const saveCrop = async () => {
+  if (!cropperRef.value) return
+  
+  const { canvas } = cropperRef.value.getResult()
+  if (!canvas) return
+  
+  canvas.toBlob(async (blob) => {
+    
+    if (nsfwLoading.value) {
+      nsfwError.value = 'El filtre d\'imatges encara s\'està carregant.'
+      return
+    }
+    const { ok, suspicious } = await validateImage(blob)
+    if (!ok) {
+      nsfwError.value = 'Aquesta imatge (o una part) sembla inapropiada.'
+      cancelCrop()
+      return
+    }
+
+    const previewUrl = URL.createObjectURL(blob)
+    const index = editingImageIndex.value
+    
+    if (index === null) {
+      rankingFile.value = blob
+      imagePreview.value = previewUrl
+      rankingSuspicious.value = suspicious
+    } else {
+      optionFiles.value[index] = blob
+      optionPreviews.value[index] = previewUrl
+      optionSuspicious.value[index] = suspicious
+    }
+    
+    cancelCrop()
+
+  }, 'image/jpeg', 0.9)
 }
 
 const handleRankingImage = (e) => {
   const file = e.target.files && e.target.files[0]
-  if (file) {
-    processRankingImage(file)
-  }
+  openCropper(file, 16 / 9, null)
   e.target.value = null
 }
 
 const onDropRanking = (e) => {
   const file = e.dataTransfer.files && e.dataTransfer.files[0]
-  if (file) {
-    processRankingImage(file)
-  }
+  openCropper(file, 16 / 9, null)
 }
 
 const handleOptionImage = (e, index) => {
   const file = e.target.files && e.target.files[0]
-  if (file) {
-    processOptionImage(file, index)
-  }
+  openCropper(file, 1 / 1, index)
   e.target.value = null
 }
 
 const onDropOption = (e, index) => {
   const file = e.dataTransfer.files && e.dataTransfer.files[0]
-  if (file) {
-    processOptionImage(file, index)
-  }
+  openCropper(file, 1 / 1, index)
 }
 
-const validateImage = async (file) => {
+const validateImage = async (fileOrBlob) => {
   try {
     if (!model) {
       await tf.ready()
       model = await nsfwjs.load()
     }
     const img = document.createElement('img')
-    img.src = URL.createObjectURL(file)
+    img.src = URL.createObjectURL(fileOrBlob)
     await new Promise(resolve => img.onload = resolve)
     const predictions = await model.classify(img)
     let maxPorn = 0
@@ -132,6 +141,7 @@ const validateImage = async (file) => {
         maxPorn = Math.max(maxPorn, p.probability)
       }
     }
+    URL.revokeObjectURL(img.src)
     if (maxPorn > 0.85) return { ok: false, suspicious: true }
     if (maxPorn > 0.6) return { ok: true, suspicious: true }
     return { ok: true, suspicious: false }
@@ -251,6 +261,33 @@ textarea { resize: none; }
   border-color: #ef4444;
   background-color: rgba(55, 65, 81, 0.8);
 }
+.cropper-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.cropper-container {
+  width: 90%;
+  max-width: 600px;
+  height: 70vh;
+  max-height: 500px;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.cropper-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
 </style>
 
 <template>
@@ -321,50 +358,39 @@ textarea { resize: none; }
 
             <div class="flex flex-col items-center">
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Imatge del rànquing
+                Imatge del rànquing (16:9)
               </label>
 
-              <div v-if="!imagePreview" class="w-full max-w-xs">
-                <label 
-                  class="file-drop-zone h-36"
-                  @dragover.prevent
-                  @drop.prevent="onDropRanking"
-                >
-                  <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega una imatge</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    @change="handleRankingImage"
-                    class="hidden"
-                  />
-                </label>
-              </div>
-
-              <div 
-                v-else 
-                class="mt-2 relative w-full max-w-xs aspect-video"
+              <label 
+                class="w-full max-w-xs"
                 @dragover.prevent
                 @drop.prevent="onDropRanking"
               >
-                <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
-                <label class="absolute -top-2 -right-2 bg-white dark:bg-gray-700 p-1.5 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    @change="handleRankingImage"
-                    class="hidden"
-                  />
-                </label>
-              </div>
+                <div v-if="!imagePreview" class="file-drop-zone h-36">
+                  <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega (16:9)</span>
+                </div>
+                <div v-else class="mt-2 relative w-full max-w-xs aspect-video cursor-pointer">
+                  <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
+                  <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <span class="text-white font-semibold">Canviar imatge</span>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="handleRankingImage"
+                  class="hidden"
+                />
+              </label>
             </div>
           </div>
+          
           <hr class="border-gray-300 dark:border-gray-600">
 
           <div>
             <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Opcions del rànquing
+              Opcions del rànquing (Quadrat 1:1)
             </h2>
 
             <div class="space-y-4" v-auto-animate>
@@ -375,29 +401,21 @@ textarea { resize: none; }
               >
                 <div class="grid grid-cols-[80px_1fr_auto] items-start gap-4">
                   
-                  <div>
-                    <label 
-                      v-if="!optionPreviews[index]" 
-                      class="file-drop-zone w-20 h-20 !p-0"
-                      @dragover.prevent
-                      @drop.prevent="(e) => onDropOption(e, index)"
-                    >
+                  <label
+                    @dragover.prevent
+                    @drop.prevent="(e) => onDropOption(e, index)"
+                  >
+                    <div v-if="!optionPreviews[index]" class="file-drop-zone w-20 h-20 !p-0">
                       <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                      <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
-                    </label>
-                    <div 
-                      v-else 
-                      class="relative w-20 h-20"
-                      @dragover.prevent
-                      @drop.prevent="(e) => onDropOption(e, index)"
-                    >
-                      <img :src="optionPreviews[index]" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
-                      <label class="absolute -top-1 -right-1 bg-white dark:bg-gray-700 p-1 rounded-full shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                        <svg class="w-4 h-4 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z"></path></svg>
-                        <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
-                      </label>
                     </div>
-                  </div>
+                    <div v-else class="relative w-20 h-20 cursor-pointer">
+                      <img :src="optionPreviews[index]" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
+                      <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                        <span class="text-white text-xs text-center">Canviar</span>
+                      </div>
+                    </div>
+                    <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
+                  </label>
 
                   <div class="min-w-0">
                     <input
@@ -455,5 +473,25 @@ textarea { resize: none; }
         </form>
       </div>
     </section>
-  </AppLayout>
+    
+    <div v-if="isCropperOpen" class="cropper-modal">
+      <div class="cropper-container">
+        <Cropper
+          ref="cropperRef"
+          :src="cropperSrc"
+          :stencil-props="{
+            aspectRatio: cropperAspectRatio
+          }"
+        />
+      </div>
+      <div class="cropper-buttons">
+        <button @click="cancelCrop" type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+          Cancel·lar
+        </button>
+        <button @click="saveCrop" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Acceptar i Retallar
+        </button>
+      </div>
+    </div>
+    </AppLayout>
 </template>
