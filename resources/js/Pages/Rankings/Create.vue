@@ -489,7 +489,7 @@ textarea { resize: none; }
           Cancel·lar
         </button>
         <button @click="saveCrop" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Acceptar i Retallar
+          Acceptar i retallar
         </button>
       </div>
     </div>
