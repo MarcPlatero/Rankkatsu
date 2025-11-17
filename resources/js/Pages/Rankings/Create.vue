@@ -267,7 +267,7 @@ textarea { resize: none; }
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -279,14 +279,16 @@ textarea { resize: none; }
   max-width: 600px;
   height: 70vh;
   max-height: 500px;
-  background: white;
+  background: transparent;
   border-radius: 0.5rem;
-  overflow: hidden;
 }
 .cropper-buttons {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+}
+:deep(.cropper-background) {
+  background: none;
 }
 </style>
 
@@ -482,6 +484,7 @@ textarea { resize: none; }
           :stencil-props="{
             aspectRatio: cropperAspectRatio
           }"
+          background-class="cropper-background"
         />
       </div>
       <div class="cropper-buttons">
