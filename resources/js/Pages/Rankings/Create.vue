@@ -488,7 +488,13 @@ textarea { resize: none; }
         <button @click="cancelCrop" type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
           Cancel·lar
         </button>
-        <button @click="saveCrop" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button 
+          @click="saveCrop" 
+          type="button" 
+          class="px-4 py-2 rounded-lg text-white transition-colors
+                 bg-blue-600 hover:bg-blue-700
+                 dark:bg-red-600 dark:hover:bg-red-700"
+        >
           Acceptar i retallar
         </button>
       </div>
