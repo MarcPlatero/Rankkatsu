@@ -358,7 +358,7 @@ textarea { resize: none; }
 
             <div class="flex flex-col items-center">
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Imatge del rànquing (16:9)
+                Imatge del rànquing
               </label>
 
               <label 
@@ -368,7 +368,7 @@ textarea { resize: none; }
               >
                 <div v-if="!imagePreview" class="file-drop-zone h-36">
                   <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega (16:9)</span>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega</span>
                 </div>
                 <div v-else class="mt-2 relative w-full max-w-xs aspect-video cursor-pointer">
                   <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
@@ -390,7 +390,7 @@ textarea { resize: none; }
 
           <div>
             <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-              Opcions del rànquing (Quadrat 1:1)
+              Opcions del rànquing
             </h2>
 
             <div class="space-y-4" v-auto-animate>
