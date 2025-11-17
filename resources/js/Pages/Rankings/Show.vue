@@ -349,9 +349,21 @@ textarea.resize-none {
                 </p>
               </div>
 
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
-              </p>
+              <div class="flex items-center gap-2 mb-4">
+                <img 
+                  v-if="ranking.user?.profile_photo_url"
+                  :src="ranking.user.profile_photo_url" 
+                  alt="Avatar" 
+                  class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                >
+                <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                  <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                </div>
+                
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
+                </p>
+              </div>
             </div>
 
             <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
