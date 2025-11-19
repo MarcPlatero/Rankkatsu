@@ -92,4 +92,9 @@ class User extends Authenticatable
 
         return Storage::disk('public')->url($path);
     }
+
+    public function rankingLikes()
+    {
+        return $this->hasMany(RankingLike::class);
+    }
 }

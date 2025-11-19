@@ -7,6 +7,7 @@ use App\Http\Controllers\RankingVoteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentVoteController;
 use App\Http\Controllers\FavoriteRankingController;
+use App\Http\Controllers\RankingLikeController;
 use App\Http\Controllers\Admin\ModerationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -59,6 +60,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'toggle']);
     Route::get('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'check']);
+});
+
+// Likes
+Route::middleware('auth')->group(function () {
+    Route::post('/rankings/{ranking}/like', [RankingLikeController::class, 'store'])->name('rankings.like');
+    Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
 });
 
 // Usuari

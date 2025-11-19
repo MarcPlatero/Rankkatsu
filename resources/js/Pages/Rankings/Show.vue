@@ -118,6 +118,20 @@ const confirmDelete = () => {
     router.delete(`/rankings/${props.ranking.id}`)
 }
 
+// Funció per a Like/Unlike
+const toggleLike = () => {
+  if (!page.props.auth?.user) {
+    router.visit(route('login'))
+    return
+  }
+  
+  const routeName = props.ranking.user_has_liked ? 'rankings.unlike' : 'rankings.like';
+  
+  router.post(route(routeName, props.ranking.id), {}, {
+    preserveScroll: true,
+  })
+}
+
 // Formulari comentaris
 const commentForm = useForm({ content: '' })
 const textareaRef = ref(null)
@@ -337,9 +351,34 @@ textarea.resize-none {
             </div>
 
             <div class="relative">
-              <FavoriteStar :ranking="ranking" class="absolute top-0 right-0" />
               
-              <div class="pr-10">
+              <div class="absolute top-0 right-0 flex items-center gap-2">
+                
+                <button 
+                  @click="toggleLike"
+                  :class="[
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm',
+                    ranking.user_has_liked 
+                      ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800' 
+                      : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  ]"
+                  title="M'agrada"
+                >
+                  <svg 
+                    :class="[
+                      'w-5 h-5 transition-all', 
+                      ranking.user_has_liked ? 'fill-current text-red-500' : 'stroke-current'
+                    ]" 
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
+                  </svg>
+                  <span>{{ ranking.likes_count }}</span>
+                </button>
+
+                <FavoriteStar :ranking="ranking" />
+              </div>
+              
+              <div class="pr-24">
                 <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100 truncate-3-lines">
                   {{ ranking.title }}
                 </h1>

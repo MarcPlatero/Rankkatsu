@@ -193,6 +193,8 @@ class RankingController extends Controller
 
         // Estat de favorit
         $ranking->is_favorite = $user ? $user->favoriteRankings->contains($ranking->id) : false;
+        $ranking->likes_count = $ranking->likes()->count();
+        $ranking->user_has_liked = $user ? $ranking->likes()->where('user_id', $user->id)->exists() : false;
 
         // Vot de l'usuari per al rànquing (si està logejat)
         $userVote = null;

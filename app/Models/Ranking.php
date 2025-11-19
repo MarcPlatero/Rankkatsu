@@ -43,4 +43,9 @@ class Ranking extends Model
     {
         return $this->belongsToMany(User::class, 'favorite_rankings')->withTimestamps();
     }
+    
+    public function likes()
+    {
+        return $this->hasMany(RankingLike::class);
+    }
 }
