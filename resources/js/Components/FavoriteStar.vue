@@ -12,7 +12,6 @@ const page = usePage()
 const isFavorite = ref(!!props.ranking.is_favorite)
 const animating = ref(false)
 
-// Mantenim el watch per si la dada canvia des de fora (altres accions)
 watch(() => props.ranking.is_favorite, (newVal) => {
   isFavorite.value = !!newVal
 })
@@ -25,8 +24,6 @@ const toggleFavorite = () => {
     return
   }
 
-  // 1. CANVI OPTIMISTA (Immediat)
-  // Canviem el valor i l'animació ABANS de la petició
   const previousState = isFavorite.value
   isFavorite.value = !isFavorite.value
   animating.value = true
@@ -34,15 +31,11 @@ const toggleFavorite = () => {
   router.post(`/rankings/${props.ranking.id}/favorite`, {}, {
     preserveScroll: true,
     onSuccess: () => {
-      // 2. SI VA BÉ: Tot perfecte.
-      // El servidor ens tornarà el missatge flash i Inertia l'actualitzarà.
-      // Ja hem canviat el color visualment, així que només ens preocupem de l'emit.
       if (!isFavorite.value) {
         emit('removed', props.ranking.id)
       }
     },
     onError: () => {
-      // 3. SI FALLA: Revertim el canvi visual
       isFavorite.value = previousState
     },
     onFinish: () => {
