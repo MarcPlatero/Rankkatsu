@@ -9,13 +9,11 @@ class RankingLikeController extends Controller
 {
     public function store(Request $request, Ranking $ranking)
     {
-        $ranking->likes()->firstOrCreate([
-            'user_id' => $request->user()->id,
-        ]);
+        $ranking->likes()->firstOrCreate(['user_id' => $request->user()->id,]);
 
         $ranking->update(['likes_count' => $ranking->likes()->count()]);
 
-        return back();
+        return back()->with('success', 'T\'agrada aquest rànquing!');
     }
 
     public function destroy(Request $request, Ranking $ranking)
@@ -24,6 +22,6 @@ class RankingLikeController extends Controller
 
         $ranking->update(['likes_count' => $ranking->likes()->count()]);
         
-        return back();
+       return back()->with('success', 'Ja no t\'agrada aquest rànquing.');
     }
 }
