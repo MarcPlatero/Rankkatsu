@@ -15,11 +15,11 @@ class FavoriteRankingController extends Controller
         if ($user->favoriteRankings()->where('ranking_id', $ranking->id)->exists()) {
             // Si ja és favorit → eliminar
             $user->favoriteRankings()->detach($ranking->id);
-            return response()->json(['favorited' => false]);
+            return back()->with('success', 'Eliminat dels favorits.');
         } else {
             // Si no és favorit → afegir
             $user->favoriteRankings()->attach($ranking->id);
-            return response()->json(['favorited' => true]);
+            return back()->with('success', 'Afegit als favorits!');
         }
     }
 
