@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import { usePage } from '@inertiajs/vue3'
+import { ref, watch } from 'vue'
+import { usePage, router } from '@inertiajs/vue3'
 
 const emit = defineEmits(['removed'])
 
@@ -13,26 +12,43 @@ const page = usePage()
 const isFavorite = ref(!!props.ranking.is_favorite)
 const animating = ref(false)
 
-const toggleFavorite = async () => {
+// Mantenim el watch per si la dada canvia des de fora (altres accions)
+watch(() => props.ranking.is_favorite, (newVal) => {
+  isFavorite.value = !!newVal
+})
+
+const toggleFavorite = () => {
   if (!page.props.auth?.user) {
-    alert('Has d’iniciar sessió per marcar favorits.')
+    if(confirm('Has d’iniciar sessió per marcar favorits. Vols anar al login?')) {
+        router.visit(route('login'))
+    }
     return
   }
 
+  // 1. CANVI OPTIMISTA (Immediat)
+  // Canviem el valor i l'animació ABANS de la petició
+  const previousState = isFavorite.value
+  isFavorite.value = !isFavorite.value
   animating.value = true
 
-  try {
-    const response = await axios.post(`/rankings/${props.ranking.id}/favorite`)
-    isFavorite.value = response.data.favorited
-
-    if (!response.data.favorited) {
-      emit('removed', props.ranking.id)
+  router.post(`/rankings/${props.ranking.id}/favorite`, {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+      // 2. SI VA BÉ: Tot perfecte.
+      // El servidor ens tornarà el missatge flash i Inertia l'actualitzarà.
+      // Ja hem canviat el color visualment, així que només ens preocupem de l'emit.
+      if (!isFavorite.value) {
+        emit('removed', props.ranking.id)
+      }
+    },
+    onError: () => {
+      // 3. SI FALLA: Revertim el canvi visual
+      isFavorite.value = previousState
+    },
+    onFinish: () => {
+      setTimeout(() => (animating.value = false), 300)
     }
-  } catch (error) {
-    console.error('Error al canviar el favorit:', error)
-  } finally {
-    setTimeout(() => (animating.value = false), 300)
-  }
+  })
 }
 </script>
 
@@ -50,8 +66,9 @@ const toggleFavorite = async () => {
 <template>
   <button
     @click="toggleFavorite"
-    class="transition transform hover:scale-110"
+    class="transition transform hover:scale-110 focus:outline-none"
     :class="{ 'animate-pop': animating }"
+    title="Afegir a favorits"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
