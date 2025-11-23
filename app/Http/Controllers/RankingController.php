@@ -137,37 +137,39 @@ class RankingController extends Controller
 
     public function home(Request $request)
     {
-        $search = $request->input('search');
         $user = Auth::user();
 
-        $rankings = Ranking::with('options')
-            ->when(!($user?->is_admin), function ($query) {
-                $query->where('is_approved', true);
-            })
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhereHas('options', function ($subQuery) use ($search) {
-                            $subQuery->where('name', 'like', "%{$search}%");
-                        });
-                });
-            })
-            ->latest()
-            ->take(12)
-            ->get();
-
+        // IDs de favorits
         $favoriteIds = $user
             ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
             : [];
 
-        foreach ($rankings as $ranking) {
-            $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
-        }
+        // Top rankings
+        $topRankings = Ranking::with('user')
+            ->withCount('likes')
+            ->where('is_approved', true)
+            ->orderBy('likes_count', 'desc')
+            ->take(12)
+            ->get()
+            ->map(function ($ranking) use ($favoriteIds) {
+                $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+                return $ranking;
+            });
 
-        return inertia('Home', [
-            'rankings' => $rankings,
-            'filters' => ['search' => $search],
+        // Últims rankings
+        $latestRankings = Ranking::with('user')
+            ->where('is_approved', true)
+            ->orderBy('created_at', 'desc')
+            ->take(12)
+            ->get()
+            ->map(function ($ranking) use ($favoriteIds) {
+                $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+                return $ranking;
+            });
+
+        return Inertia::render('Home', [
+            'topRankings' => $topRankings,
+            'latestRankings' => $latestRankings,
         ]);
     }
 
