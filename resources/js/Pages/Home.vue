@@ -2,7 +2,10 @@
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-defineProps({ rankings: Array })
+defineProps({ 
+  topRankings: Array,
+  latestRankings: Array 
+})
 </script>
 
 <style scoped>
@@ -86,28 +89,22 @@ defineProps({ rankings: Array })
     </section>
 
     <!-- Llistat de rànquings -->
-    <section class="max-w-7xl mx-auto px-6 py-12">
-      <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">
-        Últims rànquings
+    <section class="max-w-7xl mx-auto px-6 pt-12 pb-6">
+      <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+        🔥 Rànquings més populars
       </h2>
 
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
-      >
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
         <div
-          v-for="ranking in rankings"
+          v-for="ranking in topRankings"
           :key="ranking.id"
           class="group relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 
                  hover:border-blue-500 dark:hover:border-red-500 
                  hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] dark:hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] 
                  hover:-translate-y-1 transition-all duration-300
-                 overflow-hidden"
+                 overflow-hidden flex flex-col h-full"
         >
-          <Link
-            :href="`/rankings/${ranking.id}`"
-            class="block h-full"
-          >
-            <!-- Imatge -->
+          <Link :href="`/rankings/${ranking.id}`" class="block h-full flex flex-col">
             <div class="w-full aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               <img
                 v-if="ranking.image"
@@ -117,9 +114,50 @@ defineProps({ rankings: Array })
               />
               <span v-else class="text-gray-400 text-5xl">🗂️</span>
             </div>
+            <div class="p-4 flex-1">
+              <h3
+                class="text-base sm:text-lg font-bold title-clamp text-gray-900 dark:text-white 
+                       transition-colors duration-300 
+                       group-hover:text-blue-600 dark:group-hover:text-red-400"
+              >
+                {{ ranking.title }}
+              </h3>
+            </div>
+          </Link>
+        </div>
+      </div>
+      
+      <div v-if="topRankings.length === 0" class="text-center text-gray-500 mt-4">
+        Encara no hi ha rànquings populars.
+      </div>
+    </section>
 
-            <!-- Contingut -->
-            <div class="p-4">
+    <section class="max-w-7xl mx-auto px-6 py-12 border-t border-gray-200 dark:border-gray-800">
+      <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+        🆕 Últims rànquings
+      </h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div
+          v-for="ranking in latestRankings"
+          :key="ranking.id"
+          class="group relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 
+                 hover:border-blue-500 dark:hover:border-red-500 
+                 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] dark:hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] 
+                 hover:-translate-y-1 transition-all duration-300
+                 overflow-hidden flex flex-col h-full"
+        >
+          <Link :href="`/rankings/${ranking.id}`" class="block h-full flex flex-col">
+            <div class="w-full aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+              <img
+                v-if="ranking.image"
+                :src="`/storage/${ranking.image}`"
+                alt="Imatge del rànquing"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <span v-else class="text-gray-400 text-5xl">🗂️</span>
+            </div>
+            <div class="p-4 flex-1">
               <h3
                 class="text-base sm:text-lg font-bold title-clamp text-gray-900 dark:text-white 
                        transition-colors duration-300 
