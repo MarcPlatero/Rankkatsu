@@ -118,6 +118,8 @@ const confirmDelete = () => {
     router.delete(`/rankings/${props.ranking.id}`)
 }
 
+const isLikeAnimating = ref(false)
+
 // Funció per a Like/Unlike
 const toggleLike = () => {
   if (!page.props.auth?.user) {
@@ -125,6 +127,10 @@ const toggleLike = () => {
     return
   }
   
+  // Activa l'animació
+  isLikeAnimating.value = true
+  setTimeout(() => isLikeAnimating.value = false, 300)
+
   const routeName = props.ranking.user_has_liked ? 'rankings.unlike' : 'rankings.like';
   
   router.post(route(routeName, props.ranking.id), {}, {
@@ -263,6 +269,14 @@ function needsShowMore(commentId) {
 </script>
 
 <style scoped>
+@keyframes like-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.animate-like {
+  animation: like-pop 0.3s ease-in-out;
+}
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -357,17 +371,18 @@ textarea.resize-none {
                 <button 
                   @click="toggleLike"
                   :class="[
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm',
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm border',
                     ranking.user_has_liked 
-                      ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800' 
-                      : 'bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'bg-red-100 text-red-600 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800' 
+                      : 'bg-white text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
                   ]"
                   title="M'agrada"
                 >
                   <svg 
                     :class="[
                       'w-5 h-5 transition-all', 
-                      ranking.user_has_liked ? 'fill-current text-red-500' : 'stroke-current'
+                      ranking.user_has_liked ? 'fill-current text-red-500' : 'stroke-current',
+                      { 'animate-like': isLikeAnimating }
                     ]" 
                     fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
@@ -411,6 +426,7 @@ textarea.resize-none {
               </button>
             </div>
           </div>
+
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
 
@@ -455,6 +471,7 @@ textarea.resize-none {
                 <option value="oldest">Més antics</option>
               </select>
             </div>
+            
             <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
               <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
                 <div class="flex justify-between">
@@ -473,6 +490,7 @@ textarea.resize-none {
                 </div>
               </div>
             </div>
+
             <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6" v-auto-animate>
               <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
                 <div class="flex justify-between">
@@ -524,22 +542,22 @@ textarea.resize-none {
                       <span v-else>Veure menys</span>
                     </button>
                   </div>
-                  </div>
                 </div>
+              </div>
             </div>
+
             <div v-else class="text-gray-600 dark:text-gray-400 mt-4">
               Encara no hi ha comentaris. Sigues el primer!
             </div>
 
           </div>
-          </div>
+        </div>
+
         <div class="lg:col-span-3">
-          
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Vota les Opcions</h2>
             
             <div class="grid grid-cols-1 gap-4" v-auto-animate>
-              
               <div 
                 v-for="opt in rankedOptions" 
                 :key="opt.id" 
@@ -558,7 +576,6 @@ textarea.resize-none {
                 </span>
 
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-
                   <div class="flex-shrink-0 w-full sm:w-32 h-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mb-3 sm:mb-0">
                     <img
                       v-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
@@ -570,7 +587,6 @@ textarea.resize-none {
                   </div>
 
                   <div class="flex-1 min-w-0">
-                    
                     <h3 class="text-lg font-bold truncate mb-2 text-gray-900 dark:text-gray-100" :title="opt.name">
                       {{ opt.name }}
                     </h3>
@@ -595,7 +611,6 @@ textarea.resize-none {
                       >
                         Votar
                       </button>
-
                       <template v-else>
                         <span class="px-4 py-2 bg-green-600 text-white rounded">
                           ✅ Has votat "{{ opt.name }}"
