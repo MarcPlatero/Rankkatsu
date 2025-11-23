@@ -154,7 +154,7 @@ class RankingController extends Controller
                 });
             })
             ->latest()
-            ->take(10)
+            ->take(12)
             ->get();
 
         $favoriteIds = $user
