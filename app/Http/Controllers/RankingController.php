@@ -149,7 +149,7 @@ class RankingController extends Controller
             ->withCount('likes')
             ->where('is_approved', true)
             ->orderBy('likes_count', 'desc')
-            ->take(12)
+            ->take(16)
             ->get()
             ->map(function ($ranking) use ($favoriteIds) {
                 $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
@@ -160,7 +160,7 @@ class RankingController extends Controller
         $latestRankings = Ranking::with('user')
             ->where('is_approved', true)
             ->orderBy('created_at', 'desc')
-            ->take(12)
+            ->take(16)
             ->get()
             ->map(function ($ranking) use ($favoriteIds) {
                 $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
