@@ -14,35 +14,44 @@ class RankingController extends Controller
 {
     public function index(Request $request)
     {
+        // Recollir dades i usuari
         $search = $request->input('search');
+        $sort = $request->input('sort', 'popular'); 
         $user = Auth::user();
 
-        $rankings = Ranking::with('options')
-            ->when(!$user || !$user->is_admin, function ($query) use ($user) {
-                // Si no és admin:
-                if ($user) {
-                    // Usuari normal: pot veure aprovats o els seus propis
-                    $query->where(function ($q) use ($user) {
-                        $q->where('is_approved', true)
-                        ->orWhere('user_id', $user->id);
-                    });
-                } else {
-                    // Visitant: només aprovats
-                    $query->where('is_approved', true);
-                }
-            })
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('options', function ($subQuery) use ($search) {
-                        $subQuery->where('name', 'like', "%{$search}%");
-                    });
-                });
-            })
-            ->latest()
-            ->get();
+        $query = Ranking::with('options');
 
+        $query->when(!$user || !$user->is_admin, function ($q) use ($user) {
+            if ($user) {
+                $q->where(function ($sub) use ($user) {
+                    $sub->where('is_approved', true)
+                        ->orWhere('user_id', $user->id);
+                });
+            } else {
+                $q->where('is_approved', true);
+            }
+        });
+
+        $query->when($search, function ($q, $search) {
+            $q->where(function ($sub) use ($search) {
+                $sub->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('options', function ($optQuery) use ($search) {
+                        $optQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        });
+
+        // Aplicar lògica d'ordenació
+        if ($sort === 'recent') {
+            $query->latest();
+        } else {
+            $query->withCount('likes')->orderBy('likes_count', 'desc');
+        }
+
+        $rankings = $query->get();
+
+        // Processar favorits i retornar vista
         $favoriteIds = $user
             ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
             : [];
@@ -53,7 +62,10 @@ class RankingController extends Controller
 
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
-            'filters' => ['search' => $search],
+            'filters' => [
+                'search' => $search,
+                'sort' => $sort 
+            ],
         ]);
     }
 
