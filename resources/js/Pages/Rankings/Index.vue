@@ -1,10 +1,10 @@
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 
-defineProps({
+const props = defineProps({
   rankings: Array,
   filters: Object,
 })
@@ -12,15 +12,24 @@ defineProps({
 const page = usePage()
 const flash = page.props.flash || {}
 
-const search = ref(page.props.filters?.search || '')
+const search = ref(props.filters?.search || '')
 
-function applySearch() {
+const sort = ref(props.filters?.sort || 'popular') 
+
+function applyFilters() {
   router.get(
     '/rankings',
-    { search: search.value },
+    { 
+      search: search.value,
+      sort: sort.value
+    },
     { preserveState: true, replace: true }
   )
 }
+
+watch(sort, () => {
+  applyFilters()
+})
 
 function goToRanking(id) {
   router.get(`/rankings/${id}`)
@@ -29,15 +38,9 @@ function goToRanking(id) {
 
 <style scoped>
 @keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
@@ -49,7 +52,6 @@ function goToRanking(id) {
   -webkit-line-clamp: 2;
   line-clamp: 2;
   word-break: break-word; 
- 
   line-height: 1.4em;
   height: 2.8em;
 }
@@ -60,7 +62,6 @@ function goToRanking(id) {
   -webkit-line-clamp: 3;
   line-clamp: 3;
   word-break: break-word; 
-
   line-height: 1.4em;
   height: 4.2em;
 }
@@ -72,12 +73,10 @@ function goToRanking(id) {
       class="w-full mx-auto p-6 min-h-screen transition-colors duration-300 
              bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
-      <!-- Títol -->
       <h1 class="text-3xl font-extrabold mb-10 text-center">
         📊 Rànquings
       </h1>
 
-      <!-- Flash messages -->
       <div
         v-if="flash.success"
         class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 shadow"
@@ -91,26 +90,38 @@ function goToRanking(id) {
         {{ flash.error }}
       </div>
 
-      <!-- Buscador -->
-      <div class="flex mb-10 max-w-3xl mx-auto">
-        <input
-          v-model="search"
-          @keyup.enter="applySearch"
-          type="text"
-          placeholder="Cerca rànquings o opcions..."
-          class="w-full px-4 py-2 rounded-l-lg border border-gray-300 dark:border-gray-700
-                 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          @click="applySearch"
-          class="px-5 py-2 bg-gradient-to-r from-blue-600 to-red-600 text-white font-semibold
-                 rounded-r-lg hover:opacity-90 transition duration-200"
-        >
-          🔍
-        </button>
+      <div class="flex flex-col md:flex-row gap-4 mb-10 max-w-4xl mx-auto">
+        
+        <div class="flex flex-1">
+          <input
+            v-model="search"
+            @keyup.enter="applyFilters"
+            type="text"
+            placeholder="Cerca rànquings o opcions..."
+            class="w-full px-4 py-2 rounded-l-lg border border-gray-300 dark:border-gray-700
+                   bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            @click="applyFilters"
+            class="px-5 py-2 bg-gradient-to-r from-blue-600 to-red-600 text-white font-semibold
+                   rounded-r-lg hover:opacity-90 transition duration-200"
+          >
+            🔍
+          </button>
+        </div>
+
+        <div class="w-full md:w-48">
+          <select
+            v-model="sort"
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700
+                   bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+          >
+            <option value="popular">🔥 Més populars</option>
+            <option value="recent">📅 Més recents</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Crear -->
       <div class="text-center mb-12">
         <Link
           href="/rankings/create"
@@ -131,11 +142,10 @@ function goToRanking(id) {
         No s’han trobat rànquings.
       </div>
 
-      <!-- Llista -->
       <div
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 
-               gap-8 w-full px-4"
+               2xl:grid-cols-6 gap-6 w-full px-4"
       >
         <div
           v-for="ranking in rankings"
@@ -145,9 +155,8 @@ function goToRanking(id) {
                  transition-all duration-300 overflow-hidden group cursor-pointer"
           @click="goToRanking(ranking.id)"
         >
-          <!-- Imatge -->
           <div
-            class="w-full aspect-video overflow-hidden flex items-center justify-center 
+            class="w-full h-40 overflow-hidden flex items-center justify-center 
                    bg-gray-100 dark:bg-gray-800"
           >
             <img
@@ -161,14 +170,11 @@ function goToRanking(id) {
             </div>
           </div>
 
-          <!-- Contingut -->
           <div class="flex-1 p-4 relative flex flex-col justify-between">
-            <!-- Estrella -->
             <div @click.stop>
               <FavoriteStar :ranking="ranking" class="absolute top-3 right-3 z-10" />
             </div>
 
-            <!-- Text -->
             <div class="pr-12">
               <h2
                 class="text-lg font-bold mb-2 text-gray-900 dark:text-white 
@@ -203,7 +209,6 @@ function goToRanking(id) {
               </ul>
             </div>
 
-            <!-- Veure detalls -->
             <div class="mt-6">
               <span
                 class="text-blue-600 dark:text-red-400 font-semibold hover:underline"
