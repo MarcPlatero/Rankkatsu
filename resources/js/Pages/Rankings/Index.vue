@@ -5,7 +5,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 
 const props = defineProps({
-  rankings: Array,
+  rankings: Object,
   filters: Object,
 })
 
@@ -13,9 +13,12 @@ const page = usePage()
 const flash = page.props.flash || {}
 
 const search = ref(props.filters?.search || '')
+const sort = ref(props.filters?.sort || 'popular')
 
-const sort = ref(props.filters?.sort || 'popular') 
+const listRankings = ref(props.rankings.data)
+const isLoadingMore = ref(false)
 
+// Funció per aplicar filtres
 function applyFilters() {
   router.get(
     '/rankings',
@@ -23,10 +26,35 @@ function applyFilters() {
       search: search.value,
       sort: sort.value
     },
-    { preserveState: true, replace: true }
+    { 
+      preserveState: true, 
+      replace: true,
+      onSuccess: () => {
+        listRankings.value = props.rankings.data
+      }
+    }
   )
 }
 
+// Funció "Cargar Más"
+function loadMore() {
+  if (!props.rankings.next_page_url) return;
+
+  isLoadingMore.value = true;
+
+  router.get(props.rankings.next_page_url, {}, {
+    preserveState: true,
+    preserveScroll: true,
+    only: ['rankings'],
+    onSuccess: () => {
+      // Afegim els nous rankings al final de la llista existent
+      listRankings.value = [...listRankings.value, ...props.rankings.data];
+      isLoadingMore.value = false;
+    }
+  })
+}
+
+// Observem canvis en el sort per aplicar filtres automàticament
 watch(sort, () => {
   applyFilters()
 })
@@ -91,7 +119,6 @@ function goToRanking(id) {
       </div>
 
       <div class="flex flex-col md:flex-row gap-4 mb-10 max-w-4xl mx-auto">
-        
         <div class="flex flex-1">
           <input
             v-model="search"
@@ -136,7 +163,7 @@ function goToRanking(id) {
       </div>
 
       <div
-        v-if="!rankings || rankings.length === 0"
+        v-if="!listRankings || listRankings.length === 0"
         class="text-gray-600 dark:text-gray-400 mt-8 text-center text-lg"
       >
         No s’han trobat rànquings.
@@ -145,10 +172,10 @@ function goToRanking(id) {
       <div
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 
-               2xl:grid-cols-6 gap-6 w-full px-4"
+               gap-8 w-full px-4"
       >
         <div
-          v-for="ranking in rankings"
+          v-for="ranking in listRankings"
           :key="ranking.id"
           class="relative flex flex-col rounded-2xl border border-gray-200 dark:border-gray-700 
                  bg-white dark:bg-neutral-900 shadow-sm hover:shadow-xl hover:-translate-y-1
@@ -156,7 +183,7 @@ function goToRanking(id) {
           @click="goToRanking(ranking.id)"
         >
           <div
-            class="w-full h-40 overflow-hidden flex items-center justify-center 
+            class="w-full aspect-video overflow-hidden flex items-center justify-center 
                    bg-gray-100 dark:bg-gray-800"
           >
             <img
@@ -219,6 +246,21 @@ function goToRanking(id) {
           </div>
         </div>
       </div>
+
+      <div v-if="rankings.next_page_url" class="text-center mt-12 pb-10">
+        <button
+          @click="loadMore"
+          :disabled="isLoadingMore"
+          class="px-8 py-3 font-semibold rounded-full shadow-md text-white
+                 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed
+                 bg-blue-600 hover:bg-blue-700 
+                 dark:bg-red-600 dark:hover:bg-red-700"
+        >
+          <span v-if="isLoadingMore">Carregant...</span>
+          <span v-else>Carregar més rankings</span>
+        </button>
+      </div>
+
     </div>
   </AppLayout>
 </template>
