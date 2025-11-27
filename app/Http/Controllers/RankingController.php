@@ -21,6 +21,7 @@ class RankingController extends Controller
 
         $query = Ranking::with('options');
 
+        // Aplicar filtres de privacitat
         $query->when(!$user || !$user->is_admin, function ($q) use ($user) {
             if ($user) {
                 $q->where(function ($sub) use ($user) {
@@ -32,6 +33,7 @@ class RankingController extends Controller
             }
         });
 
+        // Aplicar filtre de cerca (Títol, Descripció o Opcions)
         $query->when($search, function ($q, $search) {
             $q->where(function ($sub) use ($search) {
                 $sub->where('title', 'like', "%{$search}%")
@@ -46,20 +48,24 @@ class RankingController extends Controller
         if ($sort === 'recent') {
             $query->latest();
         } else {
+            // Per defecte 'popular': Comptem likes i ordenem
             $query->withCount('likes')->orderBy('likes_count', 'desc');
         }
 
-        $rankings = $query->get();
+        // Paginació
+        $rankings = $query->paginate(50)->withQueryString();
 
-        // Processar favorits i retornar vista
+        // Processar favorits
         $favoriteIds = $user
             ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
             : [];
 
-        foreach ($rankings as $ranking) {
+        $rankings->getCollection()->transform(function ($ranking) use ($favoriteIds) {
             $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
-        }
+            return $ranking;
+        });
 
+        // Retornar a la vista
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
             'filters' => [
