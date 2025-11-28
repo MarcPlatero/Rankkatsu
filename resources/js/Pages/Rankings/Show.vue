@@ -138,6 +138,16 @@ const toggleLike = () => {
   })
 }
 
+const copied = ref(false)
+
+const shareRanking = () => {
+  const url = window.location.href
+  navigator.clipboard.writeText(url).then(() => {
+    copied.value = true
+    setTimeout(() => (copied.value = false), 2000)
+  })
+}
+
 // Formulari comentaris
 const commentForm = useForm({ content: '' })
 const textareaRef = ref(null)
@@ -367,7 +377,6 @@ textarea.resize-none {
             <div class="relative">
               
               <div class="absolute top-0 right-0 flex items-center gap-2">
-                
                 <button 
                   @click="toggleLike"
                   :class="[
@@ -403,20 +412,39 @@ textarea.resize-none {
                 </p>
               </div>
 
-              <div class="flex items-center gap-2 mb-4">
-                <img 
-                  v-if="ranking.user?.profile_photo_url"
-                  :src="ranking.user.profile_photo_url" 
-                  alt="Avatar" 
-                  class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-                >
-                <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                  <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+              <div class="flex items-center justify-between mb-4"> <div class="flex items-center gap-2">
+                  <img 
+                    v-if="ranking.user?.profile_photo_url"
+                    :src="ranking.user.profile_photo_url" 
+                    alt="Avatar" 
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                  >
+                  <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                  </div>
+                  
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
+                  </p>
                 </div>
-                
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                  Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
-                </p>
+
+                <button 
+                  @click="shareRanking"
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-gray-600 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm focus:outline-none"
+                  :title="copied ? 'Copiat!' : 'Compartir'"
+                >
+                  <span v-if="copied" class="text-green-500 transition-all duration-300 transform scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                  <span v-else class="transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                  </span>
+                </button>
+
               </div>
             </div>
 
