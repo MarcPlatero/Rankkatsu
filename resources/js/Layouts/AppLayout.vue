@@ -1,6 +1,7 @@
 <script setup>
 import Navbar from '@/Components/Navbar.vue'
 import Footer from '@/Components/Footer.vue'
+import IntroSplash from '@/Components/IntroSplash.vue'
 import { onMounted, onBeforeUnmount } from 'vue'
 
 function applyFromLocalStorage() {
@@ -27,9 +28,9 @@ function storageListener(e) {
 }
 
 onMounted(() => {
-  // Aplica el tema a la càrrega (per si algú arriba per primera vegada)
+  // Aplica el tema a la càrrega
   applyFromLocalStorage()
-  // Escolta canvis fets des d'altres pestanyes (storage events)
+  // Escolta canvis fets des d'altres pestanyes
   window.addEventListener('storage', storageListener)
 })
 
@@ -40,9 +41,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    
+    <IntroSplash />
+
     <Navbar />
 
-    <!-- Contingut de la pàgina -->
     <main class="flex-1">
       <slot />
     </main>
