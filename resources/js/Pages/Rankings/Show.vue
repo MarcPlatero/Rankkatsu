@@ -142,9 +142,17 @@ const copied = ref(false)
 
 const shareRanking = () => {
   const url = window.location.href
+  
   navigator.clipboard.writeText(url).then(() => {
+    // Canvi visual del botó
     copied.value = true
     setTimeout(() => (copied.value = false), 2000)
+
+    // Activem l'alerta Flash global
+    flash.value.success = "Enllaç copiat al porta-retalls!"
+    
+    // Fem que l'alerta desaparegui als 3.5 segons
+    setTimeout(() => (flash.value.success = null), 3500)
   })
 }
 
