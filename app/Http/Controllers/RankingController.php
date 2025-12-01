@@ -91,6 +91,7 @@ class RankingController extends Controller
             'options' => 'required|array|min:2',
             'options.*.name' => 'required|string|max:255',
             'options.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp,avif,gif|max:4096',
+            'options.*.video_url' => ['nullable', 'url', 'regex:/^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/'],
             'options.*.is_suspicious' => 'nullable|boolean',
         ], [
             'title.required' => 'Has d’introduir un títol per al rànquing.',
@@ -101,12 +102,13 @@ class RankingController extends Controller
             'options.required' => 'Has d’afegir opcions al rànquing.',
             'options.min' => 'Has d’afegir almenys 2 opcions.',
             'options.*.name.required' => 'Cada opció ha de tenir un nom.',
+            'options.*.video_url.regex' => 'La URL ha de ser un enllaç vàlid de YouTube.',
         ]);
 
         // Determinar si la imatge principal és sospitosa
         $mainSuspicious = $request->boolean('image_is_suspicious', false);
 
-        // Crear el rànquing inicialment (encara no sabem si serà aprovat)
+        // Crear el rànquing inicialment
         $ranking = Ranking::create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
@@ -132,9 +134,11 @@ class RankingController extends Controller
                 $hasSuspiciousOption = true;
             }
 
+            // Afegim video_url a la creació de l'opció
             $option = $ranking->options()->create([
                 'name' => $opt['name'],
                 'image' => null,
+                'video_url' => $opt['video_url'] ?? null,
                 'is_suspicious' => $isSuspicious,
                 'is_approved' => !$isSuspicious,
             ]);
@@ -145,7 +149,7 @@ class RankingController extends Controller
             }
         }
 
-        // Si la imatge principal o qualsevol opció és sospitosa, llavors marcar com no aprovat
+        // Si la imatge principal o qualsevol opció és sospitosa, marcar com no aprovat
         if ($mainSuspicious || $hasSuspiciousOption) {
             $ranking->update(['is_approved' => false]);
         }
