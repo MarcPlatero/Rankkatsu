@@ -76,7 +76,7 @@ const saveCrop = async () => {
     }
     const { ok, suspicious } = await validateImage(blob)
     if (!ok) {
-      nsfwError.value = 'Aquesta imatge (o una part) sembla inapropiada.'
+      nsfwError.value = 'Aquesta imatge sembla inapropiada.'
       cancelCrop()
       return
     }
@@ -99,18 +99,18 @@ const saveCrop = async () => {
 
 const handleRankingImage = (e) => {
   const file = e.target.files && e.target.files[0]
-  openCropper(file, 16 / 9, null)
+  if(file) openCropper(file, 16 / 9, null)
   e.target.value = null
 }
 
 const onDropRanking = (e) => {
   const file = e.dataTransfer.files && e.dataTransfer.files[0]
-  openCropper(file, 16 / 9, null)
+  if(file) openCropper(file, 16 / 9, null)
 }
 
 const handleOptionImage = (e, index) => {
   const file = e.target.files && e.target.files[0]
-  openCropper(file, 1 / 1, index)
+  if(file) openCropper(file, 1 / 1, index)
   e.target.value = null
 }
 
@@ -118,7 +118,7 @@ const onDropOption = (e, index) => {
   if (form.options[index].type === 'video') return;
   
   const file = e.dataTransfer.files && e.dataTransfer.files[0]
-  openCropper(file, 1 / 1, index)
+  if(file) openCropper(file, 1 / 1, index)
 }
 
 const validateImage = async (fileOrBlob) => {
@@ -199,6 +199,7 @@ const submit = async () => {
     const fd = new FormData()
     fd.append('title', form.title)
     fd.append('description', form.description ?? '')
+    
     if (rankingFile.value) {
       fd.append('image', rankingFile.value, 'ranking.jpg')
       fd.append('image_is_suspicious', rankingSuspicious.value ? '1' : '0')
@@ -326,6 +327,12 @@ textarea { resize: none; }
           🏆 Crear un nou rànquing
         </h1>
 
+        <div
+          v-if="nsfwError"
+          class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 p-3 rounded-lg mb-6 text-center font-semibold border border-red-200 dark:border-red-800">
+          ⚠️ {{ nsfwError }}
+        </div>
+
         <form @submit.prevent="submit" class="space-y-8">
           
           <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
@@ -343,7 +350,7 @@ textarea { resize: none; }
               </div>
             </div>
             <div class="flex flex-col items-center">
-              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Imatge del rànquing (16:9)</label>
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Imatge del rànquing</label>
               <label class="w-full max-w-xs" @dragover.prevent @drop.prevent="onDropRanking">
                 <div v-if="!imagePreview" class="file-drop-zone h-36">
                   <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
