@@ -118,6 +118,15 @@ const confirmDelete = () => {
     router.delete(`/rankings/${props.ranking.id}`)
 }
 
+const getYoutubeEmbedUrl = (url) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11)
+    ? `https://www.youtube.com/embed/${match[2]}`
+    : null;
+}
+
 const isLikeAnimating = ref(false)
 
 // Funció per a Like/Unlike
@@ -411,13 +420,13 @@ textarea.resize-none {
                 <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100 truncate-3-lines">
                   {{ ranking.title }}
                 </h1>
-                
                 <p class="text-gray-700 dark:text-gray-300 mb-6 truncate-3-lines">
                   {{ ranking.description }}
                 </p>
               </div>
 
-              <div class="flex items-center justify-between mb-4"> <div class="flex items-center gap-2">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
                   <img 
                     v-if="ranking.user?.profile_photo_url"
                     :src="ranking.user.profile_photo_url" 
@@ -427,7 +436,6 @@ textarea.resize-none {
                   <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                     <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                   </div>
-                  
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
                   </p>
@@ -449,7 +457,6 @@ textarea.resize-none {
                     </svg>
                   </span>
                 </button>
-
               </div>
             </div>
 
@@ -462,135 +469,63 @@ textarea.resize-none {
 
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
-
-            <div v-if="$page.props.auth?.user" class="mb-6">
+             <div v-if="$page.props.auth?.user" class="mb-6">
               <form @submit.prevent="submitComment" class="space-y-2">
-                <textarea
-                  ref="textareaRef"
-                  v-model="commentForm.content"
-                  placeholder="Escriu el teu comentari..."
-                  class="w-full border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-2 resize-none transition-all duration-300"
-                  rows="3"
-                  @input="autoResize($event)"
-                ></textarea>
-
+                <textarea ref="textareaRef" v-model="commentForm.content" placeholder="Escriu el teu comentari..." class="w-full border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-2 resize-none transition-all duration-300" rows="3" @input="autoResize($event)"></textarea>
                 <div class="flex justify-between items-center">
-                  <div :class="['char-counter', charCount < charLimit ? 'safe' : 'warning']">
-                    {{ charCount }} / {{ charLimit }}
-                  </div>
-                  <button
-                    type="submit"
-                    :disabled="commentForm.processing || !commentForm.content"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded disabled:opacity-50 transition"
-                  >
-                    Publicar
-                  </button>
+                  <div :class="['char-counter', charCount < charLimit ? 'safe' : 'warning']">{{ charCount }} / {{ charLimit }}</div>
+                  <button type="submit" :disabled="commentForm.processing || !commentForm.content" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded disabled:opacity-50 transition">Publicar</button>
                 </div>
               </form>
             </div>
-            <div v-else class="text-gray-600 dark:text-gray-300 text-sm">
-              <a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.
-            </div>
+            <div v-else class="text-gray-600 dark:text-gray-300 text-sm"><a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.</div>
 
             <div class="mb-4 flex items-center gap-3">
               <label for="sort" class="text-gray-700 dark:text-gray-300 text-sm">Ordenar per:</label>
-              <select
-                id="sort"
-                v-model="sort"
-                class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
-              >
-                <option value="likes">Més likes</option>
-                <option value="recent">Més recents</option>
-                <option value="oldest">Més antics</option>
-              </select>
-            </div>
-            
-            <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
-              <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
-                <div class="flex justify-between">
-                  <div>
-                    <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div>
-                    <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </div>
-                </div>
-                <div class="mt-3 space-y-2">
-                  <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
-                  <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div>
-                </div>
-              </div>
+              <select id="sort" v-model="sort" class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"><option value="likes">Més likes</option><option value="recent">Més recents</option><option value="oldest">Més antics</option></select>
             </div>
 
+            <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
+              <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700"><div class="flex justify-between"><div><div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div></div><div class="flex items-center gap-2"><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div></div></div><div class="mt-3 space-y-2"><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div></div></div>
+            </div>
             <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6" v-auto-animate>
               <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
                 <div class="flex justify-between">
-                  <div>
-                    <div class="font-semibold text-sm">{{ comment.user?.name || 'Usuari' }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ new Date(comment.created_at).toLocaleString() }}</div>
-                  </div>
-
-                  <div class="flex items-center gap-2">
-                    <button
-                      @click="voteComment(comment.id, 1)"
-                      :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === true ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200' : 'text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-800']"
-                    >
-                      👍 {{ comment.likes_count ?? 0 }}
-                    </button>
-                    <button
-                      @click="voteComment(comment.id, 0)"
-                      :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === false ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200' : 'text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-800']"
-                    >
-                      👎 {{ comment.dislikes_count ?? 0 }}
-                    </button>
-
-                    <button
-                      v-if="page.props.auth?.user && (comment.user_id === page.props.auth.user.id || ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)"
-                      @click="deleteComment(comment.id)"
-                      class="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-
-                <div class="mt-2">
-                  <div
-                    class="comment-clamped"
-                    :style="!isExpanded(comment.id) ? { maxHeight: '7.5rem', overflow: 'hidden' } : { maxHeight: 'none' }"
-                  >
-                    <div
-                      class="comment-content text-gray-700 dark:text-gray-200"
-                      :data-id="comment.id"
-                    >
-                      {{ comment.content }}
+                  <div class="flex items-center gap-3 min-w-0">
+                    <img v-if="comment.user?.profile_photo_url" :src="comment.user.profile_photo_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <div v-else class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700 flex-shrink-0"><svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div>
+                    <div class="min-w-0">
+                      <div class="font-semibold text-sm truncate">{{ comment.user?.name || 'Usuari' }}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">{{ new Date(comment.created_at).toLocaleString() }}</div>
                     </div>
                   </div>
-
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <button @click="voteComment(comment.id, 1)" :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === true ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200' : 'text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-800']">👍 {{ comment.likes_count ?? 0 }}</button>
+                    <button @click="voteComment(comment.id, 0)" :class="['text-sm px-2 py-1 rounded transition', comment.user_vote === false ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200' : 'text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-800']">👎 {{ comment.dislikes_count ?? 0 }}</button>
+                    <button v-if="page.props.auth?.user && (comment.user_id === page.props.auth.user.id || ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" @click="deleteComment(comment.id)" class="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition">🗑️</button>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <div class="comment-clamped" :style="!isExpanded(comment.id) ? { maxHeight: '7.5rem', overflow: 'hidden' } : { maxHeight: 'none' }">
+                    <div class="comment-content text-gray-700 dark:text-gray-200" :data-id="comment.id">{{ comment.content }}</div>
+                  </div>
                   <div v-if="needsShowMore(comment.id)" class="mt-2">
-                    <button class="show-more-btn" @click="toggleExpanded(comment.id)">
-                      <span v-if="!isExpanded(comment.id)">Veure més</span>
-                      <span v-else>Veure menys</span>
-                    </button>
+                    <button class="show-more-btn" @click="toggleExpanded(comment.id)"><span v-if="!isExpanded(comment.id)">Veure més</span><span v-else>Veure menys</span></button>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">
-              Encara no hi ha comentaris. Sigues el primer!
-            </div>
-
+            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">Encara no hi ha comentaris. Sigues el primer!</div>
           </div>
         </div>
 
         <div class="lg:col-span-3">
+          
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Vota les Opcions</h2>
             
             <div class="grid grid-cols-1 gap-4" v-auto-animate>
+              
               <div 
                 v-for="opt in rankedOptions" 
                 :key="opt.id" 
@@ -609,9 +544,19 @@ textarea.resize-none {
                 </span>
 
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+
                   <div class="flex-shrink-0 w-full sm:w-32 h-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mb-3 sm:mb-0">
+                    <iframe 
+                      v-if="opt.video_url"
+                      :src="getYoutubeEmbedUrl(opt.video_url)"
+                      class="w-full h-full"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen
+                    ></iframe>
+
                     <img
-                      v-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
+                      v-else-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
                       :src="opt.image.startsWith('/storage/') ? opt.image : `/storage/${opt.image}`"
                       alt="Imatge opció"
                       class="w-full h-full object-cover"
