@@ -14,8 +14,8 @@ const form = useForm({
   description: '',
   image: null,
   options: [
-    { name: '', image: null },
-    { name: '', image: null }
+    { name: '', type: 'image', image: null, video_url: '' },
+    { name: '', type: 'image', image: null, video_url: '' }
   ]
 })
 
@@ -52,9 +52,7 @@ onMounted(async () => {
 
 const openCropper = (file, ratio, index) => {
   if (!file || !file.type.startsWith('image/')) return
-  
   nsfwError.value = ''
-  
   cropperSrc.value = URL.createObjectURL(file)
   cropperAspectRatio.value = ratio
   editingImageIndex.value = index
@@ -68,12 +66,10 @@ const cancelCrop = () => {
 
 const saveCrop = async () => {
   if (!cropperRef.value) return
-  
   const { canvas } = cropperRef.value.getResult()
   if (!canvas) return
   
   canvas.toBlob(async (blob) => {
-    
     if (nsfwLoading.value) {
       nsfwError.value = 'El filtre d\'imatges encara s\'està carregant.'
       return
@@ -97,9 +93,7 @@ const saveCrop = async () => {
       optionPreviews.value[index] = previewUrl
       optionSuspicious.value[index] = suspicious
     }
-    
     cancelCrop()
-
   }, 'image/jpeg', 0.9)
 }
 
@@ -121,6 +115,8 @@ const handleOptionImage = (e, index) => {
 }
 
 const onDropOption = (e, index) => {
+  if (form.options[index].type === 'video') return;
+  
   const file = e.dataTransfer.files && e.dataTransfer.files[0]
   openCropper(file, 1 / 1, index)
 }
@@ -152,17 +148,28 @@ const validateImage = async (fileOrBlob) => {
 }
 
 const addOption = () => {
-  form.options.push({ name: '', image: null })
+  form.options.push({ name: '', type: 'image', image: null, video_url: '' })
   optionFiles.value.push(null)
   optionPreviews.value.push(null)
   optionSuspicious.value.push(false)
 }
+
 const removeOption = (index) => {
   if (form.options.length > 2) {
     form.options.splice(index, 1)
     optionFiles.value.splice(index, 1)
     optionPreviews.value.splice(index, 1)
     optionSuspicious.value.splice(index, 1)
+  }
+}
+
+const switchOptionType = (index, type) => {
+  form.options[index].type = type
+  if (type === 'video') {
+    optionFiles.value[index] = null
+    optionPreviews.value[index] = null
+  } else {
+    form.options[index].video_url = ''
   }
 }
 
@@ -180,6 +187,7 @@ watch(() => form.options, newOptions => {
   })
 }, { deep: true })
 
+
 const submit = async () => {
   if (nsfwError.value) {
     alert('Hi ha imatges inapropiades. Revisa-les abans de continuar.')
@@ -192,16 +200,26 @@ const submit = async () => {
     fd.append('title', form.title)
     fd.append('description', form.description ?? '')
     if (rankingFile.value) {
-      fd.append('image', rankingFile.value)
+      fd.append('image', rankingFile.value, 'ranking.jpg')
       fd.append('image_is_suspicious', rankingSuspicious.value ? '1' : '0')
     }
+    
     form.options.forEach((opt, i) => {
       fd.append(`options[${i}][name]`, opt.name ?? '')
+      
+      if (opt.type === 'video' && opt.video_url) {
+        fd.append(`options[${i}][video_url]`, opt.video_url)
+      }
+      
       fd.append(`options[${i}][is_suspicious]`, optionSuspicious.value[i] ? '1' : '0')
     })
+    
     optionFiles.value.forEach((file, i) => {
-      if (file) fd.append(`options[${i}][image]`, file)
+      if (file && form.options[i].type === 'image') {
+        fd.append(`options[${i}][image]`, file, `opt-${i}.jpg`)
+      }
     })
+    
     await axios.post(route('rankings.store'), fd, {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -308,82 +326,34 @@ textarea { resize: none; }
           🏆 Crear un nou rànquing
         </h1>
 
-        <div
-          v-if="nsfwError"
-          class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300 p-3 rounded-lg mb-6">
-          {{ nsfwError }}
-        </div>
-
         <form @submit.prevent="submit" class="space-y-8">
           
           <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
-            
             <div class="space-y-6">
               <div>
-                <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Nom del rànquing
-                </label>
-                <input
-                  id="title"
-                  v-model="form.title"
-                  type="text"
-                  :maxlength="titleMax"
-                  class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                />
-                <div class="text-xs mt-1 text-right" :class="form.title.length >= titleMax ? 'red-count' : 'text-gray-500'">
-                  {{ form.title.length }}/{{ titleMax }}
-                </div>
-                <div v-if="form.errors.title" class="text-red-500 text-sm mt-1">
-                  {{ form.errors.title }}
-                </div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Nom del rànquing</label>
+                <input id="title" v-model="form.title" type="text" :maxlength="titleMax" class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
+                <div class="text-xs mt-1 text-right" :class="form.title.length >= titleMax ? 'red-count' : 'text-gray-500'">{{ form.title.length }}/{{ titleMax }}</div>
+                <div v-if="form.errors.title" class="text-red-500 text-sm mt-1">{{ form.errors.title }}</div>
               </div>
-
               <div>
-                <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Descripció
-                </label>
-                <textarea
-                  id="description"
-                  v-model="form.description"
-                  rows="4" 
-                  :maxlength="descMax"
-                  class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                </textarea>
-                <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">
-                  {{ form.description.length }}/{{ descMax }}
-                </div>
-                <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">
-                  {{ form.errors.description }}
-                </div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Descripció</label>
+                <textarea id="description" v-model="form.description" rows="4" :maxlength="descMax" class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
+                <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">{{ form.description.length }}/{{ descMax }}</div>
               </div>
             </div>
-
             <div class="flex flex-col items-center">
-              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Imatge del rànquing
-              </label>
-
-              <label 
-                class="w-full max-w-xs"
-                @dragover.prevent
-                @drop.prevent="onDropRanking"
-              >
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Imatge del rànquing (16:9)</label>
+              <label class="w-full max-w-xs" @dragover.prevent @drop.prevent="onDropRanking">
                 <div v-if="!imagePreview" class="file-drop-zone h-36">
-                  <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                  <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                   <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega</span>
                 </div>
                 <div v-else class="mt-2 relative w-full max-w-xs aspect-video cursor-pointer">
                   <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
-                  <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <span class="text-white font-semibold">Canviar imatge</span>
-                  </div>
+                  <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"><span class="text-white font-semibold">Canviar imatge</span></div>
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  @change="handleRankingImage"
-                  class="hidden"
-                />
+                <input type="file" accept="image/*" @change="handleRankingImage" class="hidden" />
               </label>
             </div>
           </div>
@@ -401,25 +371,50 @@ textarea { resize: none; }
                 :key="index"
                 class="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700/70 transition-colors border-gray-300 dark:border-gray-600"
               >
-                <div class="grid grid-cols-[80px_1fr_auto] items-start gap-4">
+                <div class="grid grid-cols-[auto_80px_1fr_auto] items-start gap-4">
                   
-                  <label
-                    @dragover.prevent
-                    @drop.prevent="(e) => onDropOption(e, index)"
-                  >
-                    <div v-if="!optionPreviews[index]" class="file-drop-zone w-20 h-20 !p-0">
-                      <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    </div>
-                    <div v-else class="relative w-20 h-20 cursor-pointer">
-                      <img :src="optionPreviews[index]" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
-                      <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                        <span class="text-white text-xs text-center">Canviar</span>
-                      </div>
-                    </div>
-                    <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
-                  </label>
+                  <div class="flex flex-col gap-2 pt-2">
+                    <button 
+                      type="button" 
+                      @click="switchOptionType(index, 'image')"
+                      :class="option.type === 'image' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600'"
+                      title="Imatge"
+                    >
+                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </button>
+                    <button 
+                      type="button" 
+                      @click="switchOptionType(index, 'video')"
+                      :class="option.type === 'video' ? 'text-red-600 dark:text-red-400' : 'text-gray-400 hover:text-gray-600'"
+                      title="YouTube"
+                    >
+                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                  </div>
 
-                  <div class="min-w-0">
+                  <div>
+                    <label 
+                      v-if="option.type === 'image'"
+                      class="block"
+                      @dragover.prevent
+                      @drop.prevent="(e) => onDropOption(e, index)"
+                    >
+                      <div v-if="!optionPreviews[index]" class="file-drop-zone w-20 h-20 !p-0">
+                        <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                      </div>
+                      <div v-else class="relative w-20 h-20 cursor-pointer">
+                        <img :src="optionPreviews[index]" class="w-full h-full object-cover rounded-lg shadow" />
+                        <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs">Edit</div>
+                      </div>
+                      <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
+                    </label>
+
+                    <div v-else class="w-20 h-20 flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-600">
+                      <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    </div>
+                  </div>
+
+                  <div class="min-w-0 space-y-2">
                     <input
                       v-model="form.options[index].name"
                       type="text"
@@ -427,9 +422,20 @@ textarea { resize: none; }
                       placeholder="Nom de l’opció"
                       class="w-full rounded-md p-2.5 border focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     />
+                    
+                    <div v-if="option.type === 'video'">
+                      <input 
+                        v-model="form.options[index].video_url"
+                        type="text"
+                        placeholder="Enllaç de YouTube (ex: https://youtu.be/...)"
+                        class="w-full text-sm rounded-md p-2 border focus:ring-2 focus:ring-red-500 transition-colors border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                      />
+                    </div>
+
                     <div class="flex justify-between items-center">
-                      <div v-if="form.errors[`options.${index}.name`]" class="text-red-500 text-sm mt-1">
-                        {{ form.errors[`options.${index}.name`] }}
+                      <div>
+                        <div v-if="form.errors[`options.${index}.name`]" class="text-red-500 text-sm">{{ form.errors[`options.${index}.name`] }}</div>
+                        <div v-if="form.errors[`options.${index}.video_url`]" class="text-red-500 text-sm">URL invàlida.</div>
                       </div>
                       <div class="flex-grow text-xs mt-1 text-right" :class="option.name.length >= optMax ? 'red-count' : 'text-gray-500'">
                         {{ option.name.length }}/{{ optMax }}
@@ -458,7 +464,7 @@ textarea { resize: none; }
           </div>
 
           <div>
-            <button
+             <button
               type="submit"
               class="w-full px-6 py-3 rounded-lg text-lg font-semibold text-white shadow-lg relative overflow-hidden group transition-all duration-300"
               :disabled="processing || nsfwLoading">
@@ -477,7 +483,7 @@ textarea { resize: none; }
     </section>
     
     <div v-if="isCropperOpen" class="cropper-modal">
-      <div class="cropper-container">
+        <div class="cropper-container">
         <Cropper
           ref="cropperRef"
           :src="cropperSrc"
@@ -502,5 +508,6 @@ textarea { resize: none; }
         </button>
       </div>
     </div>
-    </AppLayout>
+
+  </AppLayout>
 </template>
