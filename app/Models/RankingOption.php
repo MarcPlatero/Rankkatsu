@@ -13,6 +13,7 @@ class RankingOption extends Model
         'ranking_id',
         'name',
         'image',
+        'video_url',
         'is_suspicious',
         'is_approved',
     ];
