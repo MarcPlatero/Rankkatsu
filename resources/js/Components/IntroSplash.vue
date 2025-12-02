@@ -81,7 +81,7 @@ onMounted(() => {
   animation: gradient-bg 6s ease infinite;
 }
 
-/* 2. Animació de xoc (Més impactant) */
+/* 2. Animació de xoc */
 @keyframes clash {
   0% {
     opacity: 0;
