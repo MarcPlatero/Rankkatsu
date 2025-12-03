@@ -376,7 +376,7 @@ textarea.resize-none {
 
         <div class="lg:col-span-2 space-y-8">
           
-          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-4">
+          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-800">
             
             <img
               v-if="ranking.image && (ranking.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
@@ -389,7 +389,6 @@ textarea.resize-none {
             </div>
 
             <div class="relative">
-              
               <div class="absolute top-0 right-0 flex items-center gap-2">
                 <button 
                   @click="toggleLike"
@@ -407,12 +406,11 @@ textarea.resize-none {
                       ranking.user_has_liked ? 'fill-current text-red-500' : 'stroke-current',
                       { 'animate-like': isLikeAnimating }
                     ]" 
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
                   </svg>
                   <span>{{ ranking.likes_count }}</span>
                 </button>
-
                 <FavoriteStar :ranking="ranking" />
               </div>
               
@@ -434,7 +432,7 @@ textarea.resize-none {
                     class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                   >
                   <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                   </div>
                   <p class="text-sm text-gray-600 dark:text-gray-400">
                     Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
@@ -447,29 +445,26 @@ textarea.resize-none {
                   :title="copied ? 'Copiat!' : 'Compartir'"
                 >
                   <span v-if="copied" class="text-green-500 transition-all duration-300 transform scale-110">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                   </span>
                   <span v-else class="transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                   </span>
                 </button>
               </div>
             </div>
 
-            <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mb-6">
-              <button @click="confirmDelete" class="w-full px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+            <div v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" class="mt-4">
+              <button @click="confirmDelete" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
                 Eliminar rànquing
               </button>
             </div>
           </div>
 
-          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
+          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-800">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
-             <div v-if="$page.props.auth?.user" class="mb-6">
+            
+            <div v-if="$page.props.auth?.user" class="mb-6">
               <form @submit.prevent="submitComment" class="space-y-2">
                 <textarea ref="textareaRef" v-model="commentForm.content" placeholder="Escriu el teu comentari..." class="w-full border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-2 resize-none transition-all duration-300" rows="3" @input="autoResize($event)"></textarea>
                 <div class="flex justify-between items-center">
@@ -482,11 +477,15 @@ textarea.resize-none {
 
             <div class="mb-4 flex items-center gap-3">
               <label for="sort" class="text-gray-700 dark:text-gray-300 text-sm">Ordenar per:</label>
-              <select id="sort" v-model="sort" class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"><option value="likes">Més likes</option><option value="recent">Més recents</option><option value="oldest">Més antics</option></select>
+              <select id="sort" v-model="sort" class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 cursor-pointer">
+                <option value="likes">Més likes</option>
+                <option value="recent">Més recents</option>
+                <option value="oldest">Més antics</option>
+              </select>
             </div>
-
+            
             <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
-              <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700"><div class="flex justify-between"><div><div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div></div><div class="flex items-center gap-2"><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div></div></div><div class="mt-3 space-y-2"><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div></div></div>
+               <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700"><div class="flex justify-between"><div><div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div></div><div class="flex items-center gap-2"><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div></div></div><div class="mt-3 space-y-2"><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div></div></div>
             </div>
             <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6" v-auto-animate>
               <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
@@ -506,101 +505,104 @@ textarea.resize-none {
                   </div>
                 </div>
                 <div class="mt-2">
-                  <div class="comment-clamped" :style="!isExpanded(comment.id) ? { maxHeight: '7.5rem', overflow: 'hidden' } : { maxHeight: 'none' }">
-                    <div class="comment-content text-gray-700 dark:text-gray-200" :data-id="comment.id">{{ comment.content }}</div>
-                  </div>
-                  <div v-if="needsShowMore(comment.id)" class="mt-2">
-                    <button class="show-more-btn" @click="toggleExpanded(comment.id)"><span v-if="!isExpanded(comment.id)">Veure més</span><span v-else>Veure menys</span></button>
-                  </div>
+                    <div class="comment-clamped" :style="!isExpanded(comment.id) ? { maxHeight: '7.5rem', overflow: 'hidden' } : { maxHeight: 'none' }"><div class="comment-content text-gray-700 dark:text-gray-200" :data-id="comment.id">{{ comment.content }}</div></div>
+                    <div v-if="needsShowMore(comment.id)" class="mt-2"><button class="show-more-btn" @click="toggleExpanded(comment.id)"><span v-if="!isExpanded(comment.id)">Veure més</span><span v-else>Veure menys</span></button></div>
                 </div>
               </div>
             </div>
-            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">Encara no hi ha comentaris. Sigues el primer!</div>
+            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">Encara no hi ha comentaris.</div>
           </div>
         </div>
 
         <div class="lg:col-span-3">
           
-          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6">
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Vota les Opcions</h2>
+          <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-800">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Vota les Opcions</h2>
             
-            <div class="grid grid-cols-1 gap-4" v-auto-animate>
+            <div class="grid grid-cols-1 gap-6" v-auto-animate>
               
               <div 
                 v-for="opt in rankedOptions" 
                 :key="opt.id" 
                 :class="[
-                  'relative p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg', 
-                  getPodiumClasses(opt.rank, opt.votes_count).card
+                  'relative flex flex-col sm:flex-row rounded-xl shadow-md transition-all duration-300 hover:shadow-lg overflow-visible border', 
+                  getPodiumClasses(opt.rank, opt.votes_count).card.replace('p-4', '') 
                 ]"
               > 
                 <span 
                   :class="[
-                    'absolute -top-3 -left-3 flex items-center justify-center w-8 h-8 rounded-full text-white font-bold text-lg shadow-lg z-10',
+                    'absolute -top-3 -left-3 flex items-center justify-center w-10 h-10 rounded-full text-white font-bold text-xl shadow-lg z-30',
                     getPodiumClasses(opt.rank, opt.votes_count).badge
                   ]"
                 >
                   {{ opt.rank }}
                 </span>
 
-                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
+                <div class="w-full sm:w-48 sm:h-48 bg-black relative group shrink-0 sm:rounded-l-xl overflow-hidden">
+                  
+                  <iframe 
+                    v-if="opt.video_url"
+                    :src="getYoutubeEmbedUrl(opt.video_url)"
+                    class="w-full h-full absolute inset-0"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
 
-                  <div class="flex-shrink-0 w-full sm:w-32 h-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden mb-3 sm:mb-0">
-                    <iframe 
-                      v-if="opt.video_url"
-                      :src="getYoutubeEmbedUrl(opt.video_url)"
-                      class="w-full h-full"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                    ></iframe>
+                  <img
+                    v-else-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
+                    :src="opt.image.startsWith('/storage/') ? opt.image : `/storage/${opt.image}`"
+                    alt="Imatge opció"
+                    class="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                  />
+                  
+                  <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-gray-200 dark:bg-gray-800">
+                    <span class="text-5xl mb-2">📷</span>
+                    <span class="text-sm font-medium">Sense contingut</span>
+                  </div>
+                </div>
 
-                    <img
-                      v-else-if="opt.image && (opt.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
-                      :src="opt.image.startsWith('/storage/') ? opt.image : `/storage/${opt.image}`"
-                      alt="Imatge opció"
-                      class="w-full h-full object-cover"
-                    />
-                    <span v-else class="text-gray-400 text-sm">Sense imatge</span>
+                <div class="flex-1 p-6 flex flex-col justify-center bg-white dark:bg-gray-800 sm:rounded-r-xl">
+                  
+                  <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100 leading-tight" :title="opt.name">
+                    {{ opt.name }}
+                  </h3>
+
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden mb-2 shadow-inner">
+                    <div 
+                      class="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-red-500 dark:to-red-600 h-4 transition-all duration-700 ease-out relative" 
+                      :style="{ width: getPercentage(opt.votes_count) + '%' }"
+                    ></div>
                   </div>
 
-                  <div class="flex-1 min-w-0">
-                    <h3 class="text-lg font-bold truncate mb-2 text-gray-900 dark:text-gray-100" :title="opt.name">
-                      {{ opt.name }}
-                    </h3>
+                  <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-4 font-medium">
+                    <span>{{ opt.votes_count }} vots</span>
+                    <span>{{ getPercentage(opt.votes_count) }}%</span>
+                  </div>
 
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
-                      <div 
-                        class="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-red-500 dark:to-red-600 h-4 transition-all duration-700 ease-out" 
-                        :style="{ width: getPercentage(opt.votes_count) + '%' }"
-                      ></div>
-                    </div>
+                  <div class="mt-auto">
+                    <button
+                      v-if="votedOptionId !== opt.id"
+                      @click="vote(opt.id)"
+                      class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold rounded-lg shadow-md active:scale-[0.98] transform transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      Votar
+                    </button>
 
-                    <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      <span>{{ opt.votes_count }} vots</span>
-                      <span>{{ getPercentage(opt.votes_count) }}%</span>
-                    </div>
-
-                    <div class="mt-4 flex items-center gap-3">
-                      <button
-                        v-if="votedOptionId !== opt.id"
-                        @click="vote(opt.id)"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded active:scale-95 transform transition-all duration-150 ease-out"
-                      >
-                        Votar
-                      </button>
-                      <template v-else>
-                        <span class="px-4 py-2 bg-green-600 text-white rounded">
-                          ✅ Has votat "{{ opt.name }}"
-                        </span>
+                    <template v-else>
+                      <div class="flex items-center gap-3 w-full">
+                        <div class="flex-1 py-2 px-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-bold rounded-lg text-center text-sm flex items-center justify-center">
+                          ✅ Has votat
+                        </div>
+                        
                         <button
                           @click="unvoteRanking"
-                          class="px-3 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-100 rounded hover:bg-gray-400 dark:hover:bg-gray-500 active:scale-95 transform transition-all duration-150 ease-out"
+                          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition text-sm shadow-sm whitespace-nowrap"
                         >
-                          Treure votació
+                          Retirar vot
                         </button>
-                      </template>
-                    </div>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
