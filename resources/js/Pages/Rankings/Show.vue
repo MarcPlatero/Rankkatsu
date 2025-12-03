@@ -374,7 +374,7 @@ textarea.resize-none {
 
       <div class="grid grid-cols-1 lg:grid-cols-5 lg:gap-12">
 
-        <div class="lg:col-span-2 space-y-8">
+        <div class="lg:col-span-2 space-y-4">
           
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-800">
             
