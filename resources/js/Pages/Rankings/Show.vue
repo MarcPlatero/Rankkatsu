@@ -473,7 +473,14 @@ textarea.resize-none {
                 </div>
               </form>
             </div>
-            <div v-else class="text-gray-600 dark:text-gray-300 text-sm"><a href="/login" class="text-blue-600 underline">Inicia sessió</a> per publicar comentaris.</div>
+            <div v-else class="text-gray-600 dark:text-gray-300 text-sm mb-6"> <a 
+                href="/login" 
+                class="font-semibold hover:underline text-blue-600 dark:text-red-400"
+              >
+                Inicia sessió
+              </a> 
+              per publicar comentaris.
+            </div>
 
             <div class="mb-4 flex items-center gap-3">
               <label for="sort" class="text-gray-700 dark:text-gray-300 text-sm">Ordenar per:</label>
