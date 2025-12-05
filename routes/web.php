@@ -20,9 +20,10 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
+// Configuració
 Route::get('/settings', function () {
     return inertia('Settings/Configuration');
-})->middleware(['auth'])->name('settings.configuration');
+})->name('settings.configuration');
 
 // Rankings
 Route::middleware('auth')->group(function () {
@@ -35,17 +36,17 @@ Route::resource('rankings', RankingController::class)->only([
     'index', 'store', 'show', 'destroy'
 ]);
 
-// Votació (només autenticats)
+// Votació Opcions (només autenticats)
 Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
     Route::post('/rankings/{ranking}/unvote', [RankingController::class, 'unvote'])->name('rankings.unvote');
 });
 
-// Guardem i esborrem comentaris (nested under rankings)
+// Comentaris
 Route::post('/rankings/{ranking}/comments', [CommentController::class, 'store'])->middleware('auth')->name('rankings.comments.store');
 Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth')->name('rankings.comments.destroy');
 
-// Votació comentaris (només autenticats)
+// Votació Comentaris
 Route::post('/comments/{comment}/vote', [CommentVoteController::class, 'store'])->middleware('auth')->name('comments.vote');
 Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])->name('comments.unvote');
 
@@ -53,13 +54,7 @@ Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/rankings/yours', [RankingController::class, 'yours'])->name('rankings.yours');
     Route::get('/rankings/favorites', [RankingController::class, 'favorites'])->name('rankings.favorites');
-    Route::post('/rankings/{ranking}/favorite', [RankingController::class, 'toggleFavorite'])->name('rankings.toggleFavorite');
-});
-
-// Favorits
-Route::middleware('auth')->group(function () {
-    Route::post('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'toggle']);
-    Route::get('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'check']);
+    Route::post('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'toggle'])->name('rankings.toggleFavorite');
 });
 
 // Likes
@@ -68,7 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
 });
 
-// Usuari
+// Usuari (Perfil)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -76,7 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
 });
 
-// Moderació (només per a usuaris amb rol d'admin o moderador)
+// Moderació (només admin/moderadors)
 Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () {
     Route::get('/moderation', [ModerationController::class, 'dashboard'])->name('admin.moderation.dashboard');
     Route::get('/moderation/{ranking}', [ModerationController::class, 'show'])->name('admin.moderation.show');
