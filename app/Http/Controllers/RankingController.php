@@ -325,18 +325,4 @@ class RankingController extends Controller
             'favorites' => $favorites,
         ]);
     }
-
-    // Afegir o treure de favorits
-    public function toggleFavorite(Request $request, Ranking $ranking)
-    {
-        $user = $request->user();
-
-        if ($user->favoriteRankings()->where('ranking_id', $ranking->id)->exists()) {
-            $user->favoriteRankings()->detach($ranking->id);
-            return back()->with('success', 'Ranking eliminat dels favorits.');
-        } else {
-            $user->favoriteRankings()->attach($ranking->id);
-            return back()->with('success', 'Ranking afegit als favorits!');
-        }
-    }
 }
