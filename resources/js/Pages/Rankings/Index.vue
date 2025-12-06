@@ -3,6 +3,7 @@ import { Link, usePage, router } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
+import AdBanner from '@/Components/AdBanner.vue'
 
 const props = defineProps({
   rankings: Object,
@@ -149,6 +150,10 @@ function goToRanking(id) {
         </div>
       </div>
 
+      <div class="max-w-4xl mx-auto mb-8">
+        <AdBanner format="horizontal" />
+      </div>
+
       <div class="text-center mb-12">
         <Link
           href="/rankings/create"
@@ -247,7 +252,11 @@ function goToRanking(id) {
         </div>
       </div>
 
-      <div v-if="rankings.next_page_url" class="text-center mt-12 pb-10">
+      <div class="max-w-4xl mx-auto mt-12">
+        <AdBanner format="horizontal" />
+      </div>
+
+      <div v-if="rankings.next_page_url" class="text-center mt-8 pb-10">
         <button
           @click="loadMore"
           :disabled="isLoadingMore"
