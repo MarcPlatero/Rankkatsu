@@ -8,11 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Billable; 
 
     /**
      * The attributes that are mass assignable.
@@ -25,6 +26,7 @@ class User extends Authenticatable
         'password',
         'is_admin',
         'profile_photo_path',
+        'is_premium',
     ];
 
     /**
@@ -55,6 +57,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_premium' => 'boolean',
         ];
     }
 
