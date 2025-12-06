@@ -6,6 +6,7 @@ import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { useForm } from '@inertiajs/vue3'
 import { vAutoAnimate } from '@formkit/auto-animate'
 import { onMounted, nextTick } from 'vue'
+import AdBanner from '@/Components/AdBanner.vue'
 
 const props = defineProps({
   ranking: Object,
@@ -382,7 +383,7 @@ textarea.resize-none {
               v-if="ranking.image && (ranking.is_approved || $page.props.auth?.user?.is_admin || $page.props.auth?.user?.id === ranking.user_id)"
               :src="ranking.image.startsWith('/storage/') ? ranking.image : `/storage/${ranking.image}`"
               alt="Imatge del rànquing"
-              class="w-full h-64 object-cover rounded-lg mb-6"
+              class="w-full h-64 object-cover rounded-lg mb-6 shadow-sm"
             />
             <div v-else class="w-full h-64 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-lg mb-6">
               <span class="text-gray-400 text-sm">Sense imatge</span>
@@ -461,10 +462,12 @@ textarea.resize-none {
             </div>
           </div>
 
+          <AdBanner format="horizontal" />
+
           <div class="bg-gray-50 dark:bg-gray-900 transition-colors duration-500 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-gray-800">
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
-            
-            <div v-if="$page.props.auth?.user" class="mb-6">
+             <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Comentaris</h2>
+             
+             <div v-if="$page.props.auth?.user" class="mb-6">
               <form @submit.prevent="submitComment" class="space-y-2">
                 <textarea ref="textareaRef" v-model="commentForm.content" placeholder="Escriu el teu comentari..." class="w-full border dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 rounded p-2 resize-none transition-all duration-300" rows="3" @input="autoResize($event)"></textarea>
                 <div class="flex justify-between items-center">
@@ -473,15 +476,11 @@ textarea.resize-none {
                 </div>
               </form>
             </div>
-            <div v-else class="text-gray-600 dark:text-gray-300 text-sm mb-6"> <a 
-                href="/login" 
-                class="font-semibold hover:underline text-blue-600 dark:text-red-400"
-              >
-                Inicia sessió
-              </a> 
-              per publicar comentaris.
+            
+            <div v-else class="text-gray-600 dark:text-gray-300 text-sm mb-6">
+              <a href="/login" class="font-bold hover:underline text-blue-600 dark:text-red-400 transition-colors">Inicia sessió</a> per publicar comentaris.
             </div>
-
+            
             <div class="mb-4 flex items-center gap-3">
               <label for="sort" class="text-gray-700 dark:text-gray-300 text-sm">Ordenar per:</label>
               <select id="sort" v-model="sort" class="border rounded-lg px-4 py-2 w-48 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 cursor-pointer">
@@ -490,7 +489,7 @@ textarea.resize-none {
                 <option value="oldest">Més antics</option>
               </select>
             </div>
-            
+
             <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
                <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700"><div class="flex justify-between"><div><div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div></div><div class="flex items-center gap-2"><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div></div></div><div class="mt-3 space-y-2"><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div></div></div>
             </div>
@@ -598,13 +597,13 @@ textarea.resize-none {
 
                     <template v-else>
                       <div class="flex items-center gap-3 w-full">
-                        <div class="flex-1 py-2 px-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-bold rounded-lg text-center text-sm flex items-center justify-center">
+                        <div class="flex-1 py-2 px-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 font-bold rounded-lg text-center text-sm flex items-center justify-center h-10">
                           ✅ Has votat
                         </div>
                         
                         <button
                           @click="unvoteRanking"
-                          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition text-sm shadow-sm whitespace-nowrap"
+                          class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 font-medium rounded-lg transition text-sm shadow-sm whitespace-nowrap h-10 border border-gray-200 dark:border-gray-600"
                         >
                           Retirar vot
                         </button>
@@ -612,10 +611,17 @@ textarea.resize-none {
                     </template>
                   </div>
                 </div>
+
               </div>
             </div>
+
+            <div class="mt-8">
+              <AdBanner format="square" />
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
   </AppLayout>
