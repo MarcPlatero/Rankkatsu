@@ -8,6 +8,17 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+// Càrrega Google AdSense
+// Això evita que es carreguin anuncis mentre programo en localhost
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    const script = document.createElement('script');
+    // Quan tingui el meu compte d'AdSense, hauré de canviar "TU_ID_DE_CLIENTE_AQUI"
+    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-TU_ID_DE_CLIENTE_AQUI";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+}
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
