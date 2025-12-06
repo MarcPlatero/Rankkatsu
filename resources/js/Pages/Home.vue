@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import AdBanner from '@/Components/AdBanner.vue'
 
 defineProps({ 
   topRankings: Array,
@@ -19,15 +20,9 @@ defineProps({
 }
 
 @keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
@@ -88,8 +83,12 @@ defineProps({
       </div>
     </section>
 
+    <div class="max-w-7xl mx-auto px-6">
+      <AdBanner format="horizontal" />
+    </div>
+
     <!-- Llistat de rànquings -->
-    <section class="max-w-7xl mx-auto px-6 pt-12 pb-6">
+    <section class="max-w-7xl mx-auto px-6 pt-6 pb-6">
       <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 flex items-center gap-2">
         🔥 Rànquings més populars
       </h2>
@@ -132,6 +131,10 @@ defineProps({
       </div>
     </section>
 
+    <div class="max-w-7xl mx-auto px-6">
+      <AdBanner format="horizontal" />
+    </div>
+
     <section class="max-w-7xl mx-auto px-6 py-12 border-t border-gray-200 dark:border-gray-800">
       <h2 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100 flex items-center gap-2">
         🆕 Últims rànquings
@@ -169,6 +172,16 @@ defineProps({
           </Link>
         </div>
       </div>
+      
+      <div v-if="latestRankings.length === 0" class="text-center text-gray-500 mt-4">
+        Encara no s'han creat rànquings.
+      </div>
+
+      <div class="mt-12">
+        <AdBanner format="horizontal" />
+      </div>
+
     </section>
+
   </AppLayout>
 </template>
