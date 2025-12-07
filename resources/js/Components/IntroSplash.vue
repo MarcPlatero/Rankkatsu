@@ -55,7 +55,7 @@ onMounted(() => {
 
       <h1 class="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic transform -skew-x-6 animate-title-zoom">
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-red-400 animate-shine">
-          RankDuel
+          Rankkatsu
         </span>
       </h1>
 
