@@ -3,26 +3,27 @@ import { onMounted, computed, ref } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
-    format: { type: String, default: 'auto' },
-    // Slot ID que te dará Google AdSense (opcional por ahora)
-    slotId: { type: String, default: '' } 
+  format: { type: String, default: 'auto' },
+  slotId: { type: String, default: '' } 
 })
 
 const page = usePage()
 const isPremium = computed(() => page.props.auth.user?.is_premium)
 
-// Detectar si estem en local per mostrar un placeholder fals
-// (En producció això serà false y sortirà l'anunci real)
+// Detectar localhost
 const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 
 onMounted(() => {
-    if (!isPremium.value && !isDev) {
-        try {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {
-            console.error('AdSense error:', e);
-        }
+  if (!isPremium.value && !isDev) {
+    try {
+      // Afegim l'anunci només si existeix la variable
+      if (typeof window.adsbygoogle !== 'undefined') {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (e) {
+      console.error('AdSense error:', e);
     }
+  }
 })
 </script>
 
