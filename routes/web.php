@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentVoteController;
 use App\Http\Controllers\FavoriteRankingController;
 use App\Http\Controllers\RankingLikeController;
 use App\Http\Controllers\Admin\ModerationController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -79,6 +80,13 @@ Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () 
     Route::post('/moderation/{ranking}/reject', [ModerationController::class, 'rejectRanking'])->name('admin.moderation.reject');
     Route::post('/moderation/images/{image}/approve', [ModerationController::class, 'approveImage'])->name('admin.moderation.image.approve');
     Route::post('/moderation/images/{image}/reject', [ModerationController::class, 'rejectImage'])->name('admin.moderation.image.reject');
+});
+
+// Rutes de subscripció Premium
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/premium', [SubscriptionController::class, 'index'])->name('premium.index');
+    Route::post('/premium/subscribe', [SubscriptionController::class, 'create'])->name('premium.subscribe');
+    Route::get('/premium/success', [SubscriptionController::class, 'success'])->name('premium.success');
 });
 
 require __DIR__.'/auth.php';
