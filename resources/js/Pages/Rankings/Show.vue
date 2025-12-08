@@ -493,6 +493,7 @@ textarea.resize-none {
             <div v-if="loadingComments" class="space-y-4 mt-6 animate-pulse">
                <div v-for="i in 3" :key="i" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700"><div class="flex justify-between"><div><div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-24 mb-2"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-32"></div></div><div class="flex items-center gap-2"><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div><div class="h-6 w-10 bg-gray-200 dark:bg-gray-700 rounded"></div></div></div><div class="mt-3 space-y-2"><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6"></div></div></div>
             </div>
+            
             <div v-else-if="comments && comments.length > 0" class="space-y-4 mt-6" v-auto-animate>
               <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
                 <div class="flex justify-between">
@@ -500,7 +501,18 @@ textarea.resize-none {
                     <img v-if="comment.user?.profile_photo_url" :src="comment.user.profile_photo_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <div v-else class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700 flex-shrink-0"><svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div>
                     <div class="min-w-0">
-                      <div class="font-semibold text-sm truncate">{{ comment.user?.name || 'Usuari' }}</div>
+                      
+                      <div class="font-semibold text-sm truncate flex items-center gap-2">
+                        <span>{{ comment.user?.name || 'Usuari' }}</span>
+                        <span 
+                          v-if="comment.user?.is_premium" 
+                          class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase leading-none"
+                          title="Membre Premium"
+                        >
+                          Premium
+                        </span>
+                      </div>
+
                       <div class="text-xs text-gray-500 dark:text-gray-400">{{ new Date(comment.created_at).toLocaleString() }}</div>
                     </div>
                   </div>
@@ -516,7 +528,7 @@ textarea.resize-none {
                 </div>
               </div>
             </div>
-            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">Encara no hi ha comentaris.</div>
+            <div v-else class="text-gray-600 dark:text-gray-400 mt-4">Encara no hi ha comentaris. Sigues el primer!</div>
           </div>
         </div>
 
