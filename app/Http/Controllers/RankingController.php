@@ -231,12 +231,14 @@ class RankingController extends Controller
         // Ordenació dels comentaris
         $sort = $request->get('sort', 'likes');
 
-        $commentsQuery = Comment::with('user')
-            ->where('ranking_id', $ranking->id)
-            ->withCount([
-                'votes as likes_count' => fn($q) => $q->where('is_like', 1),
-                'votes as dislikes_count' => fn($q) => $q->where('is_like', 0),
-            ]);
+        $commentsQuery = Comment::with(['user' => function($query) {
+            $query->select('id', 'name', 'profile_photo_path', 'is_premium');
+        }])
+        ->where('ranking_id', $ranking->id)
+        ->withCount([
+            'votes as likes_count' => fn($q) => $q->where('is_like', 1),
+            'votes as dislikes_count' => fn($q) => $q->where('is_like', 0),
+        ]);
 
         switch ($sort) {
             case 'oldest':
