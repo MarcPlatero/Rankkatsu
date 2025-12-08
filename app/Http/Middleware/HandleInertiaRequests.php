@@ -32,11 +32,13 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => fn () => $request->user() ? [
+                'user' => $request->user() ? [
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
-                    'is_admin' => $request->user()->is_admin, // 👈 AFEGIT
+                    'profile_photo_url' => $request->user()->profile_photo_url,
+                    'is_admin' => (bool) $request->user()->is_admin,
+                    'is_premium' => (bool) $request->user()->is_premium,
                 ] : null,
             ],
             'flash' => [
