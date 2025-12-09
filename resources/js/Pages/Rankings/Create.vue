@@ -8,6 +8,7 @@ import { useForm } from '@inertiajs/vue3'
 import axios from 'axios'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
+import AdBanner from '@/Components/AdBanner.vue'
 
 const form = useForm({
   title: '',
@@ -323,6 +324,11 @@ textarea { resize: none; }
       </div>
 
       <div class="relative z-10 max-w-4xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl rounded-2xl p-10 border border-gray-200 dark:border-gray-700">
+        
+        <div class="mb-8">
+           <AdBanner format="horizontal" />
+        </div>
+        
         <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
           🏆 Crear un nou rànquing
         </h1>
