@@ -5,6 +5,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import AccountInfo from './Tabs/AccountInfo.vue'
 import FavoriteRankings from './Tabs/FavoriteRankings.vue'
 import YourRankings from './Tabs/YourRankings.vue'
+import AdBanner from '@/Components/AdBanner.vue'
 
 const props = defineProps({
   user: Object,
@@ -61,6 +62,8 @@ const logout = () => {
           <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">Favorits</div>
         </div>
       </div>
+
+      <AdBanner format="horizontal" />
 
       <div
         class="flex border-b mb-6 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden transition-colors duration-300"
