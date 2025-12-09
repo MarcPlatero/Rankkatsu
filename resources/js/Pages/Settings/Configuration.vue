@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import AdBanner from '@/Components/AdBanner.vue'
 
 const isDarkMode = ref(false)
 
@@ -19,9 +20,7 @@ function toggleDarkMode() {
 </script>
 
 <style>
-html {
-  transition: background-color 0.3s, color 0.3s;
-}
+html { transition: background-color 0.3s, color 0.3s; }
 </style>
 
 <template>
@@ -29,16 +28,10 @@ html {
     <div class="max-w-3xl mx-auto p-6">
       <h1 class="text-2xl font-bold mb-6">⚙️ Configuració</h1>
 
-      <!-- Mode clar/obscur -->
       <section class="mb-8 p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 shadow">
-        <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
-          Aparença
-        </h2>
+        <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Aparença</h2>
         <div class="flex items-center justify-between">
-          <span class="text-gray-700 dark:text-gray-300">
-            Mode {{ isDarkMode ? 'fosc 🌙' : 'clar ☀️' }}
-          </span>
-          
+          <span class="text-gray-700 dark:text-gray-300">Mode {{ isDarkMode ? 'fosc 🌙' : 'clar ☀️' }}</span>
           <button
             @click="toggleDarkMode"
             class="px-4 py-2 text-white rounded-lg transition
@@ -50,15 +43,15 @@ html {
         </div>
       </section>
 
-      <!-- Idioma (opció futura) -->
       <section class="mt-8 p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 shadow">
-        <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
-          Idioma
-        </h2>
-        <p class="text-gray-600 dark:text-gray-400">
-          Properament podràs triar l’idioma de la plataforma 🌍.
-        </p>
+        <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Idioma</h2>
+        <p class="text-gray-600 dark:text-gray-400">Properament podràs triar l’idioma de la plataforma 🌍.</p>
       </section>
+
+      <div class="mt-12">
+        <AdBanner format="horizontal" />
+      </div>
+
     </div>
   </AppLayout>
 </template>
