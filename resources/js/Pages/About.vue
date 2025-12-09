@@ -1,7 +1,25 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import AdBanner from '@/Components/AdBanner.vue'
 </script>
+
+<style scoped>
+@keyframes gradient-slow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.animate-gradient-slow {
+  animation: gradient-slow 8s ease infinite;
+}
+</style>
 
 <template>
   <AppLayout>
@@ -94,6 +112,10 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           </div>
         </div>
 
+        <div class="mt-16">
+          <AdBanner format="horizontal" />
+        </div>
+
         <!-- Botó -->
         <div class="text-center mt-16">
           <p class="text-lg text-gray-800 dark:text-gray-200 mb-4">
@@ -114,20 +136,3 @@ import AppLayout from '@/Layouts/AppLayout.vue'
     </div>
   </AppLayout>
 </template>
-
-<style scoped>
-@keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-.animate-gradient-slow {
-  animation: gradient-slow 8s ease infinite;
-}
-</style>
