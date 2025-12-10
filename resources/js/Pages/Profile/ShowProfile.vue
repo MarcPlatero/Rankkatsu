@@ -39,7 +39,18 @@ const logout = () => {
         </div>
 
         <div class="flex-1 text-center sm:text-left">
-          <h2 class="text-2xl font-bold mb-1">{{ user.name }}</h2>
+          
+          <div class="flex items-center justify-center sm:justify-start gap-3 mb-1">
+            <h2 class="text-2xl font-bold">{{ user.name }}</h2>
+            
+            <span 
+              v-if="user.is_premium" 
+              class="px-2 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase tracking-wider"
+              title="Membre Premium"
+            >
+              Premium
+            </span>
+          </div>
           <p class="text-gray-600 dark:text-gray-400 mb-4">
             Compte creat el {{ new Date(user.created_at).toLocaleDateString() }}
           </p>
@@ -66,7 +77,7 @@ const logout = () => {
       <AdBanner format="horizontal" />
 
       <div
-        class="flex border-b mb-6 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden transition-colors duration-300"
+        class="flex border-b mb-6 mt-8 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow-sm overflow-hidden transition-colors duration-300"
       >
         <button
           class="flex-1 py-3 font-medium text-center transition border-b-4 hover:bg-gray-100 dark:hover:bg-gray-700"
