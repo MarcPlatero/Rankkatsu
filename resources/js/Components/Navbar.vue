@@ -55,7 +55,7 @@ const logout = () => {
             <span class="text-gray-700 dark:text-gray-200">
               Hola, {{ user.name }}
             </span>
-            <span v-if="user.is_premium" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase tracking-wider">PRO</span>
+            <span v-if="user.is_premium" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase tracking-wider">Premium</span>
           </div>
           
           <button
