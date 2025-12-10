@@ -1,11 +1,10 @@
 <script setup>
 import { Head, router, usePage } from '@inertiajs/vue3'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { useForm } from '@inertiajs/vue3'
 import { vAutoAnimate } from '@formkit/auto-animate'
-import { onMounted, nextTick } from 'vue'
 import AdBanner from '@/Components/AdBanner.vue'
 
 const props = defineProps({
@@ -17,6 +16,41 @@ const props = defineProps({
 })
 
 const page = usePage()
+const isPremium = computed(() => page.props.auth.user?.is_premium)
+
+const showAdOverlay = ref(false)
+const adCountdown = ref(5)
+
+onMounted(() => {
+  nextTick(() => checkOverflow())
+
+  // Comptador de visites per mostrar anuncis
+  if (!isPremium.value) {
+    let visits = parseInt(localStorage.getItem('rank_visits') || '0')
+    
+    visits++
+
+    console.log(`Visita número: ${visits}`)
+
+    if (visits >= 10) {
+      showAdOverlay.value = true
+      adCountdown.value = 5
+      
+      visits = 0
+
+      const timer = setInterval(() => {
+        adCountdown.value--
+        if (adCountdown.value <= 0) {
+          clearInterval(timer)
+          showAdOverlay.value = false
+        }
+      }, 1000)
+    }
+
+    // Guardem el nou número al navegador
+    localStorage.setItem('rank_visits', visits.toString())
+  }
+})
 
 // Flash messages
 const flash = ref({ success: null, error: null })
@@ -255,11 +289,7 @@ function isExpanded(commentId) {
 }
 
 // Veure més / menys comentaris
-const longComments = ref({}) // Guarda si cada comentari és llarg (necessita "veure més")
-
-onMounted(() => {
-  nextTick(() => checkOverflow()) // Esperem que es renderitzi el contingut
-})
+const longComments = ref({})
 
 // Recalcular quan canviïn els comentaris
 watch(() => props.comments, () => {
@@ -435,9 +465,18 @@ textarea.resize-none {
                   <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
                     <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                   </div>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span>
-                  </p>
+                  
+                  <div class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+                    <span>Creat per: <span class="font-semibold">{{ ranking.user?.name || 'Usuari desconegut' }}</span></span>
+                    
+                    <span 
+                      v-if="ranking.user?.is_premium" 
+                      class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase leading-none" 
+                      title="Membre Premium"
+                    >
+                      Premium
+                    </span>
+                  </div>
                 </div>
 
                 <button 
@@ -623,7 +662,6 @@ textarea.resize-none {
                     </template>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -636,5 +674,18 @@ textarea.resize-none {
 
       </div>
     </div>
+
+    <div v-if="showAdOverlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white">
+      <div class="text-2xl font-bold mb-4">PUBLICITAT</div>
+      
+      <div class="text-6xl font-black mb-8 animate-pulse">{{ adCountdown }}</div>
+      
+      <p class="text-gray-400">Pots continuar votant en uns segons...</p>
+      
+      <p class="text-xs text-gray-500 mt-8">
+        Fes-te <span class="text-yellow-500 font-bold">Premium</span> per saltar això.
+      </p>
+    </div>
+
   </AppLayout>
 </template>
