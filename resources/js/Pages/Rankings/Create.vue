@@ -1,14 +1,17 @@
 <script setup>
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import * as nsfwjs from 'nsfwjs'
 import * as tf from '@tensorflow/tfjs'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import axios from 'axios'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import AdBanner from '@/Components/AdBanner.vue'
+
+const page = usePage()
+const isPremium = computed(() => page.props.auth.user?.is_premium)
 
 const form = useForm({
   title: '',
@@ -38,6 +41,9 @@ const cropperSrc = ref(null)
 const cropperAspectRatio = ref(16 / 9)
 const editingImageIndex = ref(null)
 const cropperRef = ref(null)
+
+const showAdOverlay = ref(false)
+const adCountdown = ref(5)
 
 onMounted(async () => {
   try {
@@ -188,12 +194,32 @@ watch(() => form.options, newOptions => {
   })
 }, { deep: true })
 
-
 const submit = async () => {
+
   if (nsfwError.value) {
     alert('Hi ha imatges inapropiades. Revisa-les abans de continuar.')
     return
   }
+
+  if (isPremium.value) {
+    await processSubmit()
+    return
+  }
+
+  showAdOverlay.value = true
+  adCountdown.value = 5
+  
+  const timer = setInterval(() => {
+    adCountdown.value--
+    if (adCountdown.value <= 0) {
+      clearInterval(timer)
+      showAdOverlay.value = false
+      processSubmit()
+    }
+  }, 1000)
+}
+
+const processSubmit = async () => {
   processing.value = true
   form.errors = {}
   try {
@@ -496,7 +522,7 @@ textarea { resize: none; }
     </section>
     
     <div v-if="isCropperOpen" class="cropper-modal">
-        <div class="cropper-container">
+      <div class="cropper-container">
         <Cropper
           ref="cropperRef"
           :src="cropperSrc"
@@ -522,5 +548,16 @@ textarea { resize: none; }
       </div>
     </div>
 
+    <div v-if="showAdOverlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white">
+      <div class="text-2xl font-bold mb-4">PUBLICITAT</div>
+      
+      <div class="text-6xl font-black mb-8 animate-pulse">{{ adCountdown }}</div>
+      
+      <p class="text-gray-400">El teu rànquing es crearà en uns segons...</p>
+      
+      <p class="text-xs text-gray-500 mt-8">
+        Fes-te <span class="text-yellow-500 font-bold">Premium</span> per saltar això.
+      </p>
+    </div>
   </AppLayout>
 </template>
