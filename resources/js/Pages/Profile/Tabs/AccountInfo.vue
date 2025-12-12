@@ -117,7 +117,7 @@ const handlePasswordUpdated = () => {
             <span class="text-xl">🔒</span>
           </div>
           
-          </button>
+        </button>
         
         <button
           type="button"
@@ -137,7 +137,7 @@ const handlePasswordUpdated = () => {
       </div>
       
       <p v-if="!isPremium" class="text-xs text-gray-500 mt-3 flex items-center gap-1">
-        Els avatars amb cadenat són exclusius per a membres<span class="bg-yellow-400 text-black text-[9px] px-1 rounded font-bold">Premium</span>.
+        Els avatars amb cadenat són exclusius per a membres <span class="bg-yellow-400 text-black text-[9px] px-1 rounded font-bold">Premium</span>.
       </p>
 
       <div v-if="form.errors.avatar" class="text-red-600 text-sm mt-1">{{ form.errors.avatar }}</div>
@@ -148,7 +148,7 @@ const handlePasswordUpdated = () => {
       <input
         v-model="form.name"
         type="text"
-        class="mt-1 w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition"
+        class="mt-1 w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-red-500 focus:ring-blue-500 dark:focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition"
       />
       <div v-if="form.errors.name" class="text-red-600 text-sm mt-1">{{ form.errors.name }}</div>
     </div>
@@ -167,7 +167,7 @@ const handlePasswordUpdated = () => {
       <button
         @click="submit"
         :disabled="form.processing"
-        class="px-4 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition disabled:opacity-50 shadow-sm"
+        class="px-4 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 transition disabled:opacity-50 shadow-sm"
       >
         {{ form.processing ? 'Guardant...' : '💾 Guardar canvis' }}
       </button>
