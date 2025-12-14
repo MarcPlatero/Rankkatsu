@@ -64,6 +64,7 @@ const submit = () => {
               required
               autofocus
               autocomplete="name"
+              maxlength="30"
             />
             <InputError class="mt-2" :message="form.errors.name" />
           </div>
