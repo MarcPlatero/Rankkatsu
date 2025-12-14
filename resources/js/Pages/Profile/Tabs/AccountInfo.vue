@@ -145,12 +145,23 @@ const handlePasswordUpdated = () => {
 
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom d'usuari</label>
+      
       <input
         v-model="form.name"
         type="text"
-        class="mt-1 w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-red-500 focus:ring-blue-500 dark:focus:ring-red-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition"
+        maxlength="30"
+        class="mt-1 w-full border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition"
       />
-      <div v-if="form.errors.name" class="text-red-600 text-sm mt-1">{{ form.errors.name }}</div>
+      
+      <div class="flex justify-between mt-1">
+        <div class="text-red-600 text-sm">
+            <span v-if="form.errors.name">{{ form.errors.name }}</span>
+        </div>
+        
+        <div class="text-xs" :class="form.name.length >= 30 ? 'text-red-500 font-bold' : 'text-gray-500'">
+            {{ form.name.length }}/30
+        </div>
+      </div>
     </div>
 
     <div>
@@ -159,7 +170,7 @@ const handlePasswordUpdated = () => {
         v-model="form.email"
         type="email"
         disabled
-        class="mt-1 w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-400 cursor-not-allowed"
+        class="mt-1 w-full bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-gray-600 dark:text-gray-400 cursor-not-allowed truncate"
       />
     </div>
 
