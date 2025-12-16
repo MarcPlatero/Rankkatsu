@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/premium', [SubscriptionController::class, 'index'])->name('premium.index');
     Route::post('/premium/subscribe', [SubscriptionController::class, 'create'])->name('premium.subscribe');
     Route::get('/premium/success', [SubscriptionController::class, 'success'])->name('premium.success');
+    Route::get('/premium/manage', [SubscriptionController::class, 'portal'])->name('premium.manage');
 });
 
 require __DIR__.'/auth.php';
