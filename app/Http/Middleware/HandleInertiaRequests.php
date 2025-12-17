@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'profile_photo_url' => $request->user()->profile_photo_url,
                     'is_admin' => (bool) $request->user()->is_admin,
-                    'is_premium' => (bool) $request->user()->is_premium,
+                    'is_premium' => (bool) ($request->user()->is_premium || $request->user()->subscribed('default')),
                 ] : null,
             ],
             'flash' => [
