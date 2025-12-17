@@ -57,9 +57,29 @@ class SubscriptionController extends Controller
     // Quan l'usuari torna després de pagar
     public function success(Request $request)
     {
-        // Activem el flag is_premium
+        // Activem el flag is_premium (per si és Lifetime)
+        // Si és mensual, Cashier ja ho gestiona.
         $request->user()->update(['is_premium' => true]);
 
         return Inertia::render('Premium/Success');
+    }
+
+    // Gestionar Subscripció (Portal de Client)
+    public function portal(Request $request)
+    {
+        $user = $request->user();
+
+        // Si és Premium però no té subscripció activa a Stripe, és Lifetime.
+        if ($user->is_premium && !$user->subscribed('default')) {
+            return back()->with('error', 'Tens un pla de per vida (Lifetime). No necessites gestionar cap subscripció.');
+        }
+
+        // Si no està subscrit de cap manera.
+        if (!$user->subscribed('default')) {
+             return back()->with('error', 'No tens cap subscripció activa per gestionar.');
+        }
+
+        // Redirigeix al portal de Stripe
+        return $user->redirectToBillingPortal(route('premium.index'));
     }
 }
