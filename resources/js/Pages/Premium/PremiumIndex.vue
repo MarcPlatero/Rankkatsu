@@ -19,9 +19,7 @@ const subscribe = (type) => {
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = '_token';
-    
     csrfInput.value = props.csrfToken; 
-    
     form.appendChild(csrfInput);
 
     const typeInput = document.createElement('input');
@@ -64,8 +62,31 @@ const subscribe = (type) => {
         Desbloqueja tot el potencial. Sense anuncis, amb estil exclusiu i per sempre.
       </p>
 
-      <div v-if="isPremium" class="max-w-md mx-auto bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 p-6 rounded-2xl font-bold text-xl border border-green-200 dark:border-green-800 mb-12 animate-bounce">
-        ✅ Ja ets membre Premium! Gràcies pel teu suport!
+      <div v-if="isPremium" class="max-w-xl mx-auto">
+        
+        <div v-if="$page.props.flash?.error" class="mb-8 p-4 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-800 rounded-xl text-sm font-bold shadow-sm">
+            {{ $page.props.flash.error }}
+        </div>
+
+        <div class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 p-6 rounded-2xl font-bold text-xl border border-green-200 dark:border-green-800 mb-8 animate-bounce">
+          ✅ Ja ets membre Premium! Gràcies pel teu suport!
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Gestió de la Subscripció</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                Vols veure les teves factures, canviar el mètode de pagament o cancel·lar la subscripció?
+            </p>
+            
+            <a 
+                :href="route('premium.manage')"
+                class="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+            >
+                ⚙️ Gestionar Subscripció a Stripe
+            </a>
+            
+            <p class="text-xs text-gray-500 mt-2 italic">* Si tens un pla Lifetime, no cal gestionar res.</p>
+        </div>
       </div>
 
       <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
