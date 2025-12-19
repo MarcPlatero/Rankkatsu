@@ -97,7 +97,7 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.password" />
           </div>
 
-          <!-- Confirm Password -->
+          <!-- Confirmar Password -->
           <div>
             <InputLabel
               for="password_confirmation"
