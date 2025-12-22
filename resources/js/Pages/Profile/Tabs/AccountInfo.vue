@@ -100,11 +100,11 @@ const handlePasswordUpdated = () => {
           :class="[
             'relative w-16 h-16 rounded-full overflow-hidden transition-all duration-200 ease-in-out group',
             'focus:outline-none',
-            // Estil seleccionat
+            // Avatar seleccionat
             form.avatar === avatar.path
               ? 'ring-4 ring-blue-500 dark:ring-red-500 scale-105 z-10'
               : 'ring-2 ring-transparent hover:ring-gray-300 dark:hover:ring-gray-600',
-            // Estil bloquejat (Premium)
+            // Avatar bloquejat (Premium)
             (avatar.premium && !isPremium) ? 'cursor-not-allowed opacity-75 grayscale' : 'cursor-pointer'
           ]"
         >
