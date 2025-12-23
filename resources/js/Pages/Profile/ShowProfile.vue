@@ -6,6 +6,7 @@ import AccountInfo from './Tabs/AccountInfo.vue'
 import FavoriteRankings from './Tabs/FavoriteRankings.vue'
 import YourRankings from './Tabs/YourRankings.vue'
 import AdBanner from '@/Components/AdBanner.vue'
+import PixelAvatar from '@/Components/PixelAvatar.vue'
 
 const props = defineProps({
   user: Object,
@@ -44,9 +45,19 @@ const logout = () => {
         class="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6 mb-8 flex flex-col sm:flex-row items-center sm:space-x-6 transition-colors duration-300 border border-gray-100 dark:border-gray-800"
       >
         <div class="flex-shrink-0 mb-4 sm:mb-0">
-          <img v-if="user.profile_photo_url" :src="user.profile_photo_url" alt="Avatar" class="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700 shadow-md">
-          <div v-else class="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-gray-200 dark:border-gray-700 shadow-md">
-            <svg class="w-12 h-12 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+          
+          <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-700 shadow-md bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            
+            <PixelAvatar 
+              v-if="user.profile_photo_path" 
+              :id="user.profile_photo_path" 
+              className="w-full h-full"
+            />
+
+            <svg v-else class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+            </svg>
+
           </div>
         </div>
 
