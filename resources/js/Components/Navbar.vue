@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import PixelAvatar from '@/Components/PixelAvatar.vue'
 
 const page = usePage()
 const user = computed(() => page.props.auth.user)
@@ -17,6 +18,10 @@ const closeDropdown = (e) => {
   if (!e.target.closest('#user-menu-btn') && !e.target.closest('#user-menu-dropdown')) {
     isDropdownOpen.value = false
   }
+}
+
+const isPixelAvatar = (path) => {
+  return path && typeof path === 'string' && path.startsWith('pixel-')
 }
 
 onMounted(() => window.addEventListener('click', closeDropdown))
@@ -37,14 +42,10 @@ onUnmounted(() => window.removeEventListener('click', closeDropdown))
 
       <div class="hidden md:flex items-center space-x-5 text-sm font-medium">
         <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Home</Link>
-        
         <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Perfil</Link>
-
         <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Rankings</Link>
         <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Create</Link>
-        
         <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Configuració</Link>
-
         <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">About</Link>
         
         <Link href="/premium" class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 dark:hover:text-yellow-400 transition flex items-center gap-1 group">
@@ -57,17 +58,10 @@ onUnmounted(() => window.removeEventListener('click', closeDropdown))
         
         <template v-if="!user">
           <div class="flex items-center gap-3">
-            <Link 
-                href="/register" 
-                class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition shadow-sm"
-            >
+            <Link href="/register" class="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition shadow-sm">
                 Register
             </Link>
-
-            <Link 
-                href="/login" 
-                class="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition shadow-sm"
-            >
+            <Link href="/login" class="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition shadow-sm">
                 Login
             </Link>
           </div>
@@ -81,14 +75,25 @@ onUnmounted(() => window.removeEventListener('click', closeDropdown))
               @click="isDropdownOpen = !isDropdownOpen"
               class="flex items-center gap-3 p-1 pr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition focus:outline-none focus:ring-2 focus:ring-blue-500/50 max-w-[200px] sm:max-w-xs cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
             >
-              <img 
-                v-if="user.profile_photo_url" 
-                :src="user.profile_photo_url" 
-                alt="Avatar" 
-                class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-600 shrink-0"
-              >
-              <div v-else class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0 text-blue-600 dark:text-blue-300 font-bold text-sm">
-                {{ user.name.charAt(0).toUpperCase() }}
+              <div class="w-9 h-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600 shrink-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                
+                <PixelAvatar 
+                  v-if="isPixelAvatar(user.profile_photo_path)" 
+                  :id="user.profile_photo_path" 
+                  className="w-full h-full"
+                />
+
+                <img 
+                  v-else-if="user.profile_photo_url" 
+                  :src="user.profile_photo_url" 
+                  alt="Avatar" 
+                  class="w-full h-full object-cover"
+                >
+
+                <div v-else class="text-blue-600 dark:text-blue-300 font-bold text-sm">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+
               </div>
 
               <div class="flex flex-col items-start truncate hidden sm:flex">
@@ -97,11 +102,7 @@ onUnmounted(() => window.removeEventListener('click', closeDropdown))
                     {{ user.name }}
                   </span>
                   
-                  <span 
-                    v-if="user.is_premium" 
-                    class="shrink-0 px-1.5 py-[1px] rounded text-[9px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase leading-none"
-                    title="Premium User"
-                  >
+                  <span v-if="user.is_premium" class="shrink-0 px-1.5 py-[1px] rounded text-[9px] font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase leading-none">
                     Premium
                   </span>
                 </div>
@@ -130,20 +131,16 @@ onUnmounted(() => window.removeEventListener('click', closeDropdown))
                 <Link 
                   v-if="user.is_admin" 
                   href="/admin/moderation" 
-                  class="block px-4 py-2 text-sm font-medium transition flex items-center gap-2
-                         text-blue-600 hover:bg-blue-50 
-                         dark:text-red-400 dark:hover:bg-red-900/20"
+                  class="block px-4 py-2 text-sm font-medium transition flex items-center gap-2 text-blue-600 hover:bg-blue-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
                   🛡️ Moderació
                 </Link>
 
                 <button 
                   @click="logout" 
-                  class="w-full text-left px-4 py-2 text-sm font-semibold transition flex items-center gap-2
-                         text-blue-600 hover:bg-blue-50 
-                         dark:text-red-400 dark:hover:bg-red-900/20"
+                  class="w-full text-left px-4 py-2 text-sm font-semibold transition flex items-center gap-2 text-blue-600 hover:bg-blue-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                   Tancar sessió
                 </button>
               </div>
