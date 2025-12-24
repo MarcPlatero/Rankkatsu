@@ -12,14 +12,8 @@ use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, Billable; 
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -29,28 +23,15 @@ class User extends Authenticatable
         'is_premium',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     *
-     */
     protected $appends = [
         'profile_photo_url',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -81,23 +62,20 @@ class User extends Authenticatable
          return $this->belongsToMany(Ranking::class, 'favorite_rankings')->withTimestamps();
     }
 
-    public function getProfilePhotoUrlAttribute(): ?string
-    {
-        $path = $this->profile_photo_path;
-
-        if (!$path) {
-            return null;
-        }
-
-        if (str_starts_with($path, 'avatars/')) {
-            return asset('images/' . $path);
-        }
-
-        return Storage::disk('public')->url($path);
-    }
-
     public function rankingLikes()
     {
         return $this->hasMany(RankingLike::class);
     }
+
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        $path = $this->profile_photo_path;
+
+        if (!$path) return null;
+        if (str_starts_with($path, 'pixel-')) return null;
+        if (str_starts_with($path, 'avatars/')) return asset('images/' . $path);
+
+        return Storage::disk('public')->url($path);
+    }
+
 }
