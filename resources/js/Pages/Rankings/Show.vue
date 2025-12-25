@@ -6,6 +6,7 @@ import FavoriteStar from '@/Components/FavoriteStar.vue'
 import { useForm } from '@inertiajs/vue3'
 import { vAutoAnimate } from '@formkit/auto-animate'
 import AdBanner from '@/Components/AdBanner.vue'
+import PixelAvatar from '@/Components/PixelAvatar.vue'
 
 const props = defineProps({
   ranking: Object,
@@ -20,6 +21,10 @@ const isPremium = computed(() => page.props.auth.user?.is_premium)
 
 const showAdOverlay = ref(false)
 const adCountdown = ref(5)
+
+const isPixelAvatar = (path) => {
+  return path && typeof path === 'string' && path.startsWith('pixel-')
+}
 
 onMounted(() => {
   nextTick(() => checkOverflow())
@@ -456,14 +461,23 @@ textarea.resize-none {
 
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                  <img 
-                    v-if="ranking.user?.profile_photo_url"
-                    :src="ranking.user.profile_photo_url" 
-                    alt="Avatar" 
-                    class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-                  >
-                  <div v-else class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700">
-                    <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                  
+                  <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    
+                    <PixelAvatar 
+                      v-if="isPixelAvatar(ranking.user?.profile_photo_path)" 
+                      :id="ranking.user.profile_photo_path" 
+                      className="w-full h-full" 
+                    />
+                    
+                    <img 
+                      v-else-if="ranking.user?.profile_photo_url"
+                      :src="ranking.user.profile_photo_url" 
+                      alt="Avatar" 
+                      class="w-full h-full object-cover"
+                    >
+                    
+                    <svg v-else class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                   </div>
                   
                   <div class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
@@ -537,8 +551,22 @@ textarea.resize-none {
               <div v-for="comment in comments" :key="comment.id" class="p-4 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
                 <div class="flex justify-between">
                   <div class="flex items-center gap-3 min-w-0">
-                    <img v-if="comment.user?.profile_photo_url" :src="comment.user.profile_photo_url" alt="Avatar" class="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0">
-                    <div v-else class="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-700 flex-shrink-0"><svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div>
+                    
+                    <div class="w-9 h-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 flex-shrink-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <PixelAvatar 
+                        v-if="isPixelAvatar(comment.user?.profile_photo_path)" 
+                        :id="comment.user.profile_photo_path" 
+                        className="w-full h-full" 
+                      />
+                      <img 
+                        v-else-if="comment.user?.profile_photo_url" 
+                        :src="comment.user.profile_photo_url" 
+                        alt="Avatar" 
+                        class="w-full h-full object-cover"
+                      >
+                      <svg v-else class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                    </div>
+
                     <div class="min-w-0">
                       
                       <div class="font-semibold text-sm truncate flex items-center gap-2">
