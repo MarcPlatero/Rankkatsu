@@ -232,7 +232,6 @@ watch(() => commentForm.content, (val) => {
   }
 })
 
-// Auto-resize textarea
 const autoResize = (event) => {
   const textarea = event.target
   textarea.style.height = 'auto'
