@@ -29,7 +29,7 @@ class HandleInertiaRequests extends Middleware
                     'is_premium' => (bool) ($request->user()->is_premium || $request->user()->subscribed('default')),
                     'notifications' => $request->user()->notifications()
                         ->latest()
-                        ->take(15)
+                        ->take(20)
                         ->get()
                         ->map(function ($n) {
                             return [
