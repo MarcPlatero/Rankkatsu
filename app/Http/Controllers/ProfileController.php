@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB; 
+use App\Models\RankingOption;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -88,10 +90,36 @@ class ProfileController extends Controller
             $fav->is_favorite = true;
         }
 
+        $totalLikes = DB::table('ranking_likes')
+            ->join('rankings', 'ranking_likes.ranking_id', '=', 'rankings.id')
+            ->where('rankings.user_id', $user->id)
+            ->count();
+
+        $totalComments = $user->rankings()->withCount('comments')->get()->sum('comments_count');
+
+        $totalVotes = DB::table('ranking_votes')
+            ->join('ranking_options', 'ranking_votes.ranking_option_id', '=', 'ranking_options.id')
+            ->join('rankings', 'ranking_options.ranking_id', '=', 'rankings.id')
+            ->where('rankings.user_id', $user->id)
+            ->count();
+
+        $totalFavoritesRecieved = DB::table('favorite_rankings')
+            ->join('rankings', 'favorite_rankings.ranking_id', '=', 'rankings.id')
+            ->where('rankings.user_id', $user->id)
+            ->count();
+
+        $stats = [
+            'likes' => $totalLikes,
+            'comments' => $totalComments,
+            'votes' => $totalVotes,
+            'favorites_received' => $totalFavoritesRecieved,
+        ];
+
         return Inertia::render('Profile/ShowProfile', [
             'user' => $user,
             'rankings' => $rankings,
             'favorites' => $favoriteRankings,
+            'stats' => $stats,
         ]);
     }
 }
