@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useForm, usePage, router } from '@inertiajs/vue3'
 import ChangePassword from './ChangePassword.vue'
+import ManageSubscription from './ManageSubscription.vue'
 
 import { avatarList } from '@/Data/avatarList'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
@@ -190,5 +191,8 @@ const handlePasswordUpdated = () => {
     </div>
 
     <ChangePassword @password-updated="handlePasswordUpdated" />
+
+    <ManageSubscription v-if="isPremium" />
+
   </div>
 </template>
