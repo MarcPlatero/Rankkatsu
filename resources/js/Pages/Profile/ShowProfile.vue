@@ -12,6 +12,7 @@ const props = defineProps({
   user: Object,
   rankings: Array,
   favorites: Array,
+  stats: Object,
 })
 
 const page = usePage()
@@ -19,6 +20,13 @@ const currentTab = ref('account')
 
 const logout = () => {
   router.post(route('logout'))
+}
+
+const formatNumber = (num) => {
+  if (!num) return 0
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
+  return num
 }
 </script>
 
@@ -31,6 +39,13 @@ const logout = () => {
 .animate-text-shine {
   background-size: 200% auto;
   animation: shine 3s linear infinite;
+}
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 </style>
 
@@ -88,20 +103,46 @@ const logout = () => {
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md text-center border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-          <div class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 animate-text-shine drop-shadow-sm mb-1">
-            {{ rankings.length }}
-          </div>
-          <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Rankings Creats</div>
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm stat-card text-center group cursor-default">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🗳️</div>
+            <div class="text-2xl font-black text-gray-800 dark:text-white mb-1">
+                {{ formatNumber(stats?.votes) }}
+            </div>
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                Vots rebuts
+            </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-md text-center border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group">
-          <div class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 animate-text-shine drop-shadow-sm mb-1">
-            {{ favorites.length }}
-          </div>
-          <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Favorits</div>
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm stat-card text-center group cursor-default">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">❤️</div>
+            <div class="text-2xl font-black text-gray-800 dark:text-white mb-1">
+                {{ formatNumber(stats?.likes) }}
+            </div>
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                Likes rebuts
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm stat-card text-center group cursor-default">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">💬</div>
+            <div class="text-2xl font-black text-gray-800 dark:text-white mb-1">
+                {{ formatNumber(stats?.comments) }}
+            </div>
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                Comentaris rebuts
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm stat-card text-center group cursor-default">
+            <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">⭐</div>
+            <div class="text-2xl font-black text-gray-800 dark:text-white mb-1">
+                {{ formatNumber(stats?.favorites_received) }}
+            </div>
+            <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                Favorits rebuts
+            </div>
         </div>
 
       </div>
