@@ -78,9 +78,10 @@ const logout = () => {
           <p class="text-gray-600 dark:text-gray-400 mb-4">
             Compte creat el {{ new Date(user.created_at).toLocaleDateString() }}
           </p>
+          
           <button
             @click="logout"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition shadow"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg transition shadow"
           >
             Tancar sessió
           </button>
