@@ -8,26 +8,13 @@ use Tightenco\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that is loaded on the first page visit.
-     *
-     * @var string
-     */
     protected $rootView = 'app';
 
-    /**
-     * Determine the current asset version.
-     */
     public function version(Request $request): ?string
     {
         return parent::version($request);
     }
 
-    /**
-     * Define the props that are shared by default.
-     *
-     * @return array<string, mixed>
-     */
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
@@ -40,6 +27,21 @@ class HandleInertiaRequests extends Middleware
                     'profile_photo_url' => $request->user()->profile_photo_url,
                     'is_admin' => (bool) $request->user()->is_admin,
                     'is_premium' => (bool) ($request->user()->is_premium || $request->user()->subscribed('default')),
+                    'notifications' => $request->user()->notifications()
+                        ->latest()
+                        ->take(15)
+                        ->get()
+                        ->map(function ($n) {
+                            return [
+                                'id' => $n->id,
+                                'data' => $n->data,
+                                'created_at' => $n->created_at->diffForHumans(),
+                                'read_at' => $n->read_at,
+                            ];
+                        }),
+                    
+                    'unread_count' => $request->user()->unreadNotifications()->count(),
+
                 ] : null,
             ],
             'flash' => [

@@ -7,6 +7,7 @@ use App\Models\CommentVote;
 use App\Models\Ranking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\RankingInteraction;
 
 class CommentController extends Controller
 {
@@ -23,7 +24,7 @@ class CommentController extends Controller
         // Llista de paraules prohibides des de config/banned.php
         $bannedWords = config('banned.words', []);
 
-        // Comprovar si el comentari conté alguna paraula prohibida (sense distingir majúscules/minúscules)
+        // Comprovar si el comentari conté alguna paraula prohibida
         foreach ($bannedWords as $badWord) {
             if (preg_match("/\b" . preg_quote($badWord, '/') . "\b/i", $validated['content'])) {
                 return redirect()->back()
@@ -37,6 +38,11 @@ class CommentController extends Controller
             'user_id' => Auth::id(),
             'content' => $validated['content'],
         ]);
+
+        // Notificació
+        if ($ranking->user_id !== Auth::id()) {
+            $ranking->user->notify(new RankingInteraction(Auth::user(), $ranking, 'comment'));
+        }
 
         return redirect()->back()->with('success', 'Comentari publicat!');
     }
@@ -63,9 +69,7 @@ class CommentController extends Controller
             abort(403);
         }
 
-        // Comprovem que el comentari pertanyi realment al rànquing
         if ($comment->ranking_id !== $ranking->id) {
-            // Si no, busquem el comentari dins el rànquing per seguretat
             $comment = $ranking->comments()->find($comment->id);
 
             if (!$comment) {
@@ -73,7 +77,6 @@ class CommentController extends Controller
             }
         }
 
-        // Permisos: autor del comentari, creador del rànquing o admin
         if (
             $comment->user_id !== $user->id &&
             $ranking->user_id !== $user->id &&

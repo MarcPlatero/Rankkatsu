@@ -11,6 +11,7 @@ use App\Http\Controllers\RankingLikeController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 // Home
@@ -64,12 +65,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
 });
 
-// Usuari (Perfil)
+// Usuari (Perfil) i notificacions
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
+
+    // Notificacions
+    Route::post('/notifications/mark-read', function (Request $request) {
+        $request->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('notifications.markRead');
 });
 
 // Moderació (només admins i moderadors)

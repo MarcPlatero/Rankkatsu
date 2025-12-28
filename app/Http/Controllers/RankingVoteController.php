@@ -7,7 +7,7 @@ use App\Models\RankingOption;
 use App\Models\RankingVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use App\Notifications\RankingInteraction;
 
 class RankingVoteController extends Controller
 {
@@ -32,6 +32,11 @@ class RankingVoteController extends Controller
             'ranking_option_id' => $option->id,
             'user_id' => Auth::id(),
         ]);
+
+        // Notificació
+        if ($ranking->user_id !== Auth::id()) {
+            $ranking->user->notify(new RankingInteraction(Auth::user(), $ranking, 'vote'));
+        }
 
         return redirect()->back()->with('success', 'Has votat correctament!');
     }
