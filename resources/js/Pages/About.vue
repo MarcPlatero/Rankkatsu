@@ -41,7 +41,6 @@ import AdBanner from '@/Components/AdBanner.vue'
           </p>
         </div>
 
-        <!-- Targetes -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div
             class="group bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md 
@@ -116,20 +115,21 @@ import AdBanner from '@/Components/AdBanner.vue'
           <AdBanner format="horizontal" />
         </div>
 
-        <!-- Botó -->
         <div class="text-center mt-16">
           <p class="text-lg text-gray-800 dark:text-gray-200 mb-4">
             Vols començar a votar i crear els teus rànquings?
           </p>
           <Link
             :href="route('register')"
-            class="relative inline-block px-8 py-3 rounded-xl font-semibold text-white text-lg shadow-lg overflow-hidden group"
+            class="relative inline-block px-8 py-3 rounded-xl font-semibold text-white text-lg shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-300"
           >
             <span
               class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600
                      animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
             ></span>
-            <span class="relative z-10">Uneix-te ara 🚀</span>
+            <span class="relative z-10 flex items-center justify-center gap-2">
+                Uneix-te ara 🚀
+            </span>
           </Link>
         </div>
       </div>
