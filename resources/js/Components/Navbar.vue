@@ -69,14 +69,14 @@ onUnmounted(() => {
         <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Home</Link>
         <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Perfil</Link>
         <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Rankings</Link>
+        
+        <Link href="/premium" class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 dark:hover:text-yellow-400 transition">
+          Premium
+        </Link>
+
         <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Create</Link>
         <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Configuració</Link>
         <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">About</Link>
-        
-        <Link href="/premium" class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 dark:hover:text-yellow-400 transition flex items-center gap-1 group">
-          <span>Premium</span>
-          <span class="group-hover:scale-125 transition-transform duration-300">👑</span>
-        </Link>
       </div>
 
       <div class="flex items-center gap-4">
