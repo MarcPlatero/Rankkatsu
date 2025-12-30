@@ -16,10 +16,11 @@ class RankingController extends Controller
     {
         // Recollir dades i usuari
         $search = $request->input('search');
-        $sort = $request->input('sort', 'popular'); 
+        $sort = $request->input('sort', 'popular');
         $user = Auth::user();
 
-        $query = Ranking::with('options');
+        $query = Ranking::with('options')
+            ->with('user');
 
         // Aplicar filtres de privacitat
         $query->when(!$user || !$user->is_admin, function ($q) use ($user) {
@@ -33,7 +34,7 @@ class RankingController extends Controller
             }
         });
 
-        // Aplicar filtre de cerca (Títol, Descripció o Opcions)
+        // Aplicar filtre de cerca
         $query->when($search, function ($q, $search) {
             $q->where(function ($sub) use ($search) {
                 $sub->where('title', 'like', "%{$search}%")
@@ -44,16 +45,24 @@ class RankingController extends Controller
             });
         });
 
-        // Aplicar lògica d'ordenació
         if ($sort === 'recent') {
             $query->latest();
-        } else {
-            // Per defecte 'popular': Comptem likes i ordenem
+        } 
+        elseif ($sort === 'trending') {
+            // Ordenar per vots en les últimes 24h
+            $query->withCount(['votes as recent_votes_count' => function ($query) {
+                $query->where('ranking_votes.created_at', '>=', now()->subDay());
+            }])
+            ->orderBy('recent_votes_count', 'desc')
+            ->orderBy('created_at', 'desc');
+        } 
+        else {
+            // Per defecte 'popular'
             $query->withCount('likes')->orderBy('likes_count', 'desc');
         }
 
         // Paginació
-        $rankings = $query->paginate(50)->withQueryString();
+        $rankings = $query->paginate(20)->withQueryString();
 
         // Processar favorits
         $favoriteIds = $user
@@ -65,7 +74,6 @@ class RankingController extends Controller
             return $ranking;
         });
 
-        // Retornar a la vista
         return inertia('Rankings/Index', [
             'rankings' => $rankings,
             'filters' => [
@@ -161,28 +169,42 @@ class RankingController extends Controller
     {
         $user = Auth::user();
 
-        // IDs de favorits
         $favoriteIds = $user
             ? $user->favoriteRankings()->pluck('rankings.id')->toArray()
             : [];
 
-        // Top rankings
-        $topRankings = Ranking::with('user')
-            ->withCount('likes')
+        // Tendència
+        $trendingRankings = Ranking::with('user')
+            ->withCount(['votes as recent_votes_count' => function ($query) {
+                $query->where('ranking_votes.created_at', '>=', now()->subDay());
+            }])
             ->where('is_approved', true)
-            ->orderBy('likes_count', 'desc')
-            ->take(16)
+            ->orderBy('recent_votes_count', 'desc')
+            ->orderBy('created_at', 'desc') 
+            ->take(12)
             ->get()
             ->map(function ($ranking) use ($favoriteIds) {
                 $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
                 return $ranking;
             });
 
-        // Últims rankings
+        // Més populars
+        $topRankings = Ranking::with('user')
+            ->withCount('likes')
+            ->where('is_approved', true)
+            ->orderBy('likes_count', 'desc')
+            ->take(12)
+            ->get()
+            ->map(function ($ranking) use ($favoriteIds) {
+                $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
+                return $ranking;
+            });
+
+        // Novetats
         $latestRankings = Ranking::with('user')
             ->where('is_approved', true)
             ->orderBy('created_at', 'desc')
-            ->take(16)
+            ->take(12)
             ->get()
             ->map(function ($ranking) use ($favoriteIds) {
                 $ranking->is_favorite = in_array($ranking->id, $favoriteIds);
@@ -190,6 +212,7 @@ class RankingController extends Controller
             });
 
         return Inertia::render('Home', [
+            'trendingRankings' => $trendingRankings,
             'topRankings' => $topRankings,
             'latestRankings' => $latestRankings,
         ]);
