@@ -16,6 +16,28 @@ const props = defineProps({
   sort: { type: String, default: 'likes' }
 })
 
+const seoImageUrl = computed(() => {
+  // Evitem errors si la pàgina encara no s'ha carregat del tot
+  if (typeof window === 'undefined') return ''
+  
+  // Si el rànquing no té imatge, en posem una per defecte
+  if (!props.ranking.image) return window.location.origin + '/images/og-default.jpg'
+  
+  let path = props.ranking.image
+  // Si la imatge ja és una URL completa, la deixem tal qual
+  if (path.startsWith('http')) return path
+  
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path
+  const storagePrefix = cleanPath.startsWith('storage/') ? '' : 'storage/'
+  
+  return `${window.location.origin}/${storagePrefix}${cleanPath}`
+})
+
+const currentUrl = computed(() => {
+  if (typeof window === 'undefined') return ''
+  return window.location.href
+})
+
 const page = usePage()
 const isPremium = computed(() => page.props.auth.user?.is_premium)
 
@@ -392,7 +414,23 @@ textarea.resize-none {
 
 <template>
   <AppLayout>
-    <Head :title="ranking.title" />
+
+    <Head>
+      <title>{{ ranking.title }}</title>
+      
+      <meta name="description" :content="ranking.description || ''" />
+      
+      <meta property="og:type" content="website" />
+      <meta property="og:title" :content="ranking.title" />
+      <meta property="og:description" :content="ranking.description || ''" />
+      <meta property="og:image" :content="seoImageUrl" />
+      <meta property="og:url" :content="currentUrl" /> 
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" :content="ranking.title" />
+      <meta name="twitter:description" :content="ranking.description || ''" />
+      <meta name="twitter:image" :content="seoImageUrl" />
+    </Head>
 
     <div class="max-w-7xl mx-auto py-10 px-6">
       
