@@ -80,7 +80,9 @@ const subscribe = (type) => {
             
             <a 
                 :href="route('premium.manage')"
-                class="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                class="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-medium rounded-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer
+                text-blue-700 bg-blue-100 hover:bg-blue-200 focus:ring-blue-500
+                dark:text-red-200 dark:bg-red-900 dark:hover:bg-red-800 dark:focus:ring-red-500"
             >
                 ⚙️ Gestionar Subscripció a Stripe
             </a>
