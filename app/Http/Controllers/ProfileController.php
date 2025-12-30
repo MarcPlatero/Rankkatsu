@@ -36,17 +36,22 @@ class ProfileController extends Controller
         if ($request->has('avatar')) {
             $avatarId = $request->input('avatar');
 
-            $officialAvatars = config('avatars');
+            if (is_null($avatarId)) {
+                $user->profile_photo_path = null;
+            } 
+            else {
+                $officialAvatars = config('avatars');
 
-            if ($officialAvatars && array_key_exists($avatarId, $officialAvatars)) {
-                
-                $isPremiumAvatar = $officialAvatars[$avatarId];
+                if ($officialAvatars && array_key_exists($avatarId, $officialAvatars)) {
+                    
+                    $isPremiumAvatar = $officialAvatars[$avatarId];
 
-                if ($isPremiumAvatar && !$user->is_premium) {
-                    return back()->with('error', 'Aquest avatar és exclusiu per a usuaris Premium.');
+                    if ($isPremiumAvatar && !$user->is_premium) {
+                        return back()->with('error', 'Aquest avatar és exclusiu per a usuaris Premium.');
+                    }
+
+                    $user->profile_photo_path = $avatarId;
                 }
-
-                $user->profile_photo_path = $avatarId;
             }
         }
 
