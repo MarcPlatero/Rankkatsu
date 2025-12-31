@@ -49,7 +49,7 @@ class RankingController extends Controller
             $query->latest();
         } 
         elseif ($sort === 'trending') {
-            // Ordenar per vots en les últimes 24h
+            // Ordenar per vots de les últimes 24h
             $query->withCount(['votes as recent_votes_count' => function ($query) {
                 $query->where('ranking_votes.created_at', '>=', now()->subDay());
             }])
@@ -57,7 +57,7 @@ class RankingController extends Controller
             ->orderBy('created_at', 'desc');
         } 
         else {
-            // Per defecte 'popular'
+            // Per defecte està en 'popular'
             $query->withCount('likes')->orderBy('likes_count', 'desc');
         }
 
