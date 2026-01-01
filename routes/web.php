@@ -89,7 +89,7 @@ Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () 
     Route::post('/moderation/images/{image}/reject', [ModerationController::class, 'rejectImage'])->name('admin.moderation.image.reject');
 });
 
-// Rutes de subscripció Premium
+// Rutes de subscripció premium
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/premium', [SubscriptionController::class, 'index'])->name('premium.index');
     Route::post('/premium/subscribe', [SubscriptionController::class, 'create'])->name('premium.subscribe');
