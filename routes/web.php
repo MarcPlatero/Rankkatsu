@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
 });
 
-// Usuari (Perfil) i notificacions
+// Perfil i notificacions
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
