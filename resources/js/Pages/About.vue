@@ -72,7 +72,6 @@ import AdBanner from '@/Components/AdBanner.vue'
             </h3>
             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
               Enfronta diverses opcions i deixa que la comunitat decideixi quina és la millor.
-              Els duels són ràpids, divertits i addictius.
             </p>
           </div>
 
