@@ -82,10 +82,10 @@ const isPixelAvatar = (path) => {
         </div>
 
         <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-gray-100 mb-6 leading-tight">
-          Competeix, Vota i <br> <span class="text-blue-600 dark:text-blue-400">Decideix</span> qui és el millor!
+          Crea, Vota i <br> <span class="text-blue-600 dark:text-blue-400">Decideix</span> qui és el Millor!
         </h1>
         <p class="text-xl text-gray-700 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-          Crea els teus propis rànquings, descobreix què pensa la comunitat i ajuda a coronar el guanyador en cada duel.
+          Crea els teus propis rànquings, descobreix què pensa la comunitat i ajuda a coronar al guanyador.
         </p>
 
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -226,18 +226,45 @@ const isPixelAvatar = (path) => {
       <AdBanner format="horizontal" />
     </div>
 
-    <div v-if="!isPremium" class="max-w-7xl mx-auto px-6 pb-12">
-        <div class="p-8 rounded-2xl bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white text-center shadow-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-yellow-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <h3 class="text-3xl font-extrabold mb-4 relative z-10">Cansat de la publicitat? 🚫</h3>
-            <p class="text-gray-300 mb-8 max-w-xl mx-auto relative z-10 text-lg">
-            Fes-te <span class="text-yellow-400 font-bold">Premium</span> per només 1,99€ i gaudeix de RankDuel sense interrupcions.
-            </p>
-            <Link href="/premium" class="relative inline-block px-10 py-4 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white font-bold rounded-full shadow-lg transform transition-all hover:scale-105 hover:shadow-yellow-500/30 z-10">
-            Passar-me a Premium 👑
+    <div v-if="!isPremium" class="max-w-7xl mx-auto px-6 pb-20">
+    <div class="relative rounded-3xl overflow-hidden shadow-2xl group">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black z-0"></div>
+        
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-yellow-500/30 rounded-full blur-[100px] group-hover:bg-yellow-400/40 transition-colors duration-700"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-8 text-center md:text-left">
+            <div class="max-w-xl">
+                <h3 class="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">
+                    Elimina els anuncis i <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">millora la teva experiència.</span>
+                </h3>
+                
+                <div class="space-y-4">
+                    <p class="text-gray-300 text-lg md:text-xl leading-relaxed">
+                        Per només <span class="text-white font-bold border-b-2 border-yellow-500">1,99€</span>, puja de nivell a Rankkatsu:
+                    </p>
+                    <ul class="text-gray-300 text-base md:text-lg space-y-2 inline-block text-left">
+                        <li class="flex items-center gap-2">
+                            <span class="text-yellow-400">🚫</span> Adéu a tota la publicitat
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-yellow-400">✨</span> Insígnies i avatars exclusius
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-yellow-400">❤️</span> Suport directe al projecte
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <Link href="/premium" class="flex-shrink-0 group/btn relative inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-gray-900 text-lg font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)]">
+                Passar-me a Premium
+                <svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </Link>
         </div>
     </div>
+</div>
 
   </AppLayout>
 </template>
