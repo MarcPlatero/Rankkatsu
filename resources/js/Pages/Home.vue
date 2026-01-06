@@ -82,7 +82,7 @@ const isPixelAvatar = (path) => {
         </div>
 
         <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-gray-100 mb-6 leading-tight">
-          Crea, Vota i <br> <span class="text-blue-600 dark:text-blue-400">Decideix</span> qui és el Millor!
+          Crea, Vota i Decideix <br> qui és el Millor!
         </h1>
         <p class="text-xl text-gray-700 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
           Crea els teus propis rànquings, descobreix què pensa la comunitat i ajuda a coronar al guanyador.
