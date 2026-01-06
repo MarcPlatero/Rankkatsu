@@ -14,7 +14,7 @@ const props = defineProps({
 const page = usePage()
 const isPremium = page.props.auth.user?.is_premium
 
-// Control de pestanyes (si el fas servir més avall)
+// Control de pestanyes
 const activeTab = ref('popular') 
 
 const currentList = computed(() => {
@@ -38,7 +38,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* --- ANIMACIONS DE FONS (BLOBS) --- */
+/* Animacions de fons (blobs) */
 @keyframes blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
@@ -51,7 +51,7 @@ onMounted(() => {
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
-/* --- ANIMACIÓ FLOTANT PEL LOGO --- */
+/* Animació flotant pel logo */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
@@ -60,7 +60,7 @@ onMounted(() => {
   animation: float 6s ease-in-out infinite;
 }
 
-/* --- ANIMACIÓ DE BRILLANTOR (SHINE) PELS BOTONS --- */
+/* Animació de brillantor pels botons */
 @keyframes shine {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
@@ -70,7 +70,7 @@ onMounted(() => {
   animation: shine 3s linear infinite reverse;
 }
 
-/* --- ANIMACIÓ DE POLS (GLOW) PEL TÍTOL --- */
+/* Animació de pols del títol */
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.2; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.05); }
@@ -80,7 +80,7 @@ onMounted(() => {
 }
 .animation-delay-1000 { animation-delay: 1s; }
 
-/* --- UTILITATS D'ENTRADA (FADE UP) --- */
+/* Utilitats d'entrada (fade up) */
 .fade-up-enter-active,
 .fade-up-leave-active {
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -91,7 +91,7 @@ onMounted(() => {
   transform: translateY(30px);
 }
 
-/* --- PATRÓ DE FONS (GRID) --- */
+/* Patró de fons (grid) */
 .bg-grid-pattern {
   background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -105,7 +105,7 @@ onMounted(() => {
   <AppLayout>
     <Head title="RankDuel - Home" />
 
-    <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
+    <section class="relative min-h-[93vh] flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-950 transition-colors duration-500">
       
       <div class="absolute inset-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div class="absolute inset-0 bg-grid-pattern opacity-[0.3] z-0"></div>
@@ -135,7 +135,7 @@ onMounted(() => {
                 </svg>
             </div>
 
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight text-center drop-shadow-sm flex flex-col items-center">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-12 leading-tight text-center drop-shadow-sm flex flex-col items-center">
               <span class="relative inline-block z-10 mb-2 md:mb-0">
                   <span class="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 opacity-20 blur-2xl animate-pulse-slow -z-10"></span>
                   <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-blue-400 dark:via-cyan-300 dark:to-indigo-400">
