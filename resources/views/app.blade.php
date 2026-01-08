@@ -17,6 +17,8 @@
         <meta name="twitter:title" content="Rankkatsu">
         <meta name="twitter:description" content="Crea, vota i comparteix els millors rànquings a Rankkatsu.">
 
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="alternate icon" href="/favicon.ico">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
