@@ -32,35 +32,27 @@ const isPixelAvatar = (path) => {
 const showContent = ref(false)
 
 onMounted(() => {
-  // Activa l'animació d'entrada quan el component es munta
   showContent.value = true
 })
 </script>
 
 <style scoped>
-/* Animacions de fons (blobs) */
 @keyframes blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
   66% { transform: translate(-20px, 20px) scale(0.9); }
   100% { transform: translate(0px, 0px) scale(1); }
 }
-.animate-blob {
-  animation: blob 10s infinite;
-}
+.animate-blob { animation: blob 10s infinite; }
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
-/* Animació flotant pel logo */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
 }
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
+.animate-float { animation: float 6s ease-in-out infinite; }
 
-/* Animació de brillantor pels botons */
 @keyframes shine {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
@@ -70,34 +62,31 @@ onMounted(() => {
   animation: shine 3s linear infinite reverse;
 }
 
-/* Animació de pols del títol */
 @keyframes pulse-slow {
   0%, 100% { opacity: 0.2; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.05); }
 }
-.animate-pulse-slow {
-  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+.animate-pulse-slow { animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 .animation-delay-1000 { animation-delay: 1s; }
 
-/* Utilitats d'entrada (fade up) */
-.fade-up-enter-active,
-.fade-up-leave-active {
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.fade-up-enter-from,
-.fade-up-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
+.fade-up-enter-active, .fade-up-leave-active { transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.fade-up-enter-from, .fade-up-leave-to { opacity: 0; transform: translateY(30px); }
 
-/* Patró de fons (grid) */
 .bg-grid-pattern {
   background-image: radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 .dark .bg-grid-pattern {
   background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+.title-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3em;
+  height: 2.6em;
 }
 </style>
 
@@ -109,25 +98,18 @@ onMounted(() => {
       
       <div class="absolute inset-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div class="absolute inset-0 bg-grid-pattern opacity-[0.3] z-0"></div>
-        
         <div class="absolute top-0 -left-4 w-96 h-96 bg-purple-300 dark:bg-purple-900/40 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-3xl opacity-70 animate-blob"></div>
         <div class="absolute top-0 -right-4 w-96 h-96 bg-blue-300 dark:bg-blue-900/40 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
         <div class="absolute -bottom-8 left-20 w-96 h-96 bg-pink-300 dark:bg-pink-900/40 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
-        
         <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/60 to-white dark:via-gray-950/60 dark:to-gray-950 backdrop-blur-[2px]"></div>
       </div>
 
       <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center">
-        
         <Transition name="fade-up" appear>
           <div v-show="showContent" class="w-full flex flex-col items-center text-center">
             
             <div class="mb-12 w-full max-w-2xl animate-float drop-shadow-xl filter hover:drop-shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-500">
-                <svg 
-                    viewBox="0 0 6508 1417" 
-                    class="w-full h-auto text-gray-900 dark:text-white fill-current" 
-                    xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg viewBox="0 0 6508 1417" class="w-full h-auto text-gray-900 dark:text-white fill-current" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2675.5 286.107C2664.73 285.849 2639.03 286.596 2618.39 287.767C2576.26 290.157 2543.75 290.385 2511.26 288.517C2468.88 286.08 2428.31 285.447 2422.19 287.128C2414.23 289.314 2411 292.852 2411.51 298.839C2412.18 306.617 2415.68 308.151 2438.02 310.437C2459.09 312.592 2468.73 315.388 2477.85 321.994C2484.42 326.753 2490.58 335.999 2493.34 345.23C2496.34 355.251 2499.03 382.181 2499.87 410.562C2500.29 424.495 2500.95 443.395 2501.36 452.562C2502.4 476.132 2502.39 804.9 2501.35 845.896C2498.69 950.374 2494.62 978.143 2480.11 990.886C2473.29 996.873 2463.44 999.992 2443.26 1002.56C2420.04 1005.51 2416.59 1007.26 2416.59 1016.07C2416.59 1020.06 2422.16 1025.53 2427.03 1026.31C2433.96 1027.42 2482.93 1026.76 2506.59 1025.25C2542.58 1022.95 2574.51 1022.93 2615.26 1025.18C2658.51 1027.58 2689.78 1027.67 2697.22 1025.43C2706.97 1022.49 2708.75 1012.39 2700.42 1007.32C2697.87 1005.77 2691.2 1004.22 2682.79 1003.22C2654.47 999.864 2642.85 996.54 2634.32 989.361C2626.08 982.429 2621.8 963.893 2619.33 924.562C2617.55 896.328 2614.5 682.865 2615.78 676.146C2616.49 672.378 2617.32 671.174 2618.98 671.493C2620.21 671.73 2648.53 708.297 2681.9 752.751C2747.97 840.74 2754.53 849.416 2779.08 881.208C2788.14 892.953 2804.58 914.563 2815.61 929.23C2842.88 965.515 2855.02 979.38 2870.26 991.648C2885.69 1004.06 2904.04 1014.22 2919.92 1019.15C2941.55 1025.86 2947.04 1026.19 3046.59 1026.86C3164.44 1027.65 3181.52 1026.4 3210.23 1014.82C3240.7 1002.53 3267.44 977.339 3306.02 924.562C3312.19 916.128 3322.8 902.03 3329.61 893.23C3336.42 884.43 3351.58 864.63 3363.28 849.23C3374.99 833.83 3389.17 815.229 3394.8 807.896C3417.26 778.619 3433.95 756.312 3447.18 737.896C3461 718.641 3496.3 672.562 3497.22 672.562C3497.49 672.562 3498.75 672.163 3500.02 671.675C3502.21 670.836 3502.28 675.732 3501.43 761.341C3499.59 945.669 3497.13 973.548 3481.37 989.431C3474.44 996.408 3464.26 999.606 3439.26 1002.67C3429.36 1003.88 3419.58 1005.73 3417.53 1006.78C3409.74 1010.77 3409.43 1020.12 3416.94 1024.18C3422.7 1027.29 3450.04 1028 3484 1025.92C3530.39 1023.08 3569.59 1022.82 3608.96 1025.09C3659.84 1028.03 3687.78 1027.96 3693.92 1024.89C3700.04 1021.84 3702.72 1016.38 3700.62 1011.3C3698.49 1006.15 3694.79 1004.82 3678.25 1003.24C3648.49 1000.4 3636.72 994.357 3629.55 978.245C3622.49 962.398 3619.62 940.572 3617.92 889.724C3616.19 837.887 3615.41 602.682 3616.64 501.896C3618.34 362.143 3621.11 339.265 3638.17 323.925C3647.95 315.131 3658.54 312.206 3691.54 309.181C3704.84 307.962 3709.96 302.495 3706.43 293.288C3703.55 285.787 3683.25 284.545 3618.59 287.913C3571.08 290.389 3533.84 290.169 3485.26 287.128C3472.06 286.302 3452.74 285.844 3442.33 286.111C3425.79 286.534 3422.95 286.94 3419.75 289.327C3414.61 293.167 3413.08 298.412 3415.87 302.665C3418.77 307.095 3422.87 308.506 3437.26 310.038C3454.45 311.87 3463.08 313.778 3469.92 317.265C3481.49 323.158 3489.14 333.647 3493.17 349.124C3497.45 365.535 3499.8 428.265 3501.47 570.394L3502.36 646.226L3499.64 644.769C3497.04 643.374 3450.85 595.947 3434.52 577.896C3430.21 573.129 3413.12 554.528 3396.55 536.562C3339.73 474.97 3269.77 397.512 3260.85 386.327C3243.1 364.082 3233.92 345.455 3233.92 331.689C3233.92 320.448 3237.02 316.416 3250.65 309.941C3262.51 304.31 3264.51 301.755 3262.72 294.587C3261.06 287.972 3255.49 286.568 3231.92 286.822C3220.19 286.948 3199.49 287.773 3185.92 288.656C3168.66 289.779 3152.26 289.905 3131.26 289.077C3097.89 287.762 3044.07 287.577 2984.59 288.572C2962.96 288.933 2933.56 288.629 2919.26 287.896C2868.39 285.287 2858.37 286.384 2855.12 294.921C2852.81 300.997 2855.42 304.043 2867.85 309.786C2882.69 316.645 2884.98 319.975 2884.2 333.603C2883.74 341.66 2882.71 345.218 2878.1 354.519C2869.21 372.465 2857.44 387.445 2822.56 425.23C2814.43 434.03 2798.86 451.13 2787.95 463.23C2777.05 475.33 2761.48 492.419 2753.36 501.206C2745.23 509.994 2735.87 520.195 2732.54 523.874C2695.63 564.657 2682.83 578.612 2659.73 603.23C2624.87 640.377 2618.6 646.47 2616.52 645.187C2613.81 643.51 2617.14 426.879 2620.57 381.896C2623.35 345.34 2628.81 329.114 2641.06 320.908C2649.47 315.283 2657.57 312.967 2677.92 310.37C2687.09 309.201 2696.23 307.404 2698.24 306.378C2704.68 303.085 2705 293.957 2698.83 289.37C2695.5 286.894 2692.86 286.523 2675.5 286.107ZM3059.61 313.677L3069.77 317.279C3090.36 324.583 3112.86 337.364 3131.26 352.216C3142.15 361.007 3165.18 383.167 3176.68 395.923C3180.67 400.338 3199.22 420.138 3217.92 439.923C3236.61 459.709 3256.37 480.695 3261.82 486.562C3267.28 492.428 3276 501.73 3281.21 507.23C3286.42 512.73 3295.73 522.63 3301.9 529.23C3308.08 535.83 3317.66 546.051 3323.19 551.945C3328.73 557.839 3339.86 569.83 3347.92 578.591C3355.99 587.353 3367.69 599.931 3373.93 606.542C3380.17 613.153 3386.59 620.412 3388.2 622.673L3391.12 626.785L3387.38 631.341C3385.32 633.847 3376.77 644.896 3368.38 655.896C3343.24 688.86 3278.82 771.218 3236.45 824.562C3224.51 839.595 3206.92 862.095 3197.37 874.562C3143.39 944.995 3109.99 976.835 3072.34 993.773C3059.45 999.57 3059.49 999.569 3048.17 994.64C3025.63 984.818 3003.94 969.009 2979.15 944.32C2959.46 924.719 2954.33 918.56 2914.95 867.23C2897.14 844.014 2880.96 823.353 2855.94 791.896C2844.85 777.963 2828.87 757.863 2820.42 747.23C2804.17 726.776 2772.9 686.49 2747.47 653.23C2739.06 642.23 2730.65 631.571 2728.78 629.544L2725.39 625.861L2731.38 619.544C2737.58 613.012 2778.84 569.323 2796.53 550.562C2802.06 544.695 2810.49 535.674 2815.26 530.513C2828.35 516.335 2858.34 484.296 2872.59 469.255C2879.56 461.903 2896.63 443.591 2910.53 428.56C2941.86 394.685 2976 360.511 2986.59 352.437C3010.18 334.446 3032.84 321.662 3050.43 316.413L3059.61 313.677Z" fill="currentColor"/>
                     <path d="M3043.26 810.248C3040.69 806.82 3035.1 800.268 3030.83 795.688L3023.07 787.36L3031.5 783.139C3058.45 769.636 3080.37 746.972 3086.54 726.229L3087.44 723.229H3068.34H3049.24L3049.72 712.563C3049.99 706.696 3049.83 701.896 3049.38 701.896C3048.92 701.896 3045.24 704.596 3041.19 707.896C3037.13 711.196 3033.62 713.896 3033.37 713.896C3033.12 713.896 3029.39 709.246 3025.08 703.563L3017.26 693.229L3016.59 743.229C3015.98 788.578 3015.69 793.696 3013.43 798.245C3007.97 809.238 2997.77 813.659 2975.13 814.846L2961.01 815.587L2959.35 807.075C2958.43 802.393 2955.94 794.063 2953.81 788.563C2951.68 783.063 2949.93 778.263 2949.93 777.896C2949.92 777.529 2955.73 777.441 2962.84 777.7C2974.06 778.109 2975.99 777.856 2977.51 775.778C2978.85 773.943 2979.26 764.915 2979.26 736.974V700.563H2965.36H2951.47L2950.61 709.563C2947.31 744.32 2941.57 774.954 2933.99 798.229C2930.94 807.579 2928.2 815.229 2927.9 815.229C2927.59 815.229 2923.75 812.906 2919.36 810.066C2914.96 807.227 2907.43 803.188 2902.62 801.092C2895.96 798.19 2894.09 796.798 2894.8 795.255C2901.41 780.74 2908.86 747.249 2911.92 718.282C2914.82 690.844 2915.49 667.155 2915.71 583.896L2915.92 506.563L2966.26 506.213L3016.59 505.864V591.927V677.99L3019.59 676.4C3023.59 674.278 3051.26 646.596 3051.26 644.711C3051.26 643.718 3046.63 643.229 3037.26 643.229H3023.26V626.593V609.956L3047.59 609.593L3071.92 609.229L3076.28 598.147C3078.68 592.051 3080.3 586.501 3079.87 585.813C3079.44 585.114 3069.14 584.563 3056.51 584.563H3033.92V568.563V552.563H3041.92C3046.32 552.563 3049.92 551.98 3049.92 551.268C3049.92 548.312 3041.66 527.635 3037.33 519.754L3032.66 511.262L3036.29 509.408C3042.59 506.19 3063.6 500.308 3064.45 501.525C3064.89 502.166 3067.27 505.558 3069.72 509.062C3074.65 516.089 3084.59 536.492 3084.59 539.581C3084.59 540.72 3080.66 543.296 3075.19 545.741C3070.02 548.052 3066.12 550.469 3066.52 551.112C3067.14 552.117 3091.25 553.226 3091.26 552.25C3091.26 552.055 3092.72 544.396 3094.49 535.229C3096.27 526.063 3098.09 514.363 3098.54 509.229C3100.16 490.944 3100 491.316 3105.63 492.105C3138.11 496.65 3150.28 499.528 3145.11 501.444C3140.37 503.203 3139.3 506.124 3135.22 528.312C3132.89 541.008 3131.26 551.676 3131.6 552.02C3131.95 552.364 3139.96 552.476 3149.41 552.27L3166.59 551.896L3161.51 549.277C3158.09 547.513 3156.65 545.99 3157.12 544.61C3160.4 534.848 3175.35 499.865 3176.39 499.518C3177.51 499.144 3186.79 501.781 3213.59 510.092C3219.14 511.815 3219.07 513.381 3213.32 515.784C3209.54 517.364 3207.72 519.677 3203.18 528.715C3200.14 534.768 3196.21 541.999 3194.45 544.782C3192.69 547.566 3191.26 550.455 3191.26 551.203C3191.26 552.054 3197.48 552.563 3207.92 552.563H3224.59V568.563V584.563H3198.59C3178.66 584.563 3172.6 584.952 3172.62 586.229C3172.64 587.146 3174.59 592.696 3176.95 598.563L3181.26 609.229L3207.26 609.969C3221.56 610.376 3233.47 610.826 3233.72 610.969C3233.98 611.112 3233.95 618.279 3233.66 626.896L3233.13 642.563L3217.52 642.938C3208.64 643.152 3201.92 643.868 3201.92 644.601C3201.92 648.196 3230.21 673.883 3239.4 678.638L3243.5 680.756L3235.56 687.942C3231.19 691.894 3225.28 698.746 3222.44 703.167C3219.59 707.588 3216.89 711.211 3216.45 711.218C3216 711.228 3212.89 709.129 3209.53 706.563C3206.17 703.996 3203.16 701.896 3202.86 701.896C3202.55 701.896 3201.88 709.846 3201.38 719.563C3197.45 794.944 3191.72 808.848 3162.59 813.832C3157.46 814.71 3146.36 815.234 3137.92 814.995L3122.59 814.563L3121.45 809.229C3120.83 806.296 3118.88 799.008 3117.12 793.034C3115.36 787.06 3113.92 781.823 3113.92 781.395C3113.92 780.968 3121.27 780.979 3130.26 781.42C3145.65 782.176 3146.8 782.055 3150.21 779.332C3152.2 777.742 3154.46 774.219 3155.23 771.502C3157.41 763.796 3160.38 743.52 3160.84 733.23L3161.26 723.896L3144.23 723.523C3131.29 723.239 3127.08 723.559 3126.71 724.856C3115.48 763.516 3102.82 782.231 3074.32 802.256C3068.63 806.259 3049.63 816.672 3048.29 816.522C3048.09 816.499 3045.82 813.676 3043.26 810.248ZM3095.76 685.729C3096.21 683.438 3096.59 676.838 3096.59 671.063V660.563L3102.26 660.574C3111.02 660.592 3138.08 663.165 3139.64 664.131C3140.47 664.644 3139.63 666.123 3137.58 667.778C3134.65 670.136 3133.98 672.041 3133.18 680.229L3132.25 689.896H3160.46C3188 689.896 3188.65 689.833 3187.3 687.303C3186.53 685.877 3185.26 684.309 3184.46 683.818C3182.06 682.333 3167.53 662.162 3161.82 652.392L3156.47 643.229H3126.66H3096.84L3092.86 650.296C3087.79 659.274 3074.27 677.173 3068.04 683.157C3065.41 685.684 3063.26 688.234 3063.26 688.824C3063.26 689.413 3070.38 689.896 3079.09 689.896H3094.92L3095.76 685.729ZM2978.96 642.749L2979.32 621.896H2965.96H2952.59V642.34C2952.59 653.585 2952.9 663.093 2953.27 663.47C2953.65 663.846 2959.5 664.03 2966.27 663.879L2978.59 663.603L2978.96 642.749ZM3141.92 608.836C3141.92 608.252 3140.22 602.702 3138.13 596.502L3134.35 585.229H3127.98H3121.61L3117.77 596.562C3115.65 602.795 3113.92 608.345 3113.92 608.895C3113.92 609.446 3120.22 609.896 3127.92 609.896C3135.62 609.896 3141.92 609.419 3141.92 608.836ZM2978.59 563.896V542.563L2965.59 542.181L2952.59 541.799V562.959C2952.59 574.596 2953.01 584.539 2953.52 585.054C2954.04 585.568 2959.89 585.818 2966.52 585.609L2978.59 585.229V563.896Z" fill="#AA0000"/>
                     <path d="M236.25 290H378C409.5 290 439.25 294.2 467.25 302.6C495.25 310.3 519.4 322.2 539.7 338.3C560 354.4 576.1 375.05 588 400.25C599.9 424.75 605.85 453.8 605.85 487.4C605.85 518.9 598.85 549.7 584.85 579.8C570.85 609.9 550.9 635.1 525 655.4C499.1 675 467.6 685.85 430.5 687.95C448 694.25 464.8 705.8 480.9 722.6C497.7 738.7 511.7 754.8 522.9 770.9C523.6 771.6 527.8 778.25 535.5 790.85C543.9 803.45 554.4 818.85 567 837.05C579.6 854.55 592.55 872.4 605.85 890.6C619.15 908.1 630.7 922.8 640.5 934.7C655.2 952.2 669.2 966.9 682.5 978.8C695.8 990 710.15 998.75 725.55 1005.05C740.95 1011.35 758.1 1014.5 777 1014.5V1025H696.15C661.15 1025 630 1020.8 602.7 1012.4C575.4 1004 551.6 992.45 531.3 977.75C511.7 962.35 494.55 944.5 479.85 924.2C476.35 917.9 470.4 908.45 462 895.85C454.3 882.55 445.2 867.85 434.7 851.75C424.9 834.95 415.1 818.85 405.3 803.45C396.2 787.35 388.15 773.35 381.15 761.45C374.15 748.85 369.95 740.45 368.55 736.25C357.35 716.65 344.4 700.55 329.7 687.95C315.7 674.65 300.65 667.3 284.55 665.9V655.4C285.95 655.4 290.85 655.75 299.25 656.45C307.65 656.45 317.45 656.1 328.65 655.4C346.85 654.7 365.75 651.55 385.35 645.95C405.65 639.65 423.85 628.1 439.95 611.3C456.05 594.5 467.95 570.7 475.65 539.9C477.75 532.9 479.15 524.5 479.85 514.7C481.25 504.2 481.6 493.7 480.9 483.2C479.5 434.2 467.25 396.75 444.15 370.85C421.05 344.95 390.95 331.3 353.85 329.9C339.85 329.2 324.8 329.2 308.7 329.9C292.6 329.9 278.6 329.9 266.7 329.9C255.5 329.9 248.85 329.9 246.75 329.9C246.75 329.2 245.7 325.7 243.6 319.4C242.2 312.4 240.45 305.75 238.35 299.45C236.95 293.15 236.25 290 236.25 290ZM249.9 290V1025H135.45V290H249.9ZM138.6 948.35V1025H54.6V1014.5C55.3 1014.5 57.75 1014.5 61.95 1014.5C66.15 1014.5 68.25 1014.5 68.25 1014.5C86.45 1014.5 101.85 1008.2 114.45 995.6C127.75 982.3 134.75 966.55 135.45 948.35H138.6ZM138.6 366.65H135.45C134.75 348.45 127.75 333.05 114.45 320.45C101.85 307.15 86.45 300.5 68.25 300.5C68.25 300.5 66.15 300.5 61.95 300.5C57.75 300.5 55.3 300.5 54.6 300.5V290H138.6V366.65ZM246.75 948.35H249.9C249.9 966.55 256.55 982.3 269.85 995.6C283.15 1008.2 298.9 1014.5 317.1 1014.5C317.8 1014.5 319.9 1014.5 323.4 1014.5C327.6 1014.5 329.7 1014.5 329.7 1014.5V1025H246.75V948.35ZM1100.8 272.15L1428.4 1018.7H1288.75L1057.75 424.4L1100.8 272.15ZM875.052 948.35C870.152 962.35 869.452 974.25 872.952 984.05C876.452 993.85 882.052 1001.55 889.752 1007.15C898.152 1012.05 906.552 1014.5 914.952 1014.5H924.402V1025H707.052V1014.5C707.052 1014.5 708.802 1014.5 712.302 1014.5C715.102 1014.5 716.502 1014.5 716.502 1014.5C732.602 1014.5 749.052 1009.6 765.852 999.8C783.352 989.3 797.702 972.15 808.902 948.35H875.052ZM1100.8 272.15L1108.15 374L845.652 1021.85H776.352L1046.2 395C1047.6 392.9 1050.4 386.95 1054.6 377.15C1059.5 366.65 1064.75 354.75 1070.35 341.45C1075.95 327.45 1080.85 314.15 1085.05 301.55C1089.25 288.25 1091.35 278.45 1091.35 272.15H1100.8ZM1229.95 757.25V795.05H910.752V757.25H1229.95ZM1260.4 948.35H1397.95C1408.45 972.15 1422.45 989.3 1439.95 999.8C1457.45 1009.6 1474.25 1014.5 1490.35 1014.5C1490.35 1014.5 1491.75 1014.5 1494.55 1014.5C1497.35 1014.5 1498.75 1014.5 1498.75 1014.5V1025H1211.05V1014.5H1220.5C1234.5 1014.5 1246.75 1008.9 1257.25 997.7C1267.75 985.8 1268.8 969.35 1260.4 948.35ZM1600.44 274.25L2240.94 918.95L2252.49 1039.7L1610.94 396.05L1600.44 274.25ZM1603.59 950.45V1025H1516.44V1014.5C1516.44 1014.5 1519.59 1014.5 1525.89 1014.5C1532.19 1014.5 1535.69 1014.5 1536.39 1014.5C1553.89 1014.5 1568.94 1008.2 1581.54 995.6C1594.14 983 1600.44 967.95 1600.44 950.45H1603.59ZM1701.24 950.45C1701.24 967.95 1707.54 983 1720.14 995.6C1732.74 1008.2 1747.79 1014.5 1765.29 1014.5C1765.99 1014.5 1769.49 1014.5 1775.79 1014.5C1782.09 1014.5 1785.24 1014.5 1785.24 1014.5V1025H1698.09V950.45H1701.24ZM1600.44 274.25L1700.19 385.55L1701.24 1025H1600.44V405.5C1600.44 367.7 1598.69 336.55 1595.19 312.05C1591.69 286.85 1589.94 274.25 1589.94 274.25H1600.44ZM2250.39 290V905.3C2250.39 929.8 2251.09 952.55 2252.49 973.55C2254.59 993.85 2256.69 1009.95 2258.79 1021.85C2260.89 1033.75 2261.94 1039.7 2261.94 1039.7H2252.49L2150.64 925.25V290H2250.39ZM2334.39 290V300.5C2334.39 300.5 2331.24 300.5 2324.94 300.5C2318.64 300.5 2315.49 300.5 2315.49 300.5C2297.99 300.5 2282.94 306.8 2270.34 319.4C2257.74 331.3 2251.09 346.35 2250.39 364.55H2247.24V290H2334.39ZM2065.59 290H2152.74V364.55H2150.64C2149.94 346.35 2143.29 331.3 2130.69 319.4C2118.79 306.8 2103.74 300.5 2085.54 300.5C2085.54 300.5 2082.39 300.5 2076.09 300.5C2069.79 300.5 2066.29 300.5 2065.59 300.5V290Z" fill="currentColor"/>
@@ -250,48 +232,60 @@ onMounted(() => {
         </Link>
       </div>
 
-      <transition name="fade" mode="out-in">
-        <div :key="activeTab" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-            <div v-for="ranking in currentList" :key="ranking.id" class="group relative bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-red-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full">
-            <Link :href="`/rankings/${ranking.id}`" class="block h-full flex flex-col">
-                <div class="w-full aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative">
-                <img v-if="ranking.image" :src="`/storage/${ranking.image}`" alt="Imatge del rànquing" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <span v-else class="text-gray-400 text-5xl">
-                    {{ activeTab === 'trending' ? '🔥' : (activeTab === 'popular' ? '🏆' : '🆕') }}
-                </span>
-                
-                <div v-if="activeTab === 'trending'" class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
-                    <span>📈</span> {{ ranking.recent_votes_count }} vots/24h
-                </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div v-for="ranking in currentList" :key="ranking.id" class="group relative bg-white dark:bg-gray-800 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 dark:hover:border-red-500/50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-red-500/20 hover:-translate-y-2">
+              
+              <Link :href="`/rankings/${ranking.id}`" class="block h-full flex flex-col">
+                  
+                  <div class="w-full aspect-[4/3] bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
+                      <img 
+                          v-if="ranking.image" 
+                          :src="`/storage/${ranking.image}`" 
+                          alt="Ranking" 
+                          class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" 
+                      />
+                      <div v-else class="w-full h-full flex items-center justify-center text-4xl bg-gray-50 dark:bg-gray-800">
+                          {{ activeTab === 'trending' ? '🔥' : (activeTab === 'popular' ? '🏆' : '🆕') }}
+                      </div>
+                      
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
 
-                <div class="absolute inset-0 from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-                <div class="p-5 flex-1">
-                <h3 class="text-lg font-bold title-clamp text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-red-400 transition-colors">
-                    {{ ranking.title }}
-                </h3>
-                
-                <div class="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <div class="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-300 dark:border-gray-600 flex items-center justify-center">
-                        <PixelAvatar 
-                            v-if="isPixelAvatar(ranking.user?.profile_photo_path)" 
-                            :id="ranking.user.profile_photo_path" 
-                            className="w-full h-full" 
-                        />
-                        <img 
-                            v-else-if="ranking.user?.profile_photo_url" 
-                            :src="ranking.user.profile_photo_url" 
-                            class="w-full h-full object-cover"
-                        >
-                        <span v-else class="text-[10px] font-bold text-gray-500">?</span>
-                    </div>
-                    <span>{{ ranking.user?.name || 'Anònim' }}</span>
-                </div>
-                </div>
-            </Link>
-            </div>
-        </div>
-      </transition>
+                      <div v-if="activeTab === 'trending'" class="absolute top-3 right-3 bg-white/90 dark:bg-black/60 backdrop-blur-md text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-white/20 dark:border-gray-700 text-gray-900 dark:text-white">
+                          <span class="text-green-500">▲</span> {{ ranking.recent_votes_count }} vots
+                      </div>
+                  </div>
+
+                  <div class="p-6 flex-1 flex flex-col justify-between relative">
+                      <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+
+                      <div>
+                          <h3 class="text-lg font-bold text-gray-900 dark:text-white leading-tight title-clamp group-hover:text-blue-600 dark:group-hover:text-red-500 transition-colors">
+                              {{ ranking.title }}
+                          </h3>
+                      </div>
+                      
+                      <div class="mt-4 flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                          <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden ring-2 ring-transparent group-hover:ring-blue-500 dark:group-hover:ring-red-500 transition-all">
+                              <PixelAvatar 
+                                  v-if="isPixelAvatar(ranking.user?.profile_photo_path)" 
+                                  :id="ranking.user.profile_photo_path" 
+                                  className="w-full h-full" 
+                              />
+                              <img 
+                                  v-else-if="ranking.user?.profile_photo_url" 
+                                  :src="ranking.user.profile_photo_url" 
+                                  class="w-full h-full object-cover"
+                              >
+                              <span v-else class="w-full h-full flex items-center justify-center text-xs font-bold">?</span>
+                          </div>
+                          <span class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
+                              {{ ranking.user?.name || 'Anònim' }}
+                          </span>
+                      </div>
+                  </div>
+              </Link>
+          </div>
+      </div>
       
       <div v-if="currentList.length === 0" class="text-center text-gray-500 mt-4 py-10 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
         <p class="text-xl mb-2">🤔</p>
@@ -305,44 +299,44 @@ onMounted(() => {
     </div>
 
     <div v-if="!isPremium" class="max-w-7xl mx-auto px-6 pb-20">
-    <div class="relative rounded-3xl overflow-hidden shadow-2xl group">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black z-0"></div>
-        
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-yellow-500/30 rounded-full blur-[100px] group-hover:bg-yellow-400/40 transition-colors duration-700"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] group-hover:bg-blue-500/30 transition-colors duration-700"></div>
-
-        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-8 text-center md:text-left">
-            <div class="max-w-xl">
-                <h3 class="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">
-                    Elimina els anuncis i <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">millora la teva experiència.</span>
-                </h3>
-                
-                <div class="space-y-4">
-                    <p class="text-gray-300 text-lg md:text-xl leading-relaxed">
-                        Per només <span class="text-white font-bold border-b-2 border-yellow-500">1,99€</span>, puja de nivell a Rankkatsu:
-                    </p>
-                    <ul class="text-gray-300 text-base md:text-lg space-y-2 inline-block text-left">
-                        <li class="flex items-center gap-2">
-                            <span class="text-yellow-400">🚫</span> Adéu a tota la publicitat
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span class="text-yellow-400">✨</span> Insígnies i avatars exclusius
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span class="text-yellow-400">❤️</span> Suport directe al projecte
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="relative rounded-3xl overflow-hidden shadow-2xl group">
+            <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black z-0"></div>
             
-            <Link href="/premium" class="flex-shrink-0 group/btn relative inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-gray-900 text-lg font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)]">
-                Passar-me a Premium
-                <svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </Link>
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-yellow-500/30 rounded-full blur-[100px] group-hover:bg-yellow-400/40 transition-colors duration-700"></div>
+            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] group-hover:bg-blue-500/30 transition-colors duration-700"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-8 text-center md:text-left">
+                <div class="max-w-xl">
+                    <h3 class="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">
+                        Elimina els anuncis i <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">millora la teva experiència.</span>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <p class="text-gray-300 text-lg md:text-xl leading-relaxed">
+                            Per només <span class="text-white font-bold border-b-2 border-yellow-500">1,99€</span>, puja de nivell a Rankkatsu:
+                        </p>
+                        <ul class="text-gray-300 text-base md:text-lg space-y-2 inline-block text-left">
+                            <li class="flex items-center gap-2">
+                                <span class="text-yellow-400">🚫</span> Adéu a tota la publicitat
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="text-yellow-400">✨</span> Insígnia i avatars exclusius
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="text-yellow-400">❤️</span> Suport directe al projecte
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <Link href="/premium" class="flex-shrink-0 group/btn relative inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-gray-900 text-lg font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)]">
+                    Passar-me a Premium
+                    <svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </Link>
+            </div>
         </div>
     </div>
-</div>
 
   </AppLayout>
 </template>
