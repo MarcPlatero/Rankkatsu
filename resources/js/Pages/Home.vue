@@ -14,12 +14,15 @@ const props = defineProps({
 const page = usePage()
 const isPremium = page.props.auth.user?.is_premium
 
-// Control de pestanyes
 const activeTab = ref('popular') 
+
+const top3Popular = computed(() => {
+  return props.topRankings ? props.topRankings.slice(0, 3) : []
+})
 
 const currentList = computed(() => {
   if (activeTab.value === 'trending') return props.trendingRankings;
-  if (activeTab.value === 'popular') return props.topRankings;
+  if (activeTab.value === 'popular') return props.topRankings ? props.topRankings.slice(3) : [];
   if (activeTab.value === 'latest') return props.latestRankings;
   return [];
 })
@@ -28,7 +31,25 @@ const isPixelAvatar = (path) => {
   return path && typeof path === 'string' && path.startsWith('pixel-')
 }
 
-// Control d'animació d'entrada
+const timeAgo = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return `Fa ${Math.floor(interval)} anys`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `Fa ${Math.floor(interval)} mesos`;
+    interval = seconds / 86400;
+    if (interval > 1) return `Fa ${Math.floor(interval)} dies`;
+    interval = seconds / 3600;
+    if (interval > 1) return `Fa ${Math.floor(interval)} hores`;
+    interval = seconds / 60;
+    if (interval > 1) return `Fa ${Math.floor(interval)} minuts`;
+    return 'Ara mateix';
+}
+
 const showContent = ref(false)
 
 onMounted(() => {
@@ -87,6 +108,25 @@ onMounted(() => {
   text-overflow: ellipsis;
   line-height: 1.3em;
   height: 2.6em;
+}
+
+@keyframes podi-enter {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-podi { animation: podi-enter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+
+@keyframes gold-shine {
+    0% { background-position: -200%; }
+    100% { background-position: 200%; }
+}
+
+@keyframes gold-shine {
+    0% { background-position: -200%; }
+    100% { background-position: 200%; }
 }
 </style>
 
@@ -232,8 +272,118 @@ onMounted(() => {
         </Link>
       </div>
 
+      <div v-if="activeTab === 'popular' && top3Popular.length > 0" class="mb-24 mt-16 px-4">
+        
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-64 bg-blue-500/10 dark:bg-blue-900/10 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+
+        <div class="flex flex-col md:flex-row justify-center items-end gap-6 md:gap-4 lg:gap-8 max-w-5xl mx-auto">
+            
+            <div v-if="top3Popular[1]" class="order-2 md:order-1 w-full md:w-[30%] relative group animate-podi delay-100 opacity-0">
+                <div class="absolute -inset-0.5 bg-gradient-to-b from-gray-300 via-gray-100 to-gray-400 rounded-[2.5rem] opacity-0 group-hover:opacity-60 blur transition duration-500"></div>
+                
+                <Link :href="`/rankings/${top3Popular[1].id}`" class="relative block h-full bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border-2 border-gray-100 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-500 hover:-translate-y-2 transition-all duration-500 shadow-xl shadow-gray-400/20 dark:shadow-gray-700/20 group-hover:shadow-gray-400/40 flex flex-col">
+                    <div class="absolute top-4 left-4 z-20 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-700 group-hover:border-white bg-black text-white group-hover:text-gray-900 group-hover:bg-gradient-to-br group-hover:from-gray-100 group-hover:to-gray-300 transition-all duration-500">
+                        <span class="text-xl font-black">2</span>
+                    </div>
+
+                    <div class="h-64 overflow-hidden relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent z-10"></div>
+                        <img v-if="top3Popular[1].image" :src="`/storage/${top3Popular[1].image}`" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div v-else class="w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-4xl">🥈</div>
+                    </div>
+
+                    <div class="p-5 relative z-20 flex flex-col flex-grow justify-between text-center">
+                        <h3 class="font-bold text-gray-900 dark:text-white text-lg leading-tight line-clamp-2 mb-3 h-[3.2em] flex items-center justify-center transition-colors duration-300 group-hover:text-gray-600 dark:group-hover:text-gray-300">
+                            {{ top3Popular[1].title }}
+                        </h3>
+                        
+                        <div class="flex items-center justify-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                            <div class="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden bg-white dark:bg-gray-800 group-hover:border-gray-400 transition-colors duration-300 flex-shrink-0">
+                                <PixelAvatar v-if="isPixelAvatar(top3Popular[1].user?.profile_photo_path)" :id="top3Popular[1].user.profile_photo_path" className="w-full h-full" />
+                                <img v-else-if="top3Popular[1].user?.profile_photo_url" :src="top3Popular[1].user.profile_photo_url" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 truncate max-w-[140px]">
+                                {{ top3Popular[1].user?.name }}
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+
+            <div v-if="top3Popular[0]" class="order-1 md:order-2 w-full md:w-[36%] relative group z-10 -mt-10 md:-mt-0 animate-podi opacity-0">
+                <div class="absolute -top-12 left-1/2 -translate-x-1/2 z-30 animate-float">
+                    <svg class="w-16 h-16 drop-shadow-[0_0_15px_rgba(234,179,8,0.6)] text-yellow-400" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" /></svg>
+                </div>
+
+                <div class="absolute -inset-1 bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-600 rounded-[2.5rem] opacity-0 group-hover:opacity-80 blur-md transition duration-500 animate-pulse-slow"></div>
+                
+                <Link :href="`/rankings/${top3Popular[0].id}`" class="relative block h-full bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border-2 border-yellow-100 dark:border-yellow-900/30 group-hover:border-yellow-400 hover:-translate-y-3 transition-all duration-500 shadow-2xl shadow-yellow-500/20 group-hover:shadow-yellow-500/40 flex flex-col">
+                    
+                    <div class="absolute top-4 left-4 z-20 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.5)] border-2 border-gray-700 group-hover:border-yellow-200 bg-black text-white group-hover:bg-gradient-to-br group-hover:from-yellow-300 group-hover:to-amber-500 transition-all duration-500">
+                        <span class="text-2xl font-black drop-shadow-md">1</span>
+                    </div>
+
+                    <div class="h-80 overflow-hidden relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent z-10"></div>
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-30 bg-gradient-to-tr from-transparent via-white to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-20 pointer-events-none"></div>
+                        <img v-if="top3Popular[0].image" :src="`/storage/${top3Popular[0].image}`" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <div v-else class="w-full h-full bg-yellow-100 dark:bg-gray-800 flex items-center justify-center text-6xl">👑</div>
+                    </div>
+
+                    <div class="p-6 relative z-20 flex flex-col flex-grow justify-between text-center">
+                        <h3 class="font-black text-xl md:text-2xl text-center leading-tight mb-3 line-clamp-2 h-[2.5em] flex items-center justify-center text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-yellow-500 dark:group-hover:text-yellow-400 group-hover:drop-shadow-md">
+                            {{ top3Popular[0].title }}
+                        </h3>
+                        
+                        <div class="flex items-center justify-center gap-3 pt-4 border-t border-yellow-100 dark:border-gray-800">
+                            <div class="w-12 h-12 rounded-full border-[3px] border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden bg-white dark:bg-gray-800 group-hover:border-yellow-400 transition-all duration-300 flex-shrink-0">
+                                <PixelAvatar v-if="isPixelAvatar(top3Popular[0].user?.profile_photo_path)" :id="top3Popular[0].user.profile_photo_path" className="w-full h-full" />
+                                <img v-else-if="top3Popular[0].user?.profile_photo_url" :src="top3Popular[0].user.profile_photo_url" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-base font-bold text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-yellow-600 dark:group-hover:text-yellow-500 truncate max-w-[160px]">
+                                {{ top3Popular[0].user?.name }}
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+
+            <div v-if="top3Popular[2]" class="order-3 md:order-3 w-full md:w-[30%] relative group animate-podi delay-200 opacity-0">
+                <div class="absolute -inset-0.5 bg-gradient-to-b from-orange-300 via-orange-200 to-amber-700 rounded-[2.5rem] opacity-0 group-hover:opacity-60 blur transition duration-500"></div>
+                
+                <Link :href="`/rankings/${top3Popular[2].id}`" class="relative block h-full bg-white dark:bg-gray-900 rounded-[2.5rem] overflow-hidden border-2 border-gray-100 dark:border-gray-800 hover:border-orange-300 dark:hover:border-orange-800/50 hover:-translate-y-2 transition-all duration-500 shadow-xl shadow-orange-500/20 dark:shadow-orange-900/20 group-hover:shadow-orange-500/40 flex flex-col">
+                    <div class="absolute top-4 left-4 z-20 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-gray-700 group-hover:border-white bg-black text-white group-hover:bg-gradient-to-br group-hover:from-orange-400 group-hover:to-amber-700 transition-all duration-500">
+                        <span class="text-xl font-black">3</span>
+                    </div>
+
+                    <div class="h-64 overflow-hidden relative flex-shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent z-10"></div>
+                        <img v-if="top3Popular[2].image" :src="`/storage/${top3Popular[2].image}`" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div v-else class="w-full h-full bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-4xl">🥉</div>
+                    </div>
+
+                    <div class="p-5 relative z-20 flex flex-col flex-grow justify-between text-center">
+                        <h3 class="font-bold text-gray-900 dark:text-white text-center text-lg leading-tight line-clamp-2 mb-3 h-[3.2em] flex items-center justify-center transition-colors duration-300 group-hover:text-orange-600 dark:group-hover:text-orange-400">
+                            {{ top3Popular[2].title }}
+                        </h3>
+                        
+                        <div class="flex items-center justify-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+                            <div class="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden bg-white dark:bg-gray-800 group-hover:border-orange-400 transition-colors duration-300 flex-shrink-0">
+                                <PixelAvatar v-if="isPixelAvatar(top3Popular[2].user?.profile_photo_path)" :id="top3Popular[2].user.profile_photo_path" className="w-full h-full" />
+                                <img v-else-if="top3Popular[2].user?.profile_photo_url" :src="top3Popular[2].user.profile_photo_url" class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300 group-hover:text-orange-700 dark:group-hover:text-orange-300 truncate max-w-[140px]">
+                                {{ top3Popular[2].user?.name }}
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div v-for="ranking in currentList" :key="ranking.id" class="group relative bg-white dark:bg-gray-800 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 dark:hover:border-red-500/50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-red-500/20 hover:-translate-y-2">
+          <div v-for="(ranking, index) in currentList" :key="ranking.id" class="group relative bg-white dark:bg-gray-800 rounded-[2rem] overflow-hidden border border-gray-100 dark:border-gray-800 hover:border-blue-500/50 dark:hover:border-red-500/50 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-red-500/20 hover:-translate-y-2">
               
               <Link :href="`/rankings/${ranking.id}`" class="block h-full flex flex-col">
                   
@@ -249,6 +399,15 @@ onMounted(() => {
                       </div>
                       
                       <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+
+                      <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white font-black text-sm px-3 py-1 rounded-lg border border-white/20">
+                          <span v-if="activeTab === 'latest'">
+                              🕒 {{ timeAgo(ranking.created_at) }}
+                          </span>
+                          <span v-else>
+                              #{{ activeTab === 'popular' ? index + 4 : index + 1 }}
+                          </span>
+                      </div>
 
                       <div v-if="activeTab === 'trending'" class="absolute top-3 right-3 bg-white/90 dark:bg-black/60 backdrop-blur-md text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-white/20 dark:border-gray-700 text-gray-900 dark:text-white">
                           <span class="text-green-500">▲</span> {{ ranking.recent_votes_count }} vots
@@ -287,7 +446,7 @@ onMounted(() => {
           </div>
       </div>
       
-      <div v-if="currentList.length === 0" class="text-center text-gray-500 mt-4 py-10 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+      <div v-if="currentList.length === 0 && (!top3Popular || top3Popular.length === 0)" class="text-center text-gray-500 mt-4 py-10 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
         <p class="text-xl mb-2">🤔</p>
         <p>Encara no hi ha rànquings en aquesta categoria.</p>
       </div>
