@@ -304,7 +304,7 @@ textarea { resize: none; }
   background-color: rgba(255, 255, 255, 0.8);
 }
 .dark .file-drop-zone:hover {
-  border-color: #ef4444;
+  border-color: #3b82f6;
   background-color: rgba(55, 65, 81, 0.8);
 }
 .cropper-modal {
@@ -343,21 +343,16 @@ textarea { resize: none; }
     <Head title="Crear Rànquing" />
 
     <section class="relative py-16 px-6 overflow-hidden transition-colors duration-500">
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-blue-200 via-white to-red-100
-               dark:from-gray-800 dark:via-gray-900 dark:to-black
-               animate-gradient-slow">
-      </div>
-
-      <div class="relative z-10 max-w-4xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl rounded-2xl p-10 border border-gray-200 dark:border-gray-700">
+      
+      <div class="relative z-10 max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-10 border border-gray-200 dark:border-gray-700">
         
+        <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
+          🚀 Crear un nou rànquing
+        </h1>
+
         <div class="mb-8">
            <AdBanner format="horizontal" />
         </div>
-        
-        <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
-          🏆 Crear un nou rànquing
-        </h1>
 
         <div
           v-if="nsfwError"
@@ -400,7 +395,7 @@ textarea { resize: none; }
           <hr class="border-gray-300 dark:border-gray-600">
 
           <div>
-            <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+            <h2 class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
               Opcions del rànquing
             </h2>
 
@@ -419,7 +414,7 @@ textarea { resize: none; }
                       :class="option.type === 'image' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600'"
                       title="Imatge"
                     >
-                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </button>
                     <button 
                       type="button" 
@@ -427,7 +422,7 @@ textarea { resize: none; }
                       :class="option.type === 'video' ? 'text-red-600 dark:text-red-400' : 'text-gray-400 hover:text-gray-600'"
                       title="YouTube"
                     >
-                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </button>
                   </div>
 
@@ -443,7 +438,7 @@ textarea { resize: none; }
                       </div>
                       <div v-else class="relative w-20 h-20 cursor-pointer">
                         <img :src="optionPreviews[index]" class="w-full h-full object-cover rounded-lg shadow" />
-                        <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs">Edit</div>
+                        <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs">Editar</div>
                       </div>
                       <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
                     </label>
@@ -540,8 +535,8 @@ textarea { resize: none; }
           @click="saveCrop" 
           type="button" 
           class="px-4 py-2 rounded-lg text-white transition-colors
-                 bg-blue-600 hover:bg-blue-700
-                 dark:bg-red-600 dark:hover:bg-red-700"
+                  bg-blue-600 hover:bg-blue-700
+                  dark:bg-red-600 dark:hover:bg-red-700"
         >
           Acceptar i retallar
         </button>
