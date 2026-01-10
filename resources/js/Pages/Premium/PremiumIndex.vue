@@ -75,7 +75,7 @@ const subscribe = (type) => {
             <div class="relative overflow-hidden bg-gradient-to-br from-green-500 to-emerald-700 text-white p-8 rounded-3xl shadow-2xl mb-8 transform hover:scale-105 transition-transform duration-300">
                 <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
                 <h2 class="text-3xl font-bold mb-2">🎉 Ja ets Premium!</h2>
-                <p class="opacity-90">Gràcies per formar part de la llegenda.</p>
+                <p class="opacity-90">Gràcies per formar part d'això :)</p>
             </div>
 
             <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700">
