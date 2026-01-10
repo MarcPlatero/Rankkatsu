@@ -66,6 +66,31 @@ function goToRanking(id) {
 const isPixelAvatar = (path) => {
   return path && typeof path === 'string' && path.startsWith('pixel-')
 }
+
+// Funció per calcular temps
+const timeAgo = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'any' : 'anys'}`;
+    
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'mes' : 'mesos'}`;
+    
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'dia' : 'dies'}`;
+    
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'hora' : 'hores'}`;
+    
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'minut' : 'minuts'}`;
+    
+    return 'Ara mateix';
+}
 </script>
 
 <style scoped>
@@ -106,7 +131,7 @@ const isPixelAvatar = (path) => {
              bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
       <h1 class="text-3xl font-extrabold mb-10 text-center">
-        📊 Rànquings
+        🔍 Tots els rànquings
       </h1>
 
       <div
@@ -122,23 +147,28 @@ const isPixelAvatar = (path) => {
         {{ flash.error }}
       </div>
 
-      <div class="flex flex-col gap-6 mb-10 max-w-5xl mx-auto">
-        <div class="flex w-full">
-          <input
-            v-model="search"
-            @keyup.enter="applyFilters"
-            type="text"
-            placeholder="Cerca rànquings o opcions..."
-            class="w-full px-4 py-3 rounded-l-xl border border-gray-300 dark:border-gray-700
-                   bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
-          />
-          <button
-            @click="applyFilters"
-            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-red-600 text-white font-semibold
-                   rounded-r-xl hover:opacity-90 transition duration-200 shadow-sm"
-          >
-            🔍
-          </button>
+      <div class="flex flex-col gap-6 mb-12 max-w-6xl mx-auto">
+        
+        <div class="relative group max-w-2xl mx-auto w-full">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-red-400 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
+            <div class="relative flex w-full shadow-lg rounded-2xl bg-white dark:bg-gray-800 overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="pl-4 flex items-center justify-center text-gray-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input
+                    v-model="search"
+                    @keyup.enter="applyFilters"
+                    type="text"
+                    placeholder="Cerca rànquings o opcions..."
+                    class="w-full px-4 py-4 bg-transparent border-none focus:ring-0 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-lg focus:outline-none"
+                />
+                <button
+                    @click="applyFilters"
+                    class="px-8 font-semibold bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-l border-gray-100 dark:border-gray-700"
+                >
+                    Cercar
+                </button>
+            </div>
         </div>
 
         <div class="flex justify-center">
@@ -179,7 +209,7 @@ const isPixelAvatar = (path) => {
             </div>
         </div>
       </div>
-
+      
       <div class="max-w-4xl mx-auto mb-8">
         <AdBanner format="horizontal" />
       </div>
@@ -232,8 +262,12 @@ const isPixelAvatar = (path) => {
               🗂️
             </div>
 
-            <div v-if="sort === 'trending'" class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm">
-                <span>📈</span> {{ ranking.recent_votes_count || 0 }} vots/24h
+            <div v-if="sort === 'recent'" class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm z-10">
+                <span>🕒</span> {{ timeAgo(ranking.created_at) }}
+            </div>
+
+            <div v-if="sort === 'trending'" class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm z-10">
+                <span class="text-green-500">▲</span> {{ ranking.recent_votes_count || 0 }} vots/24h
             </div>
           </div>
 
@@ -269,9 +303,9 @@ const isPixelAvatar = (path) => {
                 </li>
                 <li
                   v-if="ranking.options.length > 2"
-                  class="text-gray-400 italic"
+                  class="text-gray-400 italic mt-1"
                 >
-                  ...
+                  +{{ ranking.options.length - 2 }} més...
                 </li>
               </ul>
 
@@ -289,7 +323,21 @@ const isPixelAvatar = (path) => {
                     >
                     <span v-else class="text-[10px] font-bold text-gray-500">?</span>
                 </div>
-                <span class="truncate font-medium">{{ ranking.user?.name || 'Anònim' }}</span>
+                
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="truncate font-medium">{{ ranking.user?.name || 'Anònim' }}</span>
+                    
+                    <span 
+                        v-if="ranking.user?.is_premium" 
+                        class="flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm"
+                        title="Usuari Premium"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                          <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                </div>
+
               </div>
               </div>
 
