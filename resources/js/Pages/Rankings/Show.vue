@@ -180,6 +180,7 @@ const confirmDelete = () => {
     router.delete(`/rankings/${props.ranking.id}`)
 }
 
+// Funció per obtenir l'URL d'embed de YouTube
 const getYoutubeEmbedUrl = (url) => {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
