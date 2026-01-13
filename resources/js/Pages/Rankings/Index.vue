@@ -38,7 +38,7 @@ function applyFilters() {
   )
 }
 
-// Funció "Cargar més"
+// Funció de "Cargar més"
 function loadMore() {
   if (!props.rankings.next_page_url) return;
 
