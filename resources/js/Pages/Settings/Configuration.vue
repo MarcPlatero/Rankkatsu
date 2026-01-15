@@ -45,7 +45,7 @@ html { transition: background-color 0.3s, color 0.3s; }
 
       <section class="mt-8 p-6 border rounded-lg bg-white dark:bg-gray-800 dark:border-gray-700 shadow">
         <h2 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Idioma</h2>
-        <p class="text-gray-600 dark:text-gray-400">En res podràs triar l’idioma de la plataforma 🌍.</p>
+        <p class="text-gray-600 dark:text-gray-400">En res podràs triar l’idioma 🌍.</p>
       </section>
 
       <div class="mt-12">
