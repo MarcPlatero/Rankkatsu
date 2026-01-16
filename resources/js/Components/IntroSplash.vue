@@ -92,7 +92,6 @@ onMounted(async () => {
   stroke-linejoin: round;
 }
 
-/* BLANC (Rank) */
 .path-white {
   stroke: #ffffff;
   stroke-width: 2px;
@@ -102,7 +101,6 @@ onMounted(async () => {
     fill-color-white 0.8s ease-out forwards 2.6s;
 }
 
-/* Vermell (Katsu) */
 .path-red {
   stroke: #ff3333;
   stroke-width: 2px;
