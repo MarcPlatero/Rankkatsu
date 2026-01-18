@@ -7,7 +7,7 @@ const isVisible = ref(false)
 const isExiting = ref(false)
 const logoSvg = ref(null)
 
-// Partícules (mateixa lògica, funciona bé)
+// Partícules
 const particles = Array.from({ length: 30 }, (_, i) => ({
   id: i,
   color: Math.random() > 0.5 ? 'bg-blue-500' : 'bg-red-500',
