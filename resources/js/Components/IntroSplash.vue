@@ -66,7 +66,6 @@ onMounted(async () => {
   }
 }
 
-/* Animació d'omplert + glow */
 @keyframes fill-color-white {
   0% { fill-opacity: 0; filter: drop-shadow(0 0 0 rgba(255,255,255,0)); stroke-width: 2px; }
   50% { stroke-width: 0px; }
