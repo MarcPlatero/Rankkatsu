@@ -109,7 +109,7 @@ onMounted(async () => {
     fill-color-red 0.8s ease-out forwards 2.7s;
 }
 
-/* Sacsejada (impacte final) */
+/* Sacsejada (del impacte final) */
 @keyframes impact-shake {
   0%, 100% { transform: scale(1); }
   90% { transform: scale(1); }
