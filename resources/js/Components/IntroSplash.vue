@@ -109,7 +109,7 @@ onMounted(async () => {
     fill-color-red 0.8s ease-out forwards 2.7s;
 }
 
-/* Impacte suau */
+/* Impacte */
 @keyframes impact-pulse {
   0%, 85% { 
     transform: scale(1); 
