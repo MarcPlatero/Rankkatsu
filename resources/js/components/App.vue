@@ -1,5 +1,5 @@
 <template>
-  <h1>Hola, RankDuel 🚀</h1>
+  <h1>Hola, Rankkatsu 🚀</h1>
 </template>
 
 <script>
