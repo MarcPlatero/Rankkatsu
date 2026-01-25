@@ -2,6 +2,7 @@
 import Navbar from '@/Components/Navbar.vue'
 import Footer from '@/Components/Footer.vue'
 import IntroSplash from '@/Components/IntroSplash.vue'
+import CookieConsent from '@/Components/CookieConsent.vue'
 import { onMounted, onBeforeUnmount } from 'vue'
 
 function applyFromLocalStorage() {
@@ -52,4 +53,6 @@ onBeforeUnmount(() => {
 
     <Footer />
   </div>
+
+  <CookieConsent />
 </template>

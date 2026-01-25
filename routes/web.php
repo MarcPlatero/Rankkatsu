@@ -13,6 +13,7 @@ use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Session;
 
 // Home
 Route::get('/', [RankingController::class, 'home'])->name('home');
@@ -96,5 +97,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/premium/success', [SubscriptionController::class, 'success'])->name('premium.success');
     Route::get('/premium/manage', [SubscriptionController::class, 'portal'])->name('premium.manage');
 });
+
+// Pàgines legals
+Route::get('/legal/terms', function () { return Inertia::render('Legal/Terms'); })->name('legal.terms');
+Route::get('/legal/privacy', function () { return Inertia::render('Legal/Privacy'); })->name('legal.privacy');
+Route::get('/legal/cookies', function () { return Inertia::render('Legal/Cookies'); })->name('legal.cookies');
 
 require __DIR__.'/auth.php';
