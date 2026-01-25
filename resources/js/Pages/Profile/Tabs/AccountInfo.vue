@@ -3,9 +3,10 @@ import { ref, computed } from 'vue'
 import { useForm, usePage, router } from '@inertiajs/vue3'
 import ChangePassword from './ChangePassword.vue'
 import ManageSubscription from './ManageSubscription.vue'
-
+import DeleteUserForm from '../Partials/DeleteUserForm.vue'
 import { avatarList } from '@/Data/avatarList'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   user: Object,
@@ -26,7 +27,7 @@ const allAvatars = ref(avatarList)
 
 const selectAvatar = (avatar) => {
   if (avatar.premium && !isPremium.value) {
-    if(confirm("Aquest avatar és exclusiu per a membres Premium 👑. Vols fer-te Premium?")) {
+    if(confirm(trans("Aquest avatar és exclusiu per a membres Premium 👑. Vols fer-te Premium?"))) {
         router.visit('/premium')
     }
     return
@@ -39,14 +40,14 @@ const submit = () => {
   form.patch(route('profile.update'), {
     preserveScroll: true,
     onSuccess: () => {
-      successMessage.value = '✅ Canvis guardats correctament.'
+      successMessage.value = trans('✅ Canvis guardats correctament.')
       setTimeout(() => (successMessage.value = ''), 3000)
     },
   })
 }
 
 const handlePasswordUpdated = () => {
-  successMessage.value = '🔐 Contrasenya actualitzada correctament.'
+  successMessage.value = trans('🔐 Contrasenya actualitzada correctament.')
   setTimeout(() => (successMessage.value = ''), 3000)
 }
 </script>
@@ -79,7 +80,7 @@ const handlePasswordUpdated = () => {
   <div
     class="bg-white dark:bg-gray-900 shadow-md rounded-xl p-6 space-y-6 border border-gray-100 dark:border-gray-800 transition-colors duration-300"
   >
-    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">👤 Informació del compte</h2>
+    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">👤 {{ $t('Informació del compte') }}</h2>
 
     <transition name="fade">
       <div
@@ -91,7 +92,7 @@ const handlePasswordUpdated = () => {
     </transition>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom d'usuari</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t("Nom d'usuari") }}</label>
       
       <input
         v-model="form.name"
@@ -112,7 +113,7 @@ const handlePasswordUpdated = () => {
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correu electrònic</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('Correu electrònic') }}</label>
       <input
         v-model="form.email"
         type="email"
@@ -122,7 +123,7 @@ const handlePasswordUpdated = () => {
     </div>
 
     <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Tria el teu avatar</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{{ $t('Tria el teu avatar') }}</h3>
       
       <div class="flex flex-wrap justify-center gap-3 max-h-[500px] overflow-y-auto p-3 border border-gray-100 dark:border-gray-800 rounded-xl bg-gray-50/50 dark:bg-gray-900/50 scrollbar-thin">
         
@@ -165,16 +166,16 @@ const handlePasswordUpdated = () => {
               ? 'border-red-500 ring-2 ring-red-500/30'
               : 'border-transparent hover:border-red-300'
           ]"
-          title="Eliminar avatar"
+          :title="$t('Eliminar avatar')"
         >
           <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-          <span class="text-[9px] font-bold text-red-400 mt-1 uppercase">Eliminar</span>
+          <span class="text-[9px] font-bold text-red-400 mt-1 uppercase">{{ $t('Eliminar') }}</span>
         </button>
 
       </div>
       
       <p v-if="!isPremium" class="text-xs text-gray-500 mt-3 flex items-center gap-1 justify-center">
-        Els avatars amb cadenat són exclusius per a membres <span class="bg-gradient-to-r from-blue-600 to-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">Premium</span>.
+        {{ $t('Els avatars amb cadenat són exclusius per a membres') }} <span class="bg-gradient-to-r from-blue-600 to-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">Premium</span>.
       </p>
 
       <div v-if="form.errors.avatar" class="text-red-600 text-sm mt-1">{{ form.errors.avatar }}</div>
@@ -186,13 +187,15 @@ const handlePasswordUpdated = () => {
         :disabled="form.processing"
         class="px-4 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 transition disabled:opacity-50 shadow-sm"
       >
-        {{ form.processing ? 'Guardant...' : '💾 Guardar canvis' }}
+        {{ form.processing ? $t('Guardant...') : $t('💾 Guardar canvis') }}
       </button>
     </div>
 
     <ChangePassword @password-updated="handlePasswordUpdated" />
 
     <ManageSubscription v-if="isPremium" />
+
+    <DeleteUserForm />
 
   </div>
 </template>
