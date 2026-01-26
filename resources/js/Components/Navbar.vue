@@ -106,13 +106,13 @@ onUnmounted(() => {
       </Link>
 
       <div class="hidden md:flex items-center space-x-5 text-sm font-medium">
-        <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+        <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('Home') }}
         </Link>
-        <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+        <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('Profile') }}
         </Link>
-        <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+        <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('Rankings') }}
         </Link>
         
@@ -120,13 +120,13 @@ onUnmounted(() => {
             {{ $t('Premium') }}
         </Link>
 
-        <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+        <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('Create') }}
         </Link>
-        <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+        <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('Settings') }}
         </Link>
-        <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+        <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition">
             {{ $t('About') }}
         </Link>
       </div>
