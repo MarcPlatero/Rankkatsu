@@ -7,7 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { i18nVue } from 'laravel-vue-i18n';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = 'Rankkatsu';
 
 // Càrrega Google AdSense
 // Això evita que es carreguin anuncis mentre programo en localhost
