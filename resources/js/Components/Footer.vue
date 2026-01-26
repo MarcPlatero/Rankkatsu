@@ -16,21 +16,21 @@ import { Link } from '@inertiajs/vue3'
         <div class="flex flex-wrap justify-center gap-6">
           <Link 
             :href="route('legal.terms')" 
-            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
+            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition"
           >
             {{ $t('Termes i Condicions') }}
           </Link>
           
           <Link 
             :href="route('legal.privacy')" 
-            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
+            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition"
           >
             {{ $t('Política de Privacitat') }}
           </Link>
           
           <Link 
             :href="route('legal.cookies')" 
-            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
+            class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-red-400 transition"
           >
             {{ $t('Política de Cookies') }}
           </Link>
