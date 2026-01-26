@@ -5,20 +5,22 @@ export const avatarList = [
   { id: 'pixel-slime-blue', name: 'Blue Team', premium: false },
   { id: 'pixel-slime-red', name: 'Red Team', premium: false },
   
-  // --- PACK ANIME LEGENDS (GRATIS) ---
+  // --- PACK ANIME LEGENDS ---
   { id: 'pixel-ninja', name: 'Ninja Band', premium: false }, 
   { id: 'pixel-pirate', name: 'Pirate Hat', premium: false }, 
   { id: 'pixel-orb', name: 'Dragon Orb', premium: false }, 
   { id: 'pixel-soccer', name: 'Thunder Striker', premium: false }, 
   { id: 'pixel-hero', name: 'Hero Cowl', premium: false }, 
+  { id: 'pixel-titan', name: 'Titan Scout', premium: false },
+
+   // --- PACK HERO ---
+  { id: 'pixel-iron', name: 'Iron Hero', premium: false },
 
   // --- PACK ARCADE ---
   { id: 'pixel-heart', name: 'Extra Life', premium: false },
-  { id: 'pixel-ghost', name: 'Spooky Ghost', premium: false },
   { id: 'pixel-invader', name: 'Cosmic Invader', premium: false },
 
   // --- PACK RETRO ---
-  { id: 'pixel-shroom', name: 'Power Shroom', premium: false },
   { id: 'pixel-gem', name: 'Rank Gem', premium: false },
   { id: 'pixel-ring', name: 'Speed Ring', premium: false },
 
@@ -48,8 +50,10 @@ export const avatarList = [
   { id: 'pixel-mask', name: 'Slayer Mask', premium: true },
   { id: 'pixel-tiara', name: 'Moon Tiara', premium: true },
   { id: 'pixel-mecha', name: 'Super Mecha', premium: true },
-  { id: 'pixel-titan', name: 'Titan Scout', premium: true },
   { id: 'pixel-watch', name: 'Alchemy Watch', premium: true },
+
+  // --- PREMIUM: PACK ARCADE ---
+  { id: 'pixel-ghost', name: 'Spooky Ghost', premium: true },
 
   // --- PREMIUM: FANTASY ---
   { id: 'pixel-wizard', name: 'Grand Mage', premium: true },
