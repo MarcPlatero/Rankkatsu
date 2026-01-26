@@ -1,10 +1,12 @@
 # Rankkatsu
 
+
 🏆 About Rankkatsu
 
 Rankkatsu is more than just a ranking website; it is a dynamic community platform designed to settle the age-old question: "Which one is the best?"
 
 Whether it is debating the greatest athletes of all time, ranking the best video game soundtracks, or deciding on the ultimate comfort food, Rankkatsu provides the arena where subjective opinions are transformed into community-driven data.
+
 
 🎌 The Meaning Behind the Name
 
@@ -16,6 +18,7 @@ The name Rankkatsu is a linguistic fusion that embodies the spirit of our platfo
 
 Together, Rankkatsu symbolizes the activity of finding the winner. It represents the journey of filtering through the noise to crown the true champion of any category through collective voting.
 
+
 🗳️ How It Works
 
 Unlike static lists, Rankkatsu is alive. Users can create custom rankings using images and YouTube videos, but the real magic happens in the voting process. We utilize a dual-system approach:
@@ -23,6 +26,7 @@ Unlike static lists, Rankkatsu is alive. Users can create custom rankings using 
 Direct Ranking: Users drag and drop items to create their personal tier lists.
 
 Matchmaking Duels: Items face off in battles, allowing our algorithms to determine a precise, unbiased hierarchy based on community consensus.
+
 
 🛠️ Technology Stack
 
