@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+import { trans } from 'laravel-vue-i18n';
 
 const emit = defineEmits(['password-updated'])
 const isOpen = ref(false)
@@ -41,7 +42,7 @@ const submit = () => {
       @click="isOpen = !isOpen"
       class="flex items-center justify-between w-full text-left text-lg font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-red-400 transition"
     >
-      <span>🔐 Canviar contrasenya</span>
+      <span>🔐 {{ $t('Canviar contrasenya') }}</span>
       <svg
         :class="['w-5 h-5 transition-transform', { 'rotate-180': isOpen }]"
         xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +61,7 @@ const submit = () => {
           class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-4 shadow-sm transition"
         >
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contrasenya actual</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('Contrasenya actual') }}</label>
             <input
               v-model="form.current_password"
               type="password"
@@ -73,7 +74,7 @@ const submit = () => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nova contrasenya</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('Nova contrasenya') }}</label>
             <input
               v-model="form.password"
               type="password"
@@ -84,7 +85,7 @@ const submit = () => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirma la nova contrasenya</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('Confirma la nova contrasenya') }}</label>
             <input
               v-model="form.password_confirmation"
               type="password"
@@ -99,7 +100,7 @@ const submit = () => {
               class="bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition disabled:opacity-50 shadow-sm"
               :disabled="form.processing"
             >
-              {{ form.processing ? 'Guardant...' : '💾 Actualitzar contrasenya' }}
+              {{ form.processing ? $t('Guardant...') : $t('💾 Actualitzar contrasenya') }}
             </button>
           </div>
         </form>

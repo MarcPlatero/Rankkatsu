@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { trans } from 'laravel-vue-i18n';
 
 const showBanner = ref(false)
 
@@ -34,8 +33,7 @@ const accept = () => {
 const reject = () => {
     localStorage.setItem('cookie_consent', 'rejected')
     showBanner.value = false
-    // Si l'usuari rebutja després d'haver acceptat, hauríem de recarregar la pàgina
-    // per assegurar-nos que no es carreguen scripts, però AdSense és difícil de treure sense reload.
+    
     if (window.adsenseLoaded) {
         window.location.reload();
     }
@@ -45,6 +43,7 @@ const reject = () => {
 const triggerAdSense = () => {
     if (window.adsenseLoaded) return; 
 
+    // Evitar carregar en local per no ser banejat per Google
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return;
 
     const script = document.createElement('script')

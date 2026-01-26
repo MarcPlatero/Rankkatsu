@@ -47,7 +47,7 @@ class ProfileController extends Controller
                     $isPremiumAvatar = $officialAvatars[$avatarId];
 
                     if ($isPremiumAvatar && !$user->is_premium) {
-                        return back()->with('error', 'Aquest avatar és exclusiu per a usuaris Premium.');
+                        return back()->with('error', __('Aquest avatar és exclusiu per a usuaris Premium.'));
                     }
 
                     $user->profile_photo_path = $avatarId;
@@ -57,7 +57,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Perfil actualitzat!');
+        return redirect()->route('profile.show')->with('success', __('Perfil actualitzat!'));
     }
 
     public function destroy(Request $request): RedirectResponse

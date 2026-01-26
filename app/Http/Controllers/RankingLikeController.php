@@ -18,7 +18,7 @@ class RankingLikeController extends Controller
 
         $ranking->update(['likes_count' => $ranking->likes()->count()]);
 
-        return back()->with('success', 'T\'agrada aquest rànquing!');
+        return back()->with('success', __('T\'agrada aquest rànquing!'));
     }
 
     public function destroy(Request $request, Ranking $ranking)
@@ -27,6 +27,6 @@ class RankingLikeController extends Controller
 
         $ranking->update(['likes_count' => $ranking->likes()->count()]);
         
-       return back()->with('success', 'Ja no t\'agrada aquest rànquing.');
+        return back()->with('success', __('Ja no t\'agrada aquest rànquing.'));
     }
 }

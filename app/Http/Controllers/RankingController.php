@@ -102,15 +102,15 @@ class RankingController extends Controller
             'options.*.video_url' => ['nullable', 'url', 'regex:/^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/'],
             'options.*.is_suspicious' => 'nullable|boolean',
         ], [
-            'title.required' => 'Has d’introduir un títol per al rànquing.',
-            'title.max' => 'El títol no pot tenir més de 255 caràcters.',
-            'image.image' => 'El fitxer ha de ser una imatge vàlida.',
-            'image.mimes' => 'Formats admesos: JPG, JPEG, PNG, WEBP, AVIF, GIF.',
-            'image.max' => 'La imatge no pot superar els 4MB.',
-            'options.required' => 'Has d’afegir opcions al rànquing.',
-            'options.min' => 'Has d’afegir almenys 2 opcions.',
-            'options.*.name.required' => 'Cada opció ha de tenir un nom.',
-            'options.*.video_url.regex' => 'La URL ha de ser un enllaç vàlid de YouTube.',
+            'title.required' => __('Has d’introduir un títol per al rànquing.'),
+            'title.max' => __('El títol no pot tenir més de 255 caràcters.'),
+            'image.image' => __('El fitxer ha de ser una imatge vàlida.'),
+            'image.mimes' => __('Formats admesos: JPG, JPEG, PNG, WEBP, AVIF, GIF.'),
+            'image.max' => __('La imatge no pot superar els 4MB.'),
+            'options.required' => __('Has d’afegir opcions al rànquing.'),
+            'options.min' => __('Has d’afegir almenys 2 opcions.'),
+            'options.*.name.required' => __('Cada opció ha de tenir un nom.'),
+            'options.*.video_url.regex' => __('La URL ha de ser un enllaç vàlid de YouTube.'),
         ]);
 
         // Determinar si la imatge principal és sospitosa
@@ -162,7 +162,7 @@ class RankingController extends Controller
             $ranking->update(['is_approved' => false]);
         }
 
-        return redirect()->route('rankings.index')->with('success', 'Rànquing creat correctament!');
+        return redirect()->route('rankings.index')->with('success', __('Rànquing creat correctament!'));
     }
 
     public function home(Request $request)
@@ -224,7 +224,7 @@ class RankingController extends Controller
 
         // Bloqueig si el rànquing no està aprovat i no és ni autor ni admin
         if (!$ranking->is_approved && (!$user || ($user->id !== $ranking->user_id && !$user->can('moderate')))) {
-            abort(403, 'Aquest rànquing encara no ha estat aprovat.');
+            abort(403, __('Aquest rànquing encara no ha estat aprovat.'));
         }
 
         // Carregar opcions (si no és admin ni autor, només les aprovades)
@@ -306,14 +306,14 @@ class RankingController extends Controller
     public function unvote(Ranking $ranking)
     {
         if (!Auth::check()) {
-            return back()->with('error', 'Has d\'iniciar sessió per retirar el vot.');
+            return back()->with('error', __('Has d\'iniciar sessió per retirar el vot.'));
         }
 
         RankingVote::where('user_id', Auth::id())
             ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
             ->delete();
 
-        return back()->with('success', 'Has retirat el teu vot.');
+        return back()->with('success', __('Has retirat el teu vot.'));
     }
 
     public function destroy(Ranking $ranking)
@@ -322,13 +322,13 @@ class RankingController extends Controller
 
         // Permetre eliminar si és el creador o si és administrador
         if ($ranking->user_id !== $user->id && !$user->is_admin) {
-            abort(403, 'No tens permís per eliminar aquest rànquing.');
+            abort(403, __('No tens permís per eliminar aquest rànquing.'));
         }
 
         $ranking->delete();
 
         return redirect()->route('rankings.index')
-            ->with('success', 'El rànquing s’ha eliminat correctament!');
+            ->with('success', __('El rànquing s’ha eliminat correctament!'));
     }
 
     // Llista de rankings de l'usuari

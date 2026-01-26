@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({ favorites: Array })
 const localFavorites = ref([...props.favorites])
@@ -9,14 +10,14 @@ const alertMessage = ref('')
 
 const removeFavorite = (id) => {
   localFavorites.value = localFavorites.value.filter(r => r.id !== id)
-  alertMessage.value = '❌ Has tret un rànquing dels favorits.'
+  alertMessage.value = trans('❌ Has tret un rànquing dels favorits.')
   setTimeout(() => (alertMessage.value = ''), 3000)
 }
 </script>
 
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">⭐ Rankings favorits</h2>
+    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">{{ $t('⭐ Rankings favorits') }}</h2>
 
     <transition name="fade">
       <div
@@ -54,7 +55,7 @@ const removeFavorite = (id) => {
     </div>
 
     <p v-else class="text-gray-500 dark:text-gray-400 text-center">
-      Encara no tens cap rànquing marcat com a favorit.
+      {{ $t('Encara no tens cap rànquing marcat com a favorit.') }}
     </p>
   </div>
 </template>

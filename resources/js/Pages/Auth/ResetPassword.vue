@@ -3,8 +3,9 @@ import GuestLayout from '@/Layouts/GuestLayout.vue'
 import InputError from '@/Components/InputError.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, Link } from '@inertiajs/vue3'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   email: {
@@ -33,15 +34,9 @@ const submit = () => {
 
 <style scoped>
 @keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
@@ -50,7 +45,7 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Reset Password" />
+    <Head :title="$t('Restablir contrasenya')" />
 
     <section
       class="min-h-screen flex items-center justify-center bg-gradient-to-b 
@@ -60,18 +55,15 @@ const submit = () => {
       <div
         class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Títol -->
         <h1
           class="text-3xl font-extrabold text-center mb-6 text-gray-900 dark:text-gray-100 tracking-wide"
         >
-          Reset Password
+          {{ $t('Restablir contrasenya') }}
         </h1>
 
-        <!-- Formulari -->
         <form @submit.prevent="submit" class="space-y-5">
-          <!-- Email -->
           <div>
-            <InputLabel for="email" value="Email" class="dark:text-gray-200" />
+            <InputLabel for="email" :value="$t('Correu electrònic')" class="dark:text-gray-200" />
             <TextInput
               id="email"
               type="email"
@@ -83,9 +75,8 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.email" />
           </div>
 
-          <!-- Password -->
           <div>
-            <InputLabel for="password" value="New Password" class="dark:text-gray-200" />
+            <InputLabel for="password" :value="$t('Nova contrasenya')" class="dark:text-gray-200" />
             <TextInput
               id="password"
               type="password"
@@ -97,11 +88,10 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.password" />
           </div>
 
-          <!-- Confirmar Password -->
           <div>
             <InputLabel
               for="password_confirmation"
-              value="Confirm Password"
+              :value="$t('Confirmar contrasenya')"
               class="dark:text-gray-200"
             />
             <TextInput
@@ -115,15 +105,14 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.password_confirmation" />
           </div>
 
-          <!-- Botons -->
           <div class="mt-6 flex items-center justify-between">
-            <a
+            <Link
               href="/"
               class="inline-flex items-center text-sm text-gray-600 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-white"
-              aria-label="Back to home"
+              :aria-label="$t('Tornar a l\'inici')"
             >
               <ArrowLeftIcon class="h-5 w-5" />
-            </a>
+            </Link>
 
             <button
               type="submit"
@@ -134,7 +123,7 @@ const submit = () => {
                 class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600 
                        animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
               ></span>
-              <span class="relative z-10">Reset Password</span>
+              <span class="relative z-10">{{ $t('Restablir') }}</span>
             </button>
           </div>
         </form>

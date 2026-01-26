@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { usePage, router } from '@inertiajs/vue3'
+import { trans } from 'laravel-vue-i18n';
 
 const emit = defineEmits(['removed'])
 
@@ -18,7 +19,7 @@ watch(() => props.ranking.is_favorite, (newVal) => {
 
 const toggleFavorite = () => {
   if (!page.props.auth?.user) {
-    if(confirm('Has d’iniciar sessió per marcar favorits. Vols anar al login?')) {
+    if(confirm(trans('Has d’iniciar sessió per marcar favorits. Vols anar al login?'))) {
         router.visit(route('login'))
     }
     return
@@ -61,7 +62,7 @@ const toggleFavorite = () => {
     @click="toggleFavorite"
     class="transition transform hover:scale-110 focus:outline-none"
     :class="{ 'animate-pop': animating }"
-    title="Afegir a favorits"
+    :title="isFavorite ? $t('Treure dels favorits') : $t('Afegir a favorits')"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

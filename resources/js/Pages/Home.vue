@@ -4,6 +4,7 @@ import { ref, computed, onMounted } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import AdBanner from '@/Components/AdBanner.vue'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({ 
   trendingRankings: Array,
@@ -37,22 +38,44 @@ const timeAgo = (dateString) => {
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
     
+    if (seconds < 60) return trans('Just now');
+
     let interval = Math.floor(seconds / 31536000);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'any' : 'anys'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 year ago') 
+            : trans(':count years ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 2592000);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'mes' : 'mesos'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 month ago') 
+            : trans(':count months ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 86400);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'dia' : 'dies'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 day ago') 
+            : trans(':count days ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'hora' : 'hores'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 hour ago') 
+            : trans(':count hours ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 60);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'minut' : 'minuts'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 minute ago') 
+            : trans(':count minutes ago', { count: interval });
+    }
     
-    return 'Ara mateix';
+    return trans('Just now');
 }
 
 const showContent = ref(false)
@@ -159,7 +182,7 @@ onMounted(() => {
                       <span class="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-red-600 dark:via-orange-500 dark:to-rose-600 opacity-20 blur-2xl animate-pulse-slow -z-10"></span>
                       
                       <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-red-400 dark:via-orange-300 dark:to-rose-400">
-                        Crea, Vota i
+                        {{ $t('Crea, Vota i') }}
                       </span>
                   </span>
 
@@ -167,7 +190,7 @@ onMounted(() => {
                     <span class="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-red-600 dark:via-orange-500 dark:to-rose-600 opacity-25 blur-2xl animate-pulse-slow -z-10 animation-delay-1000"></span>
 
                     <span class="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 dark:from-red-400 dark:via-orange-300 dark:to-rose-400">
-                      Decideix el Millor!
+                      {{ $t('Decideix el Millor!') }}
                     </span>
                     
                     <svg class="absolute -bottom-3 left-0 w-full h-4 text-blue-500/40 dark:text-red-500/50 z-0" viewBox="0 0 300 16" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -177,7 +200,7 @@ onMounted(() => {
                 </h1>
 
                 <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto text-center font-medium leading-relaxed">
-                  La plataforma definitiva per crear rànquings. Descobreix què pensa la comunitat i ajuda a coronar al guanyador.
+                  {{ $t('La plataforma definitiva per crear rànquings. Descobreix què pensa la comunitat i ajuda a coronar al guanyador.') }}
                 </p>
 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-5 w-full px-4">
@@ -189,7 +212,7 @@ onMounted(() => {
                     <span class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 transition-all duration-300 group-hover:from-blue-500 group-hover:to-indigo-600"></span>
                     <span class="absolute inset-0 opacity-0 group-hover:opacity-20 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.6)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-shine"></span>
                     <span class="relative flex items-center gap-3 text-lg leading-none">
-                      <span class="text-2xl">🚀</span> Crear Ranking
+                      <span class="text-2xl">🚀</span> {{ $t('Crear Ranking') }}
                     </span>
                   </Link>
 
@@ -201,7 +224,7 @@ onMounted(() => {
                     <span class="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-600 transition-all duration-300 group-hover:from-amber-400 group-hover:to-orange-500"></span>
                     <span class="absolute inset-0 opacity-0 group-hover:opacity-25 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.7)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-shine"></span>
                     <span class="relative flex items-center gap-3 text-lg leading-none">
-                      <span class="text-2xl">👑</span> Fes-te Premium
+                      <span class="text-2xl">👑</span> {{ $t('Fes-te Premium') }}
                     </span>
                   </Link>
                   
@@ -212,7 +235,7 @@ onMounted(() => {
                     <span class="absolute inset-0 bg-gradient-to-br from-red-600 to-rose-700 transition-all duration-300 group-hover:from-red-500 group-hover:to-rose-600"></span>
                     <span class="absolute inset-0 opacity-0 group-hover:opacity-20 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.6)_50%,transparent_75%,transparent_100%)] bg-[length:250%_250%] animate-shine"></span>
                     <span class="relative flex items-center gap-3 text-lg leading-none">
-                      <span class="text-2xl">🔍</span> Explorar Tot
+                      <span class="text-2xl">🔍</span> {{ $t('Explorar Tot') }}
                     </span>
                   </Link>
                 </div>
@@ -239,7 +262,7 @@ onMounted(() => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🔥 Tendència
+                    🔥 {{ $t('Tendència') }}
                 </button>
                 <button
                     @click="activeTab = 'popular'"
@@ -250,7 +273,7 @@ onMounted(() => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🏆 Més Populars
+                    🏆 {{ $t('Més Populars') }}
                 </button>
                 <button
                     @click="activeTab = 'latest'"
@@ -261,12 +284,12 @@ onMounted(() => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🆕 Novetats
+                    🆕 {{ $t('Novetats') }}
                 </button>
             </div>
 
             <Link href="/rankings" class="font-medium text-sm transition-colors flex items-center gap-1 text-blue-600 hover:text-blue-800 dark:text-red-500 dark:hover:text-red-400">
-              Veure tots els rànquings &rarr;
+              {{ $t('Veure tots els rànquings') }} &rarr;
             </Link>
           </div>
 
@@ -408,7 +431,7 @@ onMounted(() => {
                           </div>
 
                           <div v-if="activeTab === 'trending'" class="absolute top-3 right-3 bg-white/90 dark:bg-black/60 backdrop-blur-md text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg border border-white/20 dark:border-gray-700 text-gray-900 dark:text-white">
-                              <span class="text-green-500">▲</span> {{ ranking.recent_votes_count }} vots
+                              <span class="text-green-500">▲</span> {{ ranking.recent_votes_count }} {{ $t('vots') }}
                           </div>
                       </div>
 
@@ -436,7 +459,7 @@ onMounted(() => {
                                   <span v-else class="w-full h-full flex items-center justify-center text-xs font-bold">?</span>
                               </div>
                               <span class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-                                  {{ ranking.user?.name || 'Anònim' }}
+                                  {{ ranking.user?.name || $t('Anònim') }}
                               </span>
                           </div>
                       </div>
@@ -446,7 +469,7 @@ onMounted(() => {
           
           <div v-if="currentList.length === 0 && (!top3Popular || top3Popular.length === 0)" class="text-center text-gray-500 mt-4 py-10 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
             <p class="text-xl mb-2">🤔</p>
-            <p>Encara no hi ha rànquings en aquesta categoria.</p>
+            <p>{{ $t('Encara no hi ha rànquings en aquesta categoria.') }}</p>
           </div>
 
         </section>
@@ -465,30 +488,30 @@ onMounted(() => {
                 <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-10 md:p-16 gap-8 text-center md:text-left">
                     <div class="max-w-xl">
                         <h3 class="text-3xl md:text-4xl font-black text-white mb-6 leading-tight">
-                            Elimina els anuncis i <br>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">millora la teva experiència.</span>
+                            {{ $t('Elimina els anuncis i') }} <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">{{ $t('millora la teva experiència.') }}</span>
                         </h3>
                         
                         <div class="space-y-4">
                             <p class="text-gray-300 text-lg md:text-xl leading-relaxed">
-                                Per només <span class="text-white font-bold border-b-2 border-yellow-500">1,99€</span>, puja de nivell a Rankkatsu:
+                                {{ $t('Per només') }} <span class="text-white font-bold border-b-2 border-yellow-500">1,99€</span>, {{ $t('puja de nivell a Rankkatsu:') }}
                             </p>
                             <ul class="text-gray-300 text-base md:text-lg space-y-2 inline-block text-left">
                                 <li class="flex items-center gap-2">
-                                    <span class="text-yellow-400">🚫</span> Adéu a tota la publicitat
+                                    <span class="text-yellow-400">🚫</span> {{ $t('Adéu a tota la publicitat') }}
                                 </li>
                                 <li class="flex items-center gap-2">
-                                    <span class="text-yellow-400">✨</span> Insígnia i avatars exclusius
+                                    <span class="text-yellow-400">✨</span> {{ $t('Insígnia i avatars exclusius') }}
                                 </li>
                                 <li class="flex items-center gap-2">
-                                    <span class="text-yellow-400">❤️</span> Suport directe al projecte
+                                    <span class="text-yellow-400">❤️</span> {{ $t('Suport directe al projecte') }}
                                 </li>
                             </ul>
                         </div>
                     </div>
                     
                     <Link href="/premium" class="flex-shrink-0 group/btn relative inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-gray-900 text-lg font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.6)]">
-                        Passar-me a Premium
+                        {{ $t('Passar-me a Premium') }}
                         <svg class="w-5 h-5 ml-2 -mr-1 transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </Link>
                 </div>

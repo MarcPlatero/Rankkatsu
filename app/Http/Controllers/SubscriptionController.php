@@ -29,12 +29,12 @@ class SubscriptionController extends Controller
         $type = $request->input('type');
 
         if ($user->is_premium) {
-            return back()->with('error', 'Ja ets membre PRO!');
+            return back()->with('error', __('Ja ets membre Premium!'));
         }
 
         // Mensual
         if ($type === 'monthly') {
-            if (!env('STRIPE_MONTHLY_ID')) return back()->with('error', 'Error config mensual');
+            if (!env('STRIPE_MONTHLY_ID')) return back()->with('error', __('Error de configuració mensual'));
 
             return $user->newSubscription('default', env('STRIPE_MONTHLY_ID'))
                 ->checkout([
@@ -45,7 +45,7 @@ class SubscriptionController extends Controller
 
         // Lifetime
         if ($type === 'lifetime') {
-            if (!env('STRIPE_LIFETIME_ID')) return back()->with('error', 'Error config lifetime');
+            if (!env('STRIPE_LIFETIME_ID')) return back()->with('error', __('Error de configuració Lifetime'));
 
             return $user->checkout(env('STRIPE_LIFETIME_ID'), [
                 'success_url' => route('premium.success'),
@@ -71,12 +71,12 @@ class SubscriptionController extends Controller
 
         // Si és Premium però no té subscripció activa a Stripe, és Lifetime.
         if ($user->is_premium && !$user->subscribed('default')) {
-            return back()->with('error', 'Tens un pla de per vida (Lifetime). No necessites gestionar cap subscripció.');
+            return back()->with('error', __('Tens un pla de per vida (Lifetime). No necessites gestionar cap subscripció.'));
         }
 
         // Si no està subscrit de cap manera.
         if (!$user->subscribed('default')) {
-             return back()->with('error', 'No tens cap subscripció activa per gestionar.');
+             return back()->with('error', __('No tens cap subscripció activa per gestionar.'));
         }
 
         // Redirigeix al portal de Stripe

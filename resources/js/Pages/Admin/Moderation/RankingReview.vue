@@ -1,6 +1,7 @@
 <script setup>
 import { router } from '@inertiajs/vue3'
 import { ref } from 'vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   ranking: Object
@@ -18,7 +19,7 @@ function approveRanking() {
 
 function rejectRanking() {
   if (isLoading.value) return
-  if (confirm('Segur que vols eliminar aquest rànquing?')) {
+  if (confirm(trans('Segur que vols eliminar aquest rànquing?'))) {
     isLoading.value = true
     router.post(`/admin/moderation/${props.ranking.id}/reject`, {}, {
       onSuccess: () => {
@@ -43,12 +44,12 @@ function goBack() {
       @click="goBack"
       class="mb-6 text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-gray-700 dark:text-gray-100 transition"
     >
-      ⬅️ Tornar a la moderació
+      ⬅️ {{ $t('Tornar a la moderació') }}
     </button>
 
     <h1 class="text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">{{ ranking.title }}</h1>
     <p class="text-gray-700 dark:text-gray-300 mb-1">
-      Creat per: {{ ranking.user?.name || 'Desconegut' }}
+      {{ $t('Creat per:') }} {{ ranking.user?.name || $t('Desconegut') }}
     </p>
     <p class="text-gray-600 dark:text-gray-400 mb-6">{{ ranking.description }}</p>
 
@@ -58,7 +59,7 @@ function goBack() {
         class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition disabled:opacity-50"
         :disabled="isLoading"
       >
-        ✅ Aprovar rànquing
+        ✅ {{ $t('Aprovar rànquing') }}
       </button>
 
       <button
@@ -66,19 +67,19 @@ function goBack() {
         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition disabled:opacity-50"
         :disabled="isLoading"
       >
-        ❌ Eliminar rànquing
+        ❌ {{ $t('Eliminar rànquing') }}
       </button>
     </div>
 
     <div v-if="ranking.image" class="flex justify-center mb-6">
       <img
         :src="`/storage/${ranking.image}`"
-        alt="Imatge principal"
+        :alt="$t('Imatge principal')"
         class="max-h-96 w-auto rounded-xl shadow-lg"
       />
     </div>
 
-    <h2 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Opcions del rànquing</h2>
+    <h2 class="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">{{ $t('Opcions del rànquing') }}</h2>
 
     <div
       v-if="ranking.options?.length"
@@ -92,7 +93,7 @@ function goBack() {
         <img
           v-if="opt.image"
           :src="`/storage/${opt.image}`"
-          alt="Imatge opció"
+          :alt="$t('Imatge opció')"
           class="object-cover w-full h-40"
         />
         <div class="p-3">
@@ -102,7 +103,7 @@ function goBack() {
     </div>
 
     <p v-else class="text-gray-500 dark:text-gray-400 italic">
-      Aquest rànquing no té opcions.
+      {{ $t('Aquest rànquing no té opcions.') }}
     </p>
   </div>
 </template>

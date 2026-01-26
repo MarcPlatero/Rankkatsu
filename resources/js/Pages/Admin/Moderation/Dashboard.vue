@@ -1,5 +1,6 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3'
+import { trans } from 'laravel-vue-i18n';
 
 defineProps({
   rankings: Array,
@@ -11,7 +12,7 @@ function approveRanking(id) {
 }
 
 function rejectRanking(id) {
-  if (confirm('Segur que vols eliminar aquest rànquing?')) {
+  if (confirm(trans('Segur que vols eliminar aquest rànquing?'))) {
     router.post(`/admin/moderation/${id}/reject`)
   }
 }
@@ -20,12 +21,12 @@ function rejectRanking(id) {
 <template>
   <div class="p-6 min-h-screen bg-gray-50 dark:bg-[#0d0d0d] transition-colors duration-500">
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Moderació de rànquings</h1>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ $t('Moderació de rànquings') }}</h1>
       <Link
         href="/"
         class="text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-gray-700 dark:text-gray-100 transition"
       >
-        ⬅️ Tornar a l'inici
+        ⬅️ {{ $t("Tornar a l'inici") }}
       </Link>
     </div>
 
@@ -34,7 +35,7 @@ function rejectRanking(id) {
     </p>
 
     <div v-if="rankings.length === 0" class="text-gray-600 dark:text-gray-400">
-      No hi ha rànquings pendents de moderació.
+      {{ $t('No hi ha rànquings pendents de moderació.') }}
     </div>
 
     <div
@@ -46,11 +47,10 @@ function rejectRanking(id) {
         :key="ranking.id"
         class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm bg-white dark:bg-[#1a1a1a] flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
       >
-        <!-- Imatge -->
         <img
           v-if="ranking.image"
           :src="`/storage/${ranking.image}`"
-          alt="Imatge principal"
+          :alt="$t('Imatge principal')"
           class="w-full h-40 object-cover rounded-lg mb-3"
         />
         <div class="flex-1">
@@ -58,7 +58,7 @@ function rejectRanking(id) {
             {{ ranking.title }}
           </h2>
           <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-            Creat per: {{ ranking.user?.name || 'Desconegut' }}
+            {{ $t('Creat per:') }} {{ ranking.user?.name || $t('Desconegut') }}
           </p>
         </div>
 
@@ -67,7 +67,7 @@ function rejectRanking(id) {
             :href="`/admin/moderation/${ranking.id}`"
             class="text-blue-600 dark:text-blue-400 hover:underline"
           >
-            Veure detalls
+            {{ $t('Veure detalls') }}
           </Link>
 
           <div class="flex gap-2">
@@ -75,13 +75,13 @@ function rejectRanking(id) {
               @click="approveRanking(ranking.id)"
               class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
             >
-              Aprovar
+              {{ $t('Aprovar') }}
             </button>
             <button
               @click="rejectRanking(ranking.id)"
               class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
             >
-              Rebutjar
+              {{ $t('Rebutjar') }}
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import { vAutoAnimate } from '@formkit/auto-animate'
 import AdBanner from '@/Components/AdBanner.vue'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
 import AnimatedNumber from '@/Components/AnimatedNumber.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   ranking: Object,
@@ -37,7 +38,6 @@ const isPremium = computed(() => page.props.auth.user?.is_premium)
 const showAdOverlay = ref(false)
 const adCountdown = ref(5)
 
-// Control de l'animació de les barres
 const animateBars = ref(false)
 
 const isPixelAvatar = (path) => {
@@ -45,7 +45,6 @@ const isPixelAvatar = (path) => {
 }
 
 onMounted(() => {
-  // Retard per activar l'animació de les barres
   setTimeout(() => {
     animateBars.value = true
   }, 100)
@@ -70,7 +69,6 @@ onMounted(() => {
   }
 })
 
-// Flash messages
 const flash = ref({ success: null, error: null })
 watch(
   () => page.props.flash,
@@ -87,7 +85,6 @@ watch(
   { immediate: true }
 )
 
-// Càlculs
 const totalVotes = computed(() =>
   props.ranking.options.reduce((sum, opt) => sum + opt.votes_count, 0)
 )
@@ -117,7 +114,6 @@ const vote = (optionId) => {
     router.post(`/rankings/${props.ranking.id}/vote`, { option_id: optionId }, { preserveScroll: true })
 }
 
-// Estils del podi
 const getPodiumClasses = (rank, votes) => {
   if (votes === 0) {
     return {
@@ -153,7 +149,7 @@ const unvoteRanking = () =>
   router.post(`/rankings/${props.ranking.id}/unvote`, {}, { preserveScroll: true })
 
 const confirmDelete = () => {
-  if (confirm("⚠️ Estàs segur que vols eliminar aquest rànquing? Aquesta acció no es podrà desfer."))
+  if (confirm(trans("Are you sure you want to delete this ranking? This action cannot be undone.")))
     router.delete(`/rankings/${props.ranking.id}`)
 }
 
@@ -182,12 +178,11 @@ const shareRanking = () => {
   navigator.clipboard.writeText(url).then(() => {
     copied.value = true
     setTimeout(() => (copied.value = false), 2000)
-    flash.value.success = "Enllaç copiat al porta-retalls!"
+    flash.value.success = trans("Link copied to clipboard!")
     setTimeout(() => (flash.value.success = null), 3500)
   })
 }
 
-// Comentaris
 const commentForm = useForm({ content: '' })
 const textareaRef = ref(null)
 const charCount = ref(0)
@@ -226,7 +221,7 @@ const resetTextareaHeight = () => {
 }
 
 const deleteComment = (commentId) => {
-  if (!confirm('Estàs segur que vols eliminar aquest comentari?')) return
+  if (!confirm(trans('Are you sure you want to delete this comment?'))) return
   router.delete(route('rankings.comments.destroy', { ranking: props.ranking.id, comment: commentId }), {
     preserveScroll: true
   })
@@ -240,7 +235,6 @@ const voteComment = (commentId, isLike) => {
     router.post(`/comments/${commentId}/vote`, { is_like: isLike }, { preserveScroll: true })
 }
 
-// Lògica de Filtre i Scroll
 const sort = ref(props.sort || 'likes')
 const loadingComments = ref(false)
 
@@ -370,7 +364,7 @@ textarea.resize-none { resize: none; }
                      </div>
                      <div class="hidden sm:flex flex-col items-center gap-1">
                          <div class="text-3xl font-black text-gray-900 dark:text-white">{{ ranking.options?.length || 0 }}</div>
-                         <div class="text-[10px] uppercase font-bold text-gray-400">Opcions</div>
+                         <div class="text-[10px] uppercase font-bold text-gray-400">{{ $t('Opcions') }}</div>
                      </div>
                    </div>
 
@@ -392,30 +386,30 @@ textarea.resize-none { resize: none; }
                       <div class="w-px h-10 bg-gray-200 dark:bg-gray-700 mx-2 hidden sm:block"></div>
 
                       <div class="flex items-center gap-3">
-                         <div class="w-12 h-12 rounded-full ring-2 ring-white dark:ring-gray-700 shadow-lg overflow-hidden">
+                          <div class="w-12 h-12 rounded-full ring-2 ring-white dark:ring-gray-700 shadow-lg overflow-hidden">
                            <PixelAvatar v-if="isPixelAvatar(ranking.user?.profile_photo_path)" :id="ranking.user.profile_photo_path" className="w-full h-full" />
                            <img v-else-if="ranking.user?.profile_photo_url" :src="ranking.user.profile_photo_url" class="w-full h-full object-cover" />
-                         </div>
-                         <div class="flex flex-col gap-0.5">
+                          </div>
+                          <div class="flex flex-col gap-0.5">
                            <div class="flex items-center gap-2">
-                              <span class="text-xs text-gray-400 font-bold uppercase leading-none">Autor</span>
+                              <span class="text-xs text-gray-400 font-bold uppercase leading-none">{{ $t('Autor') }}</span>
                               <span v-if="ranking.user?.is_premium" class="px-1.5 py-[1px] rounded-sm text-[8px] font-black bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase tracking-wider leading-none">PREMIUM</span>
                            </div>
-                           <span class="font-bold text-gray-900 dark:text-white leading-tight">{{ ranking.user?.name || 'Anònim' }}</span>
-                         </div>
+                           <span class="font-bold text-gray-900 dark:text-white leading-tight">{{ ranking.user?.name || $t('Anònim') }}</span>
+                          </div>
                       </div>
 
                       <div class="ml-auto flex gap-3">
-                         <button @click="shareRanking" class="w-12 h-12 rounded-full backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 shadow-xl flex items-center justify-center hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 transition-all hover:scale-110 active:scale-90" title="Compartir">
+                          <button @click="shareRanking" class="w-12 h-12 rounded-full backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 shadow-xl flex items-center justify-center hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 transition-all hover:scale-110 active:scale-90" :title="$t('Compartir')">
                            <svg v-if="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                            <svg v-else class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                         </button>
-                         <div class="w-12 h-12 rounded-full backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
+                          </button>
+                          <div class="w-12 h-12 rounded-full backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 border border-white/20 shadow-xl flex items-center justify-center hover:scale-110 transition-transform">
                            <FavoriteStar :ranking="ranking" />
-                         </div>
-                         <button v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" @click="confirmDelete" class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                         </button>
+                          </div>
+                          <button v-if="page.props.auth?.user && (ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" @click="confirmDelete" class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
                       </div>
                    </div>
                 </div>
@@ -431,7 +425,7 @@ textarea.resize-none { resize: none; }
           
           <div class="lg:col-span-8 space-y-8">
             <h2 class="text-3xl font-black text-gray-900 dark:text-white">
-              Vota les Opcions
+              {{ $t('Vota les Opcions') }}
             </h2>
 
             <div class="space-y-6" v-auto-animate>
@@ -489,7 +483,7 @@ textarea.resize-none { resize: none; }
                      
                      <div class="flex justify-between items-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-6">
                        <span class="flex gap-1">
-                          <AnimatedNumber :value="opt.votes_count" /> vots
+                          <AnimatedNumber :value="opt.votes_count" /> {{ $t('vots') }}
                        </span>
                        <span class="flex gap-0.5">
                           <AnimatedNumber :value="getPercentage(opt.votes_count)" />%
@@ -502,16 +496,16 @@ textarea.resize-none { resize: none; }
                          @click="vote(opt.id)"
                          class="w-full py-3 px-6 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2"
                        >
-                         Votar aquesta
+                         {{ $t('Votar') }}
                        </button>
                        <template v-else>
                          <div class="flex gap-3">
                             <div class="flex-1 py-3 bg-green-500/10 border border-green-500 text-green-600 dark:text-green-400 font-bold rounded-xl text-center flex items-center justify-center gap-2">
                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                               Votat
+                               {{ $t('Votat') }}
                             </div>
                             <button @click="unvoteRanking" class="px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                               Retirar
+                               {{ $t('Retirar') }}
                             </button>
                          </div>
                        </template>
@@ -531,14 +525,14 @@ textarea.resize-none { resize: none; }
                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col max-h-[calc(100vh-2rem)]">
                  <div class="p-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur flex items-center justify-between">
                      <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                       <span>💬</span> <span class="hidden sm:inline">Comentaris</span> <span class="text-sm font-normal text-gray-500">({{ comments?.length || 0 }})</span>
+                       <span>💬</span> <span class="hidden sm:inline">{{ $t('Comentaris') }}</span> <span class="text-sm font-normal text-gray-500">({{ comments?.length || 0 }})</span>
                      </h2>
                      
                      <div>
                          <select v-model="sort" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-red-500 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all">
-                           <option value="likes">Més populars</option>
-                           <option value="recent">Més recents</option>
-                           <option value="oldest">Més antics</option>
+                           <option value="likes">{{ $t('Més populars') }}</option>
+                           <option value="recent">{{ $t('Més recents') }}</option>
+                           <option value="oldest">{{ $t('Més antics') }}</option>
                          </select>
                      </div>
                  </div>
@@ -550,19 +544,19 @@ textarea.resize-none { resize: none; }
                          <textarea 
                            ref="textareaRef" 
                            v-model="commentForm.content" 
-                           placeholder="Digues la teva..." 
+                           :placeholder="$t('Digues la teva...')" 
                            class="w-full bg-transparent border-0 focus:ring-0 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none p-0 text-sm" 
                            rows="2" 
                            @input="autoResize($event)"
                          ></textarea>
                          <div class="flex justify-between items-center mt-2 pt-2 border-t border-blue-100 dark:border-gray-700">
                             <span :class="['text-xs', charCount < charLimit ? 'text-gray-400' : 'text-red-500 font-bold']">{{ charCount }}/{{ charLimit }}</span>
-                            <button type="submit" :disabled="commentForm.processing || !commentForm.content" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-md transition disabled:opacity-50">Enviar</button>
+                            <button type="submit" :disabled="commentForm.processing || !commentForm.content" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-md transition disabled:opacity-50">{{ $t('Enviar') }}</button>
                          </div>
                        </form>
                      </div>
                      <div v-else class="text-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl mb-4">
-                       <a href="/login" class="text-blue-600 dark:text-red-400 font-bold hover:underline">Inicia sessió</a> <span class="text-sm text-gray-500">per comentar.</span>
+                       <a href="/login" class="text-blue-600 dark:text-red-400 font-bold hover:underline">{{ $t('Inicia sessió') }}</a> <span class="text-sm text-gray-500">{{ $t('per comentar.') }}</span>
                      </div>
                      <div v-if="loadingComments" class="space-y-4 animate-pulse">
                        <div v-for="i in 3" :key="i" class="flex gap-3">
@@ -581,7 +575,7 @@ textarea.resize-none { resize: none; }
                                  <div class="w-8 h-8 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 ring-2 ring-gray-100 dark:ring-gray-700">
                                    <PixelAvatar v-if="isPixelAvatar(comment.user?.profile_photo_path)" :id="comment.user.profile_photo_path" className="w-full h-full" />
                                    <img v-else-if="comment.user?.profile_photo_url" :src="comment.user.profile_photo_url" class="w-full h-full object-cover" />
-                                  </div>
+                                 </div>
                              </div>
                              <div class="flex-1 min-w-0">
                                  <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl rounded-tl-none p-3 px-4 relative group-hover:bg-gray-100 dark:group-hover:bg-gray-700/80 transition-colors">
@@ -597,7 +591,7 @@ textarea.resize-none { resize: none; }
                                        <div class="comment-content" :data-id="comment.id">{{ comment.content }}</div>
                                     </div>
                                     <button v-if="needsShowMore(comment.id)" @click="toggleExpanded(comment.id)" class="text-xs text-blue-500 font-semibold mt-1 hover:underline">
-                                       {{ !isExpanded(comment.id) ? 'Llegir més' : 'Llegir menys' }}
+                                       {{ !isExpanded(comment.id) ? $t('Llegir més') : $t('Llegir menys') }}
                                     </button>
                                  </div>
 
@@ -611,7 +605,7 @@ textarea.resize-none { resize: none; }
                                        {{ comment.dislikes_count ?? 0 }}
                                     </button>
                                     <button v-if="page.props.auth?.user && (comment.user_id === page.props.auth.user.id || ranking.user_id === page.props.auth.user.id || page.props.auth.user.is_admin)" @click="deleteComment(comment.id)" class="text-xs text-gray-300 hover:text-red-500 transition">
-                                       Eliminar
+                                       {{ $t('Eliminar') }}
                                     </button>
                                  </div>
                              </div>
@@ -620,7 +614,7 @@ textarea.resize-none { resize: none; }
                      </template>
                      <div v-else class="text-center py-10">
                        <div class="text-4xl mb-2">🦗</div>
-                       <p class="text-gray-500 text-sm">Encara no hi ha soroll per aquí...</p>
+                       <p class="text-gray-500 text-sm">{{ $t('Encara no hi ha soroll per aquí...') }}</p>
                      </div>
                  </div>
                </div>
@@ -635,14 +629,14 @@ textarea.resize-none { resize: none; }
     </div>
 
     <div v-if="showAdOverlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white">
-      <div class="text-2xl font-bold mb-4">PUBLICITAT</div>
+      <div class="text-2xl font-bold mb-4">{{ $t('PUBLICITAT') }}</div>
       
       <div class="text-6xl font-black mb-8 animate-pulse">{{ adCountdown }}</div>
       
-      <p class="text-gray-400">Pots continuar votant en uns segons...</p>
+      <p class="text-gray-400">{{ $t('Pots continuar votant en uns segons...') }}</p>
       
       <p class="text-xs text-gray-500 mt-8">
-        Fes-te <span class="text-yellow-500 font-bold">Premium</span> per saltar això.
+        {{ $t('Fes-te') }} <span class="text-yellow-500 font-bold">{{ $t('Premium') }}</span> {{ $t('per saltar això.') }}
       </p>
     </div>
 

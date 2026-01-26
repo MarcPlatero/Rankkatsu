@@ -17,7 +17,7 @@ class FavoriteRankingController extends Controller
         if ($user->favoriteRankings()->where('ranking_id', $ranking->id)->exists()) {
             $user->favoriteRankings()->detach($ranking->id);
             
-            return back()->with('success', 'Eliminat dels favorits.');
+            return back()->with('success', __('Eliminat dels favorits.'));
         } 
         // Si no existeix, l'afegim
         else {
@@ -27,7 +27,7 @@ class FavoriteRankingController extends Controller
                 $ranking->user->notify(new RankingInteraction($user, $ranking, 'favorite'));
             }
             
-            return back()->with('success', 'Afegit als favorits!');
+            return back()->with('success', __('Afegit als favorits!'));
         }
     }
 }

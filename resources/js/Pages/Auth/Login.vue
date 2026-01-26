@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue'
 import TextInput from '@/Components/TextInput.vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+import { trans } from 'laravel-vue-i18n';
 
 defineProps({
   canResetPassword: Boolean,
@@ -28,15 +29,9 @@ const submit = () => {
 
 <style scoped>
 @keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
@@ -45,7 +40,7 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Login" />
+    <Head :title="$t('Iniciar Sessió')" />
 
     <section
       class="min-h-screen flex items-center justify-center bg-gradient-to-b 
@@ -55,23 +50,19 @@ const submit = () => {
       <div
         class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Títol -->
         <h1
           class="text-3xl font-extrabold text-center mb-6 text-gray-900 dark:text-gray-100 tracking-wide"
         >
-          Login
+          {{ $t('Iniciar Sessió') }}
         </h1>
 
-        <!-- Missatge d’estat -->
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
           {{ status }}
         </div>
 
-        <!-- Formulari -->
         <form @submit.prevent="submit">
-          <!-- Email -->
           <div>
-            <InputLabel for="email" value="Email" class="dark:text-gray-200" />
+            <InputLabel for="email" :value="$t('Correu electrònic')" class="dark:text-gray-200" />
             <TextInput
               id="email"
               type="email"
@@ -84,9 +75,8 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.email" />
           </div>
 
-          <!-- Password -->
           <div class="mt-4">
-            <InputLabel for="password" value="Password" class="dark:text-gray-200" />
+            <InputLabel for="password" :value="$t('Contrasenya')" class="dark:text-gray-200" />
             <TextInput
               id="password"
               type="password"
@@ -98,20 +88,18 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.password" />
           </div>
 
-          <!-- Remember me -->
           <div class="mt-4 block">
             <label class="flex items-center">
               <Checkbox name="remember" v-model:checked="form.remember" />
-              <span class="ms-2 text-sm text-gray-600 dark:text-gray-300">Remember me</span>
+              <span class="ms-2 text-sm text-gray-600 dark:text-gray-300">{{ $t('Recorda’m') }}</span>
             </label>
           </div>
 
-          <!-- Botons -->
           <div class="mt-6 flex items-center justify-between">
             <Link
               href="/"
               class="inline-flex items-center text-sm text-gray-600 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-white"
-              aria-label="Back to home"
+              :aria-label="$t('Tornar a l\'inici')"
             >
               <ArrowLeftIcon class="h-5 w-5" />
             </Link>
@@ -122,7 +110,7 @@ const submit = () => {
                 :href="route('password.request')"
                 class="text-sm text-gray-600 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-white"
               >
-                Forgot your password?
+                {{ $t('Has oblidat la contrasenya?') }}
               </Link>
 
               <button
@@ -134,7 +122,7 @@ const submit = () => {
                   class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600 
                          animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
                 ></span>
-                <span class="relative z-10">Log in</span>
+                <span class="relative z-10">{{ $t('Entrar') }}</span>
               </button>
             </div>
           </div>

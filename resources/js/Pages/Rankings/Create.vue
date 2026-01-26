@@ -9,6 +9,7 @@ import axios from 'axios'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import AdBanner from '@/Components/AdBanner.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage()
 const isPremium = computed(() => page.props.auth.user?.is_premium)
@@ -51,7 +52,7 @@ onMounted(async () => {
     model = await nsfwjs.load()
   } catch (err) {
     console.error('Error carregant model NSFW:', err)
-    nsfwError.value = 'No s’ha pogut carregar el filtre d’imatges.'
+    nsfwError.value = trans('No s’ha pogut carregar el filtre d’imatges.')
   } finally {
     nsfwLoading.value = false
   }
@@ -78,12 +79,12 @@ const saveCrop = async () => {
   
   canvas.toBlob(async (blob) => {
     if (nsfwLoading.value) {
-      nsfwError.value = 'El filtre d\'imatges encara s\'està carregant.'
+      nsfwError.value = trans("El filtre d'imatges encara s'està carregant.")
       return
     }
     const { ok, suspicious } = await validateImage(blob)
     if (!ok) {
-      nsfwError.value = 'Aquesta imatge sembla inapropiada.'
+      nsfwError.value = trans('Aquesta imatge sembla inapropiada.')
       cancelCrop()
       return
     }
@@ -197,7 +198,7 @@ watch(() => form.options, newOptions => {
 const submit = async () => {
 
   if (nsfwError.value) {
-    alert('Hi ha imatges inapropiades. Revisa-les abans de continuar.')
+    alert(trans('Hi ha imatges inapropiades. Revisa-les abans de continuar.'))
     return
   }
 
@@ -263,7 +264,7 @@ const processSubmit = async () => {
       }
     } else {
       console.error('Error enviant el formulari:', err)
-      alert('Error en crear el rànquing.')
+      alert(trans('Error en crear el rànquing.'))
     }
   } finally {
     processing.value = false
@@ -340,14 +341,14 @@ textarea { resize: none; }
 
 <template>
   <AppLayout>
-    <Head title="Crear Rànquing" />
+    <Head :title="$t('Crear Rànquing')" />
 
     <section class="relative py-16 px-6 overflow-hidden transition-colors duration-500">
       
       <div class="relative z-10 max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-10 border border-gray-200 dark:border-gray-700">
         
         <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
-          🚀 Crear un nou rànquing
+          🚀 {{ $t('Crear un nou rànquing') }}
         </h1>
 
         <div class="mb-8">
@@ -365,27 +366,27 @@ textarea { resize: none; }
           <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
             <div class="space-y-6">
               <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Nom del rànquing</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $t('Nom del rànquing') }}</label>
                 <input id="title" v-model="form.title" type="text" :maxlength="titleMax" class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                 <div class="text-xs mt-1 text-right" :class="form.title.length >= titleMax ? 'red-count' : 'text-gray-500'">{{ form.title.length }}/{{ titleMax }}</div>
                 <div v-if="form.errors.title" class="text-red-500 text-sm mt-1">{{ form.errors.title }}</div>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Descripció</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $t('Descripció') }}</label>
                 <textarea id="description" v-model="form.description" rows="4" :maxlength="descMax" class="mt-1 block w-full rounded-lg border p-2.5 focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
                 <div class="text-xs mt-1 text-right" :class="form.description.length >= descMax ? 'red-count' : 'text-gray-500'">{{ form.description.length }}/{{ descMax }}</div>
               </div>
             </div>
             <div class="flex flex-col items-center">
-              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Imatge del rànquing</label>
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $t('Imatge del rànquing') }}</label>
               <label class="w-full max-w-xs" @dragover.prevent @drop.prevent="onDropRanking">
                 <div v-if="!imagePreview" class="file-drop-zone h-36">
                   <svg class="w-10 h-10 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">Clica o arrossega</span>
+                  <span class="mt-2 text-sm text-gray-600 dark:text-gray-300 text-center">{{ $t('Clica o arrossega') }}</span>
                 </div>
                 <div v-else class="mt-2 relative w-full max-w-xs aspect-video cursor-pointer">
                   <img :src="imagePreview" alt="Preview" class="w-full h-full object-cover rounded-lg shadow" />
-                  <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"><span class="text-white font-semibold">Canviar imatge</span></div>
+                  <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"><span class="text-white font-semibold">{{ $t('Canviar imatge') }}</span></div>
                 </div>
                 <input type="file" accept="image/*" @change="handleRankingImage" class="hidden" />
               </label>
@@ -396,7 +397,7 @@ textarea { resize: none; }
 
           <div>
             <h2 class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              Opcions del rànquing
+              {{ $t('Opcions del rànquing') }}
             </h2>
 
             <div class="space-y-4" v-auto-animate>
@@ -412,7 +413,7 @@ textarea { resize: none; }
                       type="button" 
                       @click="switchOptionType(index, 'image')"
                       :class="option.type === 'image' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600'"
-                      title="Imatge"
+                      :title="$t('Imatge')"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </button>
@@ -420,7 +421,7 @@ textarea { resize: none; }
                       type="button" 
                       @click="switchOptionType(index, 'video')"
                       :class="option.type === 'video' ? 'text-red-600 dark:text-red-400' : 'text-gray-400 hover:text-gray-600'"
-                      title="YouTube"
+                      :title="$t('YouTube')"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </button>
@@ -438,7 +439,7 @@ textarea { resize: none; }
                       </div>
                       <div v-else class="relative w-20 h-20 cursor-pointer">
                         <img :src="optionPreviews[index]" class="w-full h-full object-cover rounded-lg shadow" />
-                        <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs">Editar</div>
+                        <div class="absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs">{{ $t('Editar') }}</div>
                       </div>
                       <input type="file" accept="image/*" @change="(e) => handleOptionImage(e, index)" class="hidden" />
                     </label>
@@ -453,7 +454,7 @@ textarea { resize: none; }
                       v-model="form.options[index].name"
                       type="text"
                       :maxlength="optMax"
-                      placeholder="Nom de l’opció"
+                      :placeholder="$t('Nom de l’opció')"
                       class="w-full rounded-md p-2.5 border focus:ring-2 focus:ring-blue-500 transition-colors border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     />
                     
@@ -461,7 +462,7 @@ textarea { resize: none; }
                       <input 
                         v-model="form.options[index].video_url"
                         type="text"
-                        placeholder="Enllaç de YouTube (ex: https://youtu.be/...)"
+                        :placeholder="$t('Enllaç de YouTube (ex: https://youtu.be/...)')"
                         class="w-full text-sm rounded-md p-2 border focus:ring-2 focus:ring-red-500 transition-colors border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                       />
                     </div>
@@ -469,7 +470,7 @@ textarea { resize: none; }
                     <div class="flex justify-between items-center">
                       <div>
                         <div v-if="form.errors[`options.${index}.name`]" class="text-red-500 text-sm">{{ form.errors[`options.${index}.name`] }}</div>
-                        <div v-if="form.errors[`options.${index}.video_url`]" class="text-red-500 text-sm">URL invàlida.</div>
+                        <div v-if="form.errors[`options.${index}.video_url`]" class="text-red-500 text-sm">{{ $t('URL invàlida.') }}</div>
                       </div>
                       <div class="flex-grow text-xs mt-1 text-right" :class="option.name.length >= optMax ? 'red-count' : 'text-gray-500'">
                         {{ option.name.length }}/{{ optMax }}
@@ -493,7 +494,7 @@ textarea { resize: none; }
               type="button"
               @click="addOption"
               class="mt-4 px-4 py-2 bg-blue-600 dark:bg-red-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-red-700 shadow-md transition-all duration-300">
-              + Afegir opció
+              {{ $t('+ Afegir opció') }}
             </button>
           </div>
 
@@ -506,9 +507,9 @@ textarea { resize: none; }
                 class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600 animate-gradient-slow">
               </span>
               <span class="relative z-10">
-                <span v-if="nsfwLoading">Carregant filtre...</span>
-                <span v-else-if="processing">Creant…</span>
-                <span v-else>Crear Rànquing</span>
+                <span v-if="nsfwLoading">{{ $t('Carregant filtre...') }}</span>
+                <span v-else-if="processing">{{ $t('Creant…') }}</span>
+                <span v-else>{{ $t('Crear Rànquing') }}</span>
               </span>
             </button>
           </div>
@@ -529,7 +530,7 @@ textarea { resize: none; }
       </div>
       <div class="cropper-buttons">
         <button @click="cancelCrop" type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-          Cancel·lar
+          {{ $t('Cancel·lar') }}
         </button>
         <button 
           @click="saveCrop" 
@@ -538,20 +539,20 @@ textarea { resize: none; }
                   bg-blue-600 hover:bg-blue-700
                   dark:bg-red-600 dark:hover:bg-red-700"
         >
-          Acceptar i retallar
+          {{ $t('Acceptar i retallar') }}
         </button>
       </div>
     </div>
 
     <div v-if="showAdOverlay" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white">
-      <div class="text-2xl font-bold mb-4">PUBLICITAT</div>
+      <div class="text-2xl font-bold mb-4">{{ $t('PUBLICITAT') }}</div>
       
       <div class="text-6xl font-black mb-8 animate-pulse">{{ adCountdown }}</div>
       
-      <p class="text-gray-400">El teu rànquing es crearà en uns segons...</p>
+      <p class="text-gray-400">{{ $t('El teu rànquing es crearà en uns segons...') }}</p>
       
       <p class="text-xs text-gray-500 mt-8">
-        Fes-te <span class="text-yellow-500 font-bold">Premium</span> per saltar això.
+        {{ $t('Fes-te') }} <span class="text-yellow-500 font-bold">{{ $t('Premium') }}</span> {{ $t('per saltar això.') }}
       </p>
     </div>
   </AppLayout>

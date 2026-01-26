@@ -18,6 +18,16 @@ use Illuminate\Support\Facades\Session;
 // Home
 Route::get('/', [RankingController::class, 'home'])->name('home');
 
+// Canvi d'idioma
+Route::get('/language/{locale}', function ($locale) {
+    // Validem que l'idioma sigui un dels permesos
+    if (in_array($locale, ['ca', 'es', 'en', 'fr', 'de', 'it', 'pt', 'gl', 'eu'])) {
+        Session::put('locale', $locale);
+    }
+    // Retornem l'usuari a la pàgina on estava
+    return back();
+})->name('language.switch');
+
 // Informació
 Route::get('/about', function () {
     return Inertia::render('About');

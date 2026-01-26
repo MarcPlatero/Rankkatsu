@@ -2,17 +2,18 @@
 import { Link, router, usePage } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const page = usePage()
 const user = computed(() => page.props.auth.user)
 
+// Notificacions
 const notificationsOpen = ref(false)
 const notifications = computed(() => page.props.auth.user?.notifications || [])
 const unreadCount = computed(() => page.props.auth.user?.unread_count || 0)
 
 const markAsRead = () => {
   notificationsOpen.value = !notificationsOpen.value
-  
   if (notificationsOpen.value && unreadCount.value > 0) {
     router.post('/notifications/mark-read', {}, { preserveScroll: true })
   }
@@ -24,6 +25,7 @@ const closeNotifications = (e) => {
   }
 }
 
+// Menú usuari
 const isDropdownOpen = ref(false)
 
 const logout = () => {
@@ -42,14 +44,46 @@ const isPixelAvatar = (path) => {
   return path && typeof path === 'string' && path.startsWith('pixel-')
 }
 
+// Idioma
+const isLangDropdownOpen = ref(false)
+
+const currentLocale = computed(() => page.props.locale)
+
+const closeLangDropdown = (e) => {
+  if (!e.target.closest('#lang-menu-btn') && !e.target.closest('#lang-menu-dropdown')) {
+    isLangDropdownOpen.value = false
+  }
+}
+
+// Llista d'idiomes
+const rawLocales = {
+    ca: 'Català',
+    es: 'Español',
+    en: 'English',
+    gl: 'Galego',
+    eu: 'Euskara',
+    fr: 'Français',
+    de: 'Deutsch',
+    it: 'Italiano',
+    pt: 'Português'
+}
+
+const sortedLocales = computed(() => {
+    return Object.entries(rawLocales)
+        .map(([code, label]) => ({ code, label }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+})
+
 onMounted(() => {
   window.addEventListener('click', closeDropdown)
   window.addEventListener('click', closeNotifications)
+  window.addEventListener('click', closeLangDropdown)
 })
 
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdown)
   window.removeEventListener('click', closeNotifications)
+  window.removeEventListener('click', closeLangDropdown)
 })
 </script>
 
@@ -72,21 +106,72 @@ onUnmounted(() => {
       </Link>
 
       <div class="hidden md:flex items-center space-x-5 text-sm font-medium">
-        <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Home</Link>
-        <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Perfil</Link>
-        <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Rankings</Link>
+        <Link href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+            {{ $t('Home') }}
+        </Link>
+        <Link href="/profile" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+            {{ $t('Profile') }}
+        </Link>
+        <Link href="/rankings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+            {{ $t('Rankings') }}
+        </Link>
         
         <Link href="/premium" class="text-gray-700 dark:text-gray-300 hover:text-yellow-500 dark:hover:text-yellow-400 transition">
-          Premium
+            {{ $t('Premium') }}
         </Link>
 
-        <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">Create</Link>
-        <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Configuració</Link>
-        <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">About</Link>
+        <Link href="/rankings/create" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+            {{ $t('Create') }}
+        </Link>
+        <Link href="/settings" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition">
+            {{ $t('Settings') }}
+        </Link>
+        <Link href="/about" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition">
+            {{ $t('About') }}
+        </Link>
       </div>
       
       <div class="flex items-center gap-4">
         
+        <div class="relative">
+            <button 
+                id="lang-menu-btn"
+                @click="isLangDropdownOpen = !isLangDropdownOpen"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition text-sm font-bold text-gray-600 dark:text-gray-300 border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+            >
+                <span>{{ currentLocale ? currentLocale.toUpperCase() : 'CA' }}</span>
+                <svg :class="{'rotate-180': isLangDropdownOpen}" class="w-3 h-3 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+
+            <transition
+                enter-active-class="transition ease-out duration-100"
+                enter-from-class="transform opacity-0 scale-95"
+                enter-to-class="transform opacity-100 scale-100"
+                leave-active-class="transition ease-in duration-75"
+                leave-from-class="transform opacity-100 scale-100"
+                leave-to-class="transform opacity-0 scale-95"
+            >
+                <div 
+                    v-if="isLangDropdownOpen"
+                    id="lang-menu-dropdown"
+                    class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1 z-50"
+                >
+                    <a 
+                        v-for="locale in sortedLocales" 
+                        :key="locale.code"
+                        :href="`/language/${locale.code}`"
+                        class="block px-4 py-2 text-sm transition hover:bg-gray-50 dark:hover:bg-gray-700/50 flex justify-between items-center"
+                        :class="currentLocale === locale.code ? 'font-bold text-blue-600 dark:text-red-400 bg-blue-50/50 dark:bg-red-900/10' : 'text-gray-700 dark:text-gray-300'"
+                    >
+                        {{ locale.label }}
+                        <span v-if="currentLocale === locale.code">✓</span>
+                    </a>
+                </div>
+            </transition>
+        </div>
+
+        <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1 hidden sm:block"></div>
+
         <template v-if="!user">
           <div class="flex items-center gap-3">
             <Link 
@@ -94,21 +179,22 @@ onUnmounted(() => {
               class="group flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-              Login
+              {{ $t('Login') }}
             </Link>
             
             <Link 
               href="/register" 
-              class="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-md transition-all hover:scale-105"
+              class="hidden sm:flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-md transition-all hover:scale-105"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-              Register
+              {{ $t('Register') }}
             </Link>
           </div>
         </template>
 
         <template v-else>
-          <div class="relative mr-2">
+          <div class="relative mr-2 flex items-center">
+            
             <button 
                 id="notification-btn"
                 @click="markAsRead" 
@@ -133,15 +219,15 @@ onUnmounted(() => {
                 <div 
                     v-if="notificationsOpen"
                     id="notification-dropdown"
-                    class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50 overflow-hidden"
+                    class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50 overflow-hidden"
                 >
                     <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700 font-bold text-gray-700 dark:text-gray-200 flex justify-between items-center">
-                        <span>Notificacions</span>
-                        <span v-if="unreadCount > 0" class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">{{ unreadCount }} noves</span>
+                        <span>{{ $t('Notificacions') }}</span>
+                        <span v-if="unreadCount > 0" class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">{{ unreadCount }} {{ $t('noves') }}</span>
                     </div>
 
                     <div v-if="notifications.length === 0" class="px-4 py-6 text-center text-gray-500 text-sm">
-                        No tens notificacions recents. 💤
+                        {{ $t('No tens notificacions recents. 💤') }}
                     </div>
 
                     <div v-else class="max-h-80 overflow-y-auto">
@@ -179,7 +265,7 @@ onUnmounted(() => {
                                 <div class="text-sm pr-4">
                                     <p class="text-gray-800 dark:text-gray-200 leading-snug">
                                         <span class="font-bold">{{ notification.data.user_name }}</span>
-                                        {{ notification.data.message }}
+                                        {{ $t(notification.data.message) }}
                                         <span class="font-medium text-blue-600 dark:text-red-400 block truncate max-w-[220px]">
                                             "{{ notification.data.ranking_title }}"
                                         </span>
@@ -258,7 +344,7 @@ onUnmounted(() => {
                   href="/admin/moderation" 
                   class="block px-4 py-2 text-sm font-medium transition flex items-center gap-2 text-blue-600 hover:bg-blue-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
-                  🛡️ Moderació
+                  {{ $t('Moderation') }}
                 </Link>
 
                 <button 
@@ -266,7 +352,7 @@ onUnmounted(() => {
                   class="w-full text-left px-4 py-2 text-sm font-semibold transition flex items-center gap-2 text-blue-600 hover:bg-blue-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                  Tancar sessió
+                  {{ $t('Logout') }}
                 </button>
               </div>
             </transition>

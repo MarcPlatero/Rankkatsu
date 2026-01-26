@@ -38,7 +38,7 @@ class RankingVoteController extends Controller
             $ranking->user->notify(new RankingInteraction(Auth::user(), $ranking, 'vote'));
         }
 
-        return redirect()->back()->with('success', 'Has votat correctament!');
+        return redirect()->back()->with('success', __('Has votat correctament!'));
     }
 
     public function unvote(Ranking $ranking)
@@ -47,6 +47,6 @@ class RankingVoteController extends Controller
             ->whereHas('option', fn($q) => $q->where('ranking_id', $ranking->id))
             ->delete();
 
-        return redirect()->back()->with('success', 'Has eliminat el teu vot!');
+        return redirect()->back()->with('success', __('Has eliminat el teu vot!'));
     }
 }

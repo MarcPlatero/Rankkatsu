@@ -42,11 +42,11 @@ class RankingInteraction extends Notification
     protected function getMessage()
     {
         switch ($this->type) {
-            case 'vote': return "ha votat en el teu rànquing";
-            case 'comment': return "ha comentat en el teu rànquing";
-            case 'like': return "li ha agradat el teu rànquing";
-            case 'favorite': return "ha guardat a favorits el teu rànquing";
-            default: return "ha interactuat amb el teu rànquing";
+            case 'vote': return 'ha votat en el teu rànquing';
+            case 'comment': return 'ha comentat en el teu rànquing';
+            case 'like': return 'li ha agradat el teu rànquing';
+            case 'favorite': return 'ha guardat a favorits el teu rànquing';
+            default: return 'ha interactuat amb el teu rànquing';
         }
     }
 }

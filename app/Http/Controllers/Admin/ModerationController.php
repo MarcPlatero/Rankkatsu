@@ -44,7 +44,7 @@ class ModerationController extends Controller
 
         return inertia('Admin/Moderation/Dashboard', [
             'rankings' => $rankings,
-            'success' => 'Rànquing aprovat correctament.',
+            'success' => __('Rànquing aprovat correctament.'),
         ]);
     }
 
@@ -56,7 +56,7 @@ class ModerationController extends Controller
 
         return redirect()
             ->route('admin.moderation.dashboard')
-            ->with('success', 'Rànquing eliminat correctament.');
+            ->with('success', __('Rànquing eliminat correctament.'));
     }
 
     public function approveImage(RankingImage $image)

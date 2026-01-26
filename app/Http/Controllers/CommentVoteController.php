@@ -26,6 +26,6 @@ class CommentVoteController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Vot registrat!');
+        return redirect()->back()->with('success', __('Vot registrat!'));
     }
 }

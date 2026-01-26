@@ -5,6 +5,7 @@ import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+import { trans } from 'laravel-vue-i18n';
 
 defineProps({
   status: String,
@@ -21,15 +22,9 @@ const submit = () => {
 
 <style scoped>
 @keyframes gradient-slow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .animate-gradient-slow {
   animation: gradient-slow 8s ease infinite;
@@ -38,7 +33,7 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <Head title="Forgot Password" />
+    <Head :title="$t('Recuperar contrasenya')" />
 
     <section
       class="min-h-screen flex items-center justify-center bg-gradient-to-b 
@@ -48,20 +43,16 @@ const submit = () => {
       <div
         class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
       >
-        <!-- Títol -->
         <h1
           class="text-3xl font-extrabold text-center mb-6 text-gray-900 dark:text-gray-100 tracking-wide"
         >
-          Forgot Password
+          {{ $t('Recuperar contrasenya') }}
         </h1>
 
-        <!-- Text explicatiu -->
         <p class="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
-          Forgot your password? No problem. Just enter your email and we’ll send
-          you a link to reset it.
+          {{ $t("Has oblidat la contrasenya? Cap problema. Introdueix el teu correu electrònic i t'enviarem un enllaç per restablir-la.") }}
         </p>
 
-        <!-- Missatge d’estat -->
         <div
           v-if="status"
           class="mb-4 text-sm font-medium text-green-600 dark:text-green-400 text-center"
@@ -69,11 +60,9 @@ const submit = () => {
           {{ status }}
         </div>
 
-        <!-- Formulari -->
         <form @submit.prevent="submit">
-          <!-- Email -->
           <div>
-            <InputLabel for="email" value="Email" class="dark:text-gray-200" />
+            <InputLabel for="email" :value="$t('Correu electrònic')" class="dark:text-gray-200" />
             <TextInput
               id="email"
               type="email"
@@ -86,12 +75,11 @@ const submit = () => {
             <InputError class="mt-2" :message="form.errors.email" />
           </div>
 
-          <!-- Botons -->
           <div class="mt-6 flex items-center justify-between">
             <Link
               href="/"
               class="inline-flex items-center text-sm text-gray-600 dark:text-gray-300 underline hover:text-gray-900 dark:hover:text-white"
-              aria-label="Back to home"
+              :aria-label="$t('Tornar a l\'inici')"
             >
               <ArrowLeftIcon class="h-5 w-5" />
             </Link>
@@ -105,7 +93,7 @@ const submit = () => {
                 class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600 
                        animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
               ></span>
-              <span class="relative z-10">Send Reset Link</span>
+              <span class="relative z-10">{{ $t('Enviar enllaç') }}</span>
             </button>
           </div>
         </form>

@@ -5,6 +5,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import FavoriteStar from '@/Components/FavoriteStar.vue'
 import AdBanner from '@/Components/AdBanner.vue'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   rankings: Object,
@@ -74,22 +75,52 @@ const timeAgo = (dateString) => {
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
     
+    // Si fa menys d'un minut
+    if (seconds < 60) return trans('Just now');
+
     let interval = Math.floor(seconds / 31536000);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'any' : 'anys'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 year ago') 
+            : trans(':count years ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 2592000);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'mes' : 'mesos'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 month ago') 
+            : trans(':count months ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 86400);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'dia' : 'dies'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 day ago') 
+            : trans(':count days ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'hora' : 'hores'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 hour ago') 
+            : trans(':count hours ago', { count: interval });
+    }
     
     interval = Math.floor(seconds / 60);
-    if (interval >= 1) return `Fa ${interval} ${interval === 1 ? 'minut' : 'minuts'}`;
+    if (interval >= 1) {
+        return interval === 1 
+            ? trans('1 minute ago') 
+            : trans(':count minutes ago', { count: interval });
+    }
     
-    return 'Ara mateix';
+    return trans('Just now');
+}
+
+// Funció helper per als vots
+const votesText = (count) => {
+    if (!count) count = 0;
+    if (count === 1) return trans('1 vote/24h');
+    return trans(':count votes/24h', { count: count });
 }
 </script>
 
@@ -131,7 +162,7 @@ const timeAgo = (dateString) => {
              bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
       <h1 class="text-3xl font-extrabold mb-10 text-center">
-        🔍 Tots els rànquings
+        🔍 {{ $t('Tots els rànquings') }}
       </h1>
 
       <div
@@ -159,14 +190,14 @@ const timeAgo = (dateString) => {
                     v-model="search"
                     @keyup.enter="applyFilters"
                     type="text"
-                    placeholder="Cerca rànquings o opcions..."
+                    :placeholder="$t('Cerca rànquings o opcions...')"
                     class="w-full px-4 py-4 bg-transparent border-none focus:ring-0 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-lg focus:outline-none"
                 />
                 <button
                     @click="applyFilters"
                     class="px-8 font-semibold bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-l border-gray-100 dark:border-gray-700"
                 >
-                    Cercar
+                    {{ $t('Cercar') }}
                 </button>
             </div>
         </div>
@@ -182,7 +213,7 @@ const timeAgo = (dateString) => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🔥 Tendència
+                    🔥 {{ $t('Tendència') }}
                 </button>
                 <button
                     @click="sort = 'popular'"
@@ -193,7 +224,7 @@ const timeAgo = (dateString) => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🏆 Més Populars
+                    🏆 {{ $t('Més Populars') }}
                 </button>
                 <button
                     @click="sort = 'recent'"
@@ -204,7 +235,7 @@ const timeAgo = (dateString) => {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     ]"
                 >
-                    🆕 Novetats
+                    🆕 {{ $t('Novetats') }}
                 </button>
             </div>
         </div>
@@ -223,7 +254,7 @@ const timeAgo = (dateString) => {
             class="absolute inset-0 bg-gradient-to-r from-blue-600 via-red-500 to-blue-600
                    animate-gradient-slow bg-[length:200%_200%] transition-all duration-500"
           ></span>
-          <span class="relative z-10 flex items-center justify-center gap-2">🚀 Crear nou rànquing</span>
+          <span class="relative z-10 flex items-center justify-center gap-2">🚀 {{ $t('Crear nou rànquing') }}</span>
         </Link>
       </div>
 
@@ -232,7 +263,7 @@ const timeAgo = (dateString) => {
         class="text-gray-600 dark:text-gray-400 mt-8 text-center text-lg py-12"
       >
         <div class="text-4xl mb-3">😕</div>
-        No s’han trobat rànquings amb aquests filtres.
+        {{ $t('No s’han trobat rànquings amb aquests filtres.') }}
       </div>
 
       <div
@@ -267,7 +298,7 @@ const timeAgo = (dateString) => {
             </div>
 
             <div v-if="sort === 'trending'" class="absolute top-2 left-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1 shadow-sm z-10">
-                <span class="text-green-500">▲</span> {{ ranking.recent_votes_count || 0 }} vots/24h
+                <span class="text-green-500">▲</span> {{ votesText(ranking.recent_votes_count) }}
             </div>
           </div>
 
@@ -305,7 +336,7 @@ const timeAgo = (dateString) => {
                   v-if="ranking.options.length > 2"
                   class="text-gray-400 italic mt-1"
                 >
-                  +{{ ranking.options.length - 2 }} més...
+                  +{{ ranking.options.length - 2 }} {{ $t('més...') }}
                 </li>
               </ul>
 
@@ -325,12 +356,12 @@ const timeAgo = (dateString) => {
                 </div>
                 
                 <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="truncate font-medium">{{ ranking.user?.name || 'Anònim' }}</span>
+                    <span class="truncate font-medium">{{ ranking.user?.name || $t('Anònim') }}</span>
                     
                     <span 
                         v-if="ranking.user?.is_premium" 
                         class="flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm"
-                        title="Usuari Premium"
+                        :title="$t('Usuari Premium')"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
                           <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
@@ -345,7 +376,7 @@ const timeAgo = (dateString) => {
               <span
                 class="text-blue-600 dark:text-red-400 font-semibold text-sm hover:underline"
               >
-                Veure detalls →
+                {{ $t('Veure detalls') }} →
               </span>
             </div>
           </div>
@@ -365,8 +396,8 @@ const timeAgo = (dateString) => {
                  bg-blue-600 hover:bg-blue-700 
                  dark:bg-red-600 dark:hover:bg-red-700"
         >
-          <span v-if="isLoadingMore">Carregant...</span>
-          <span v-else>Carregar més rankings</span>
+          <span v-if="isLoadingMore">{{ $t('Carregant...') }}</span>
+          <span v-else>{{ $t('Carregar més rankings') }}</span>
         </button>
       </div>
 

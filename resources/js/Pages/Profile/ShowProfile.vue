@@ -7,6 +7,7 @@ import FavoriteRankings from './Tabs/FavoriteRankings.vue'
 import YourRankings from './Tabs/YourRankings.vue'
 import AdBanner from '@/Components/AdBanner.vue'
 import PixelAvatar from '@/Components/PixelAvatar.vue'
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps({
   user: Object,
@@ -51,10 +52,10 @@ const formatNumber = (num) => {
 
 <template>
   <AppLayout>
-    <Head title="Perfil d'usuari" />
+    <Head :title="$t('Perfil d\'usuari')" />
 
     <div class="max-w-5xl mx-auto py-10 px-6 text-gray-800 dark:text-gray-100">
-      <h1 class="text-3xl font-bold mb-6 text-center">El meu perfil</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center">{{ $t('El meu perfil') }}</h1>
 
       <div
         class="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6 mb-8 flex flex-col sm:flex-row items-center sm:space-x-6 transition-colors duration-300 border border-gray-100 dark:border-gray-800"
@@ -84,21 +85,21 @@ const formatNumber = (num) => {
             <span 
               v-if="user.is_premium" 
               class="px-2 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-sm uppercase tracking-wider"
-              title="Membre Premium"
+              :title="$t('Membre Premium')"
             >
-              Premium
+              {{ $t('Premium') }}
             </span>
           </div>
 
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Compte creat el {{ new Date(user.created_at).toLocaleDateString() }}
+            {{ $t('Compte creat el :date', { date: new Date(user.created_at).toLocaleDateString() }) }}
           </p>
           
           <button
             @click="logout"
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg transition shadow"
           >
-            Tancar sessió
+            {{ $t('Tancar sessió') }}
           </button>
         </div>
       </div>
@@ -111,7 +112,7 @@ const formatNumber = (num) => {
                 {{ formatNumber(stats?.votes) }}
             </div>
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                Vots rebuts
+                {{ $t('Vots rebuts') }}
             </div>
         </div>
 
@@ -121,7 +122,7 @@ const formatNumber = (num) => {
                 {{ formatNumber(stats?.likes) }}
             </div>
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                Likes rebuts
+                {{ $t('Likes rebuts') }}
             </div>
         </div>
 
@@ -131,7 +132,7 @@ const formatNumber = (num) => {
                 {{ formatNumber(stats?.comments) }}
             </div>
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                Comentaris rebuts
+                {{ $t('Comentaris rebuts') }}
             </div>
         </div>
 
@@ -141,7 +142,7 @@ const formatNumber = (num) => {
                 {{ formatNumber(stats?.favorites_received) }}
             </div>
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                Favorits rebuts
+                {{ $t('Favorits rebuts') }}
             </div>
         </div>
 
@@ -159,7 +160,7 @@ const formatNumber = (num) => {
             : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-red-400'"
           @click="currentTab = 'yours'"
         >
-          🏆 Els teus rankings
+          🏆 {{ $t('Els teus rankings') }}
         </button>
 
         <button
@@ -169,7 +170,7 @@ const formatNumber = (num) => {
             : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-red-400'"
           @click="currentTab = 'account'"
         >
-          🧑 Informació del compte
+          🧑 {{ $t('Informació del compte') }}
         </button>
 
         <button
@@ -179,7 +180,7 @@ const formatNumber = (num) => {
             : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-red-400'"
           @click="currentTab = 'favorites'"
         >
-          ⭐ Rankings favorits
+          ⭐ {{ $t('Rankings favorits') }}
         </button>
       </div>
 

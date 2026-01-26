@@ -17,8 +17,8 @@ class CommentController extends Controller
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
         ], [
-            'content.required' => 'El comentari no pot estar buit.',
-            'content.max' => 'El comentari no pot superar els 1000 caràcters.',
+            'content.required' => __('El comentari no pot estar buit.'),
+            'content.max' => __('El comentari no pot superar els 1000 caràcters.'),
         ]);
 
         // Llista de paraules prohibides des de config/banned.php
@@ -28,7 +28,7 @@ class CommentController extends Controller
         foreach ($bannedWords as $badWord) {
             if (preg_match("/\b" . preg_quote($badWord, '/') . "\b/i", $validated['content'])) {
                 return redirect()->back()
-                    ->with('error', '⚠️ No utilitzis paraules malsonants al comentari.')
+                    ->with('error', __('No utilitzis paraules malsonants al comentari.'))
                     ->withInput();
             }
         }
@@ -44,13 +44,13 @@ class CommentController extends Controller
             $ranking->user->notify(new RankingInteraction(Auth::user(), $ranking, 'comment'));
         }
 
-        return redirect()->back()->with('success', 'Comentari publicat!');
+        return redirect()->back()->with('success', __('Comentari publicat!'));
     }
 
     public function unvote(Comment $comment)
     {
         if (!Auth::check()) {
-            return back()->with('error', 'Has d\'iniciar sessió per treure el vot.');
+            return back()->with('error', __('Has d\'iniciar sessió per treure el vot.'));
         }
 
         CommentVote::where('user_id', Auth::id())
@@ -73,7 +73,7 @@ class CommentController extends Controller
             $comment = $ranking->comments()->find($comment->id);
 
             if (!$comment) {
-                abort(403, 'El comentari no pertany a aquest rànquing.');
+                abort(403, __('El comentari no pertany a aquest rànquing.'));
             }
         }
 
@@ -87,6 +87,6 @@ class CommentController extends Controller
 
         $comment->delete();
 
-        return redirect()->back()->with('success', 'Comentari eliminat correctament.');
+        return redirect()->back()->with('success', __('Comentari eliminat correctament.'));
     }
 }
