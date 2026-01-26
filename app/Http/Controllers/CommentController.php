@@ -70,11 +70,7 @@ class CommentController extends Controller
         }
 
         if ($comment->ranking_id !== $ranking->id) {
-            $comment = $ranking->comments()->find($comment->id);
-
-            if (!$comment) {
-                abort(403, __('El comentari no pertany a aquest rànquing.'));
-            }
+            abort(404);
         }
 
         if (
@@ -82,7 +78,7 @@ class CommentController extends Controller
             $ranking->user_id !== $user->id &&
             !$user->is_admin
         ) {
-            abort(403);
+            abort(403, __('No tens permís per esborrar aquest comentari.'));
         }
 
         $comment->delete();
