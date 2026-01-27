@@ -3,7 +3,7 @@ import Checkbox from '@/Components/CheckboxInput.vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import InputError from '@/Components/ErrorInput.vue';
 import InputLabel from '@/Components/LabelInput.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue'
+import PrimaryButton from '@/Components/ButtonPrimary.vue'
 import TextInput from '@/Components/InputText.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
