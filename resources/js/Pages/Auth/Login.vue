@@ -1,5 +1,5 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue'
+import Checkbox from '@/Components/CheckboxInput.vue'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import InputError from '@/Components/ErrorInput.vue';
 import InputLabel from '@/Components/LabelInput.vue';
