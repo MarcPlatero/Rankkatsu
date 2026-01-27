@@ -2,7 +2,7 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import InputError from '@/Components/ErrorInput.vue';
 import InputLabel from '@/Components/LabelInput.vue';
-import TextInput from '@/Components/TextInput.vue'
+import TextInput from '@/Components/InputText.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import { trans } from 'laravel-vue-i18n';
