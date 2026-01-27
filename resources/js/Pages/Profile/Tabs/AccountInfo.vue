@@ -175,7 +175,11 @@ const handlePasswordUpdated = () => {
       </div>
       
       <p v-if="!isPremium" class="text-xs text-gray-500 mt-3 flex items-center gap-1 justify-center">
-        {{ $t('Els avatars amb cadenat són exclusius per a membres') }} <span class="bg-gradient-to-r from-blue-600 to-red-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">Premium</span>.
+          <span 
+              v-html="$t('Els avatars amb cadenat són exclusius per a membres Premium.')
+              .replace('Premium', '<span class=\'font-bold text-yellow-600 dark:text-yellow-400\'>Premium</span>')"
+          >
+          </span>
       </p>
 
       <div v-if="form.errors.avatar" class="text-red-600 text-sm mt-1">{{ form.errors.avatar }}</div>
