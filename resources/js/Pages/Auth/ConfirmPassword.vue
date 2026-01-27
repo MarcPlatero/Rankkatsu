@@ -1,7 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
@@ -48,7 +47,10 @@ const submit = () => {
 
                 <form @submit.prevent="submit">
                     <div>
-                        <InputLabel for="password" :value="$t('Contrasenya')" class="dark:text-gray-200" />
+                        <label for="password" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                            {{ $t('Contrasenya') }}
+                        </label>
+                        
                         <TextInput
                             id="password"
                             type="password"
