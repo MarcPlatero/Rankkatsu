@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Session;
 
-// Home
+// Pàgina principal
 Route::get('/', [RankingController::class, 'home'])->name('home');
 
-// Canvi d'idioma
+// Canvi d'idioma de l'aplicació
 Route::get('/language/{locale}', function ($locale) {
     // Validem que l'idioma sigui un dels permesos
     if (in_array($locale, ['ca', 'es', 'en', 'fr', 'de', 'it', 'pt', 'gl', 'eu'])) {
@@ -28,69 +28,72 @@ Route::get('/language/{locale}', function ($locale) {
     return back();
 })->name('language.switch');
 
-// Informació
-Route::get('/about', function () {
-    return Inertia::render('About');
-})->name('about');
+// Pàgines informatives i de configuració bàsica
+Route::get('/about', function () { return Inertia::render('About'); })->name('about');
+Route::get('/settings', function () { return inertia('Settings/Configuration'); })->name('settings.configuration');
 
-// Configuració
-Route::get('/settings', function () {
-    return inertia('Settings/Configuration');
-})->name('settings.configuration');
+// Pàgines legals (Termes, Privacitat, Cookies)
+Route::get('/legal/terms', function () { return Inertia::render('Legal/Terms'); })->name('legal.terms');
+Route::get('/legal/privacy', function () { return Inertia::render('Legal/Privacy'); })->name('legal.privacy');
+Route::get('/legal/cookies', function () { return Inertia::render('Legal/Cookies'); })->name('legal.cookies');
 
-// Rankings
+// Índex públic de tots els rànquings
+Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index');
+
+// Grup de rutes per a usuaris autenticats (Crear, Guardar, Esborrar, etc.)
 Route::middleware('auth')->group(function () {
     Route::get('/rankings/create', [RankingController::class, 'create'])->name('rankings.create');
     Route::post('/rankings', [RankingController::class, 'store'])->name('rankings.store');
-});
-
-// Rutes dels rankings (index, store, show, destroy)
-Route::resource('rankings', RankingController::class)->only([
-    'index', 'store', 'show', 'destroy'
-]);
-
-// Votació Opcions (només autenticats)
-Route::middleware('auth')->group(function () {
-    Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
+    
+    Route::delete('/rankings/{ranking}', [RankingController::class, 'destroy'])->name('rankings.destroy');
+    Route::post('/rankings/{ranking}/like', [RankingLikeController::class, 'store'])->name('rankings.like');
+    Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
+    
+    Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::class, 'destroy'])->name('rankings.comments.destroy');
     Route::post('/rankings/{ranking}/unvote', [RankingController::class, 'unvote'])->name('rankings.unvote');
+    Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])->name('comments.unvote');
 });
 
-// Comentaris
-Route::post('/rankings/{ranking}/comments', [CommentController::class, 'store'])->middleware('auth')->name('rankings.comments.store');
-Route::delete('/rankings/{ranking}/comments/{comment}', [CommentController::class, 'destroy'])->middleware('auth')->name('rankings.comments.destroy');
-
-// Votació Comentaris
-Route::post('/comments/{comment}/vote', [CommentVoteController::class, 'store'])->middleware('auth')->name('comments.vote');
-Route::post('/comments/{comment}/unvote', [CommentController::class, 'unvote'])->name('comments.unvote');
-
-// Rànquings de l'usuari i favorits
+// Llistes personals (Els meus rànquings i favorits) - Requereix email verificat
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/rankings/yours', [RankingController::class, 'yours'])->name('rankings.yours');
     Route::get('/rankings/favorites', [RankingController::class, 'favorites'])->name('rankings.favorites');
     Route::post('/rankings/{ranking}/favorite', [FavoriteRankingController::class, 'toggle'])->name('rankings.toggleFavorite');
 });
 
-// Likes
-Route::middleware('auth')->group(function () {
-    Route::post('/rankings/{ranking}/like', [RankingLikeController::class, 'store'])->name('rankings.like');
-    Route::post('/rankings/{ranking}/unlike', [RankingLikeController::class, 'destroy'])->name('rankings.unlike');
+// Accions de votació i comentaris
+Route::middleware(['auth', 'throttle:60,1'])->group(function () {
+    Route::post('/rankings/{ranking}/vote', [RankingVoteController::class, 'vote'])->name('rankings.vote');
+    Route::post('/rankings/{ranking}/comments', [CommentController::class, 'store'])->name('rankings.comments.store');
+    Route::post('/comments/{comment}/vote', [CommentVoteController::class, 'store'])->name('comments.vote');
 });
 
-// Perfil i notificacions
+// Visualització d'un rànquing específic
+Route::get('/rankings/{ranking}', [RankingController::class, 'show'])->name('rankings.show');
+
+// Gestió de Subscripcions Premium (Stripe)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/premium', [SubscriptionController::class, 'index'])->name('premium.index');
+    Route::post('/premium/subscribe', [SubscriptionController::class, 'create'])->name('premium.subscribe');
+    Route::get('/premium/success', [SubscriptionController::class, 'success'])->name('premium.success');
+    Route::get('/premium/manage', [SubscriptionController::class, 'portal'])->name('premium.manage');
+});
+
+// Gestió del Perfil d'Usuari i Notificacions
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/password', [PasswordController::class, 'update'])->name('profile.password.update');
 
-    // Notificacions
+    // Marcar notificacions com a llegides
     Route::post('/notifications/mark-read', function (Request $request) {
         $request->user()->unreadNotifications->markAsRead();
         return back();
     })->name('notifications.markRead');
 });
 
-// Moderació (només admins i moderadors)
+// Rutes d'administració i moderació
 Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () {
     Route::get('/moderation', [ModerationController::class, 'dashboard'])->name('admin.moderation.dashboard');
     Route::get('/moderation/{ranking}', [ModerationController::class, 'show'])->name('admin.moderation.show');
@@ -99,18 +102,5 @@ Route::middleware(['auth', 'can:moderate'])->prefix('admin')->group(function () 
     Route::post('/moderation/images/{image}/approve', [ModerationController::class, 'approveImage'])->name('admin.moderation.image.approve');
     Route::post('/moderation/images/{image}/reject', [ModerationController::class, 'rejectImage'])->name('admin.moderation.image.reject');
 });
-
-// Rutes de subscripció premium
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/premium', [SubscriptionController::class, 'index'])->name('premium.index');
-    Route::post('/premium/subscribe', [SubscriptionController::class, 'create'])->name('premium.subscribe');
-    Route::get('/premium/success', [SubscriptionController::class, 'success'])->name('premium.success');
-    Route::get('/premium/manage', [SubscriptionController::class, 'portal'])->name('premium.manage');
-});
-
-// Pàgines legals
-Route::get('/legal/terms', function () { return Inertia::render('Legal/Terms'); })->name('legal.terms');
-Route::get('/legal/privacy', function () { return Inertia::render('Legal/Privacy'); })->name('legal.privacy');
-Route::get('/legal/cookies', function () { return Inertia::render('Legal/Cookies'); })->name('legal.cookies');
 
 require __DIR__.'/auth.php';
