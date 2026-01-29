@@ -68,7 +68,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 
           <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">8. {{ $t('Contacte') }}</h2>
           <p>
-            {{ $t('Per a qualsevol dubte legal o reclamació de copyright (DMCA), pots contactar amb nosaltres a: legal@rankkatsu.com.') }}
+            {{ $t('Per a qualsevol dubte legal o reclamació de copyright (DMCA), pots contactar amb nosaltres a: rankkatsu.contact@gmail.com') }}
           </p>
 
         </div>

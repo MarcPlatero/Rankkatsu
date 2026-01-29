@@ -21,7 +21,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           <p>
             {{ $t('El responsable de les dades és:') }} <br>
             <strong>{{ $t('Nom') }}:</strong> Marc Platero <br>
-            <strong>{{ $t('Correu de contacte') }}:</strong> legal@rankkatsu.com <br>
+            <strong>{{ $t('Correu de contacte') }}:</strong> rankkatsu.contact@gmail.com <br>
             <strong>{{ $t('Ubicació') }}:</strong> Barcelona, {{ $t('Espanya') }}
           </p>
 
@@ -51,7 +51,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 
           <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">5. {{ $t('Els teus Drets') }}</h2>
           <p>
-            {{ $t('Sota el RGPD (Reglament General de Protecció de Dades), tens dret a accedir, rectificar, suprimir i limitar el tractament de les teves dades. Pots exercir aquests drets des del teu perfil o enviant un correu a legal@rankkatsu.com.') }}
+            {{ $t('Sota el RGPD (Reglament General de Protecció de Dades), tens dret a accedir, rectificar, suprimir i limitar el tractament de les teves dades. Pots exercir aquests drets des del teu perfil o enviant un correu a rankkatsu.contact@gmail.com') }}
           </p>
 
           <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">6. {{ $t('Eliminació del Compte') }}</h2>
