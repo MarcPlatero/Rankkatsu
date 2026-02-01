@@ -12,7 +12,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl rounded-2xl p-8 md:p-12 text-gray-700 dark:text-gray-300 leading-relaxed">
           
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">{{ $t('Termes i Condicions d\'Ús') }}</h1>
-          <p class="text-sm text-gray-500 mb-8">{{ $t('Última actualització:') }} {{ new Date().toLocaleDateString() }}</p>
 
           <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">1. {{ $t('Introducció') }}</h2>
           <p>

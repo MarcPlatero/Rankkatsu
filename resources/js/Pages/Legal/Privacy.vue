@@ -46,7 +46,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           <ul class="list-disc pl-5 space-y-2 mt-2">
             <li><strong>Stripe:</strong> {{ $t('Per processar els pagaments de forma segura. Rankkatsu no guarda les teves dades bancàries.') }}</li>
             <li><strong>Google AdSense:</strong> {{ $t('Per mostrar publicitat. Google pot utilitzar cookies per personalitzar els anuncis.') }}</li>
-            <li><strong>Amazon S3 / R2 (si n'uses):</strong> {{ $t('Per a l\'emmagatzematge d\'imatges al núvol.') }}</li>
           </ul>
 
           <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">5. {{ $t('Els teus Drets') }}</h2>
