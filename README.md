@@ -39,3 +39,6 @@ Frontend: Built with Vue.js and Tailwind CSS, delivering a reactive, dark-mode-r
 The Glue: Inertia.js bridges the gap between server and client, allowing us to build a fully modern frontend without the complexity of a separate API, keeping development fast and maintainable.
 
 Ecosystem: The platform integrates Stripe for handling monthly and lifetime Premium subscriptions, Google AdSense for monetization, and i18n support for different languages, making Rankkatsu a truly global experience.
+
+
+Check out the website at rankkatsu.com
