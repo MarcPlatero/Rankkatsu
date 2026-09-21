@@ -41,4 +41,4 @@ The Glue: Inertia.js bridges the gap between server and client, allowing us to b
 Ecosystem: The platform integrates Stripe for handling monthly and lifetime Premium subscriptions, Google AdSense for monetization, and i18n support for different languages, making Rankkatsu a truly global experience.
 
 
-Check out the website at rankkatsu.com
+Check out the website at rankkatsu.com (currently unavailable).
